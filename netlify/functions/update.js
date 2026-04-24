@@ -35,10 +35,10 @@ function readHeader(headers, name) {
 
 function safeEqualToken(input) {
   if (!ADMIN_TOKEN || typeof input !== "string") return false;
-  const a = Buffer.from(ADMIN_TOKEN);
-  const b = Buffer.from(input);
-  if (a.length !== b.length) return false;
-  return crypto.timingSafeEqual(a, b);
+  const left = Buffer.from(ADMIN_TOKEN);
+  const right = Buffer.from(input);
+  if (left.length !== right.length) return false;
+  return crypto.timingSafeEqual(left, right);
 }
 
 function normalizeRelease(release) {
@@ -49,9 +49,6 @@ function normalizeRelease(release) {
     latest: release.latest === true,
     status: str(release.status) || "success",
     loader: str(release.loader) || "PaperMC",
-    minecraft: str(release.minecraft),
-    description: str(release.description),
-    changelog: Array.isArray(release.changelog) ? release.changelog.map(str).filter(Boolean) : [],
     download: str(release.download),
   };
 }
@@ -59,25 +56,14 @@ function normalizeRelease(release) {
 function normalizePlugin(plugin) {
   return {
     name: str(plugin.name),
-    description: str(plugin.description),
-    author: str(plugin.author),
-    website: str(plugin.website),
-    source: str(plugin.source),
     releases: Array.isArray(plugin.releases) ? plugin.releases.map(normalizeRelease) : [],
   };
 }
 
-function normalizeSubcategory(subcategory) {
+function normalizeSection(section) {
   return {
-    name: str(subcategory.name),
-    plugins: Array.isArray(subcategory.plugins) ? subcategory.plugins.map(normalizePlugin) : [],
-  };
-}
-
-function normalizeCategory(category) {
-  return {
-    name: str(category.name),
-    subcategories: Array.isArray(category.subcategories) ? category.subcategories.map(normalizeSubcategory) : [],
+    name: str(section.name),
+    plugins: Array.isArray(section.plugins) ? section.plugins.map(normalizePlugin) : [],
   };
 }
 
@@ -86,8 +72,12 @@ function normalizeCatalog(input) {
   return {
     catalog: {
       title: str(catalog.title) || "Plugin Catalog",
-      description: str(catalog.description),
-      categories: Array.isArray(catalog.categories) ? catalog.categories.map(normalizeCategory) : [],
+      core: {
+        plugins: Array.isArray(catalog.core?.plugins) ? catalog.core.plugins.map(normalizePlugin) : [],
+      },
+      addons: {
+        sections: Array.isArray(catalog.addons?.sections) ? catalog.addons.sections.map(normalizeSection) : [],
+      },
     },
   };
 }
@@ -101,96 +91,88 @@ function validateRelease(release, path) {
   if (!ALLOWED_STATUSES.includes(release.status)) errors.push(`${path}.status must be one of: ${ALLOWED_STATUSES.join(", ")}`);
   if (!ALLOWED_LOADERS.includes(release.loader)) errors.push(`${path}.loader must be one of: ${ALLOWED_LOADERS.join(", ")}`);
   if (!isHttpsUrl(release.download)) errors.push(`${path}.download must be a valid https URL`);
-  if (release.minecraft != null && !str(release.minecraft)) errors.push(`${path}.minecraft must be a non-empty string when provided`);
-  if (release.description != null && !str(release.description)) errors.push(`${path}.description must be a non-empty string when provided`);
-  if (release.changelog != null && !Array.isArray(release.changelog)) errors.push(`${path}.changelog must be an array of strings`);
-  if (Array.isArray(release.changelog)) {
-    release.changelog.forEach((item, index) => {
-      if (!str(item)) errors.push(`${path}.changelog[${index}] must be a non-empty string`);
-    });
-  }
   return errors;
 }
 
 function validatePlugin(plugin, path) {
   const errors = [];
   if (!str(plugin.name)) errors.push(`${path}.name is required`);
-  if (plugin.description != null && !str(plugin.description)) errors.push(`${path}.description must be a non-empty string when provided`);
-  if (plugin.author != null && !str(plugin.author)) errors.push(`${path}.author must be a non-empty string when provided`);
-  if (plugin.website && !isHttpsUrl(plugin.website)) errors.push(`${path}.website must be a valid https URL`);
-  if (plugin.source && !isHttpsUrl(plugin.source)) errors.push(`${path}.source must be a valid https URL`);
   if (!Array.isArray(plugin.releases)) errors.push(`${path}.releases must be an array`);
 
   const releases = Array.isArray(plugin.releases) ? plugin.releases : [];
-  const releaseVersions = new Set();
+  const versions = new Set();
   let latestCount = 0;
+
   releases.forEach((release, index) => {
     errors.push(...validateRelease(release, `${path}.releases[${index}]`));
-    const versionKey = str(release.version).toLowerCase();
-    if (versionKey) {
-      if (releaseVersions.has(versionKey)) errors.push(`${path}.releases[${index}].version must be unique inside the plugin`);
-      releaseVersions.add(versionKey);
+    const key = str(release.version).toLowerCase();
+    if (key) {
+      if (versions.has(key)) errors.push(`${path}.releases[${index}].version must be unique inside the plugin`);
+      versions.add(key);
     }
     if (release.latest === true) latestCount += 1;
   });
+
   if (latestCount > 1) errors.push(`${path}.releases can only contain one latest release`);
   return errors;
 }
 
-function validateSubcategory(subcategory, path) {
+function validateSection(section, path) {
   const errors = [];
-  if (!str(subcategory.name)) errors.push(`${path}.name is required`);
-  if (!Array.isArray(subcategory.plugins)) errors.push(`${path}.plugins must be an array`);
+  if (!str(section.name)) errors.push(`${path}.name is required`);
+  if (!Array.isArray(section.plugins)) errors.push(`${path}.plugins must be an array`);
 
-  const plugins = Array.isArray(subcategory.plugins) ? subcategory.plugins : [];
-  const pluginNames = new Set();
+  const plugins = Array.isArray(section.plugins) ? section.plugins : [];
+  const names = new Set();
+
   plugins.forEach((plugin, index) => {
     errors.push(...validatePlugin(plugin, `${path}.plugins[${index}]`));
     const key = str(plugin.name).toLowerCase();
     if (key) {
-      if (pluginNames.has(key)) errors.push(`${path}.plugins[${index}].name must be unique inside the subcategory`);
-      pluginNames.add(key);
+      if (names.has(key)) errors.push(`${path}.plugins[${index}].name must be unique inside the section`);
+      names.add(key);
     }
   });
-  return errors;
-}
 
-function validateCategory(category, path) {
-  const errors = [];
-  if (!str(category.name)) errors.push(`${path}.name is required`);
-  if (!Array.isArray(category.subcategories)) errors.push(`${path}.subcategories must be an array`);
-
-  const subcategories = Array.isArray(category.subcategories) ? category.subcategories : [];
-  const subcategoryNames = new Set();
-  subcategories.forEach((subcategory, index) => {
-    errors.push(...validateSubcategory(subcategory, `${path}.subcategories[${index}]`));
-    const key = str(subcategory.name).toLowerCase();
-    if (key) {
-      if (subcategoryNames.has(key)) errors.push(`${path}.subcategories[${index}].name must be unique inside the category`);
-      subcategoryNames.add(key);
-    }
-  });
   return errors;
 }
 
 function validateCatalog(input) {
   const errors = [];
   const catalog = input?.catalog;
-  if (!catalog || typeof catalog !== "object") return ["catalog is required"];
-  if (!str(catalog.title)) errors.push("catalog.title is required");
-  if (catalog.description != null && !str(catalog.description)) errors.push("catalog.description must be a non-empty string when provided");
-  if (!Array.isArray(catalog.categories)) errors.push("catalog.categories must be an array");
 
-  const categories = Array.isArray(catalog.categories) ? catalog.categories : [];
-  const categoryNames = new Set();
-  categories.forEach((category, index) => {
-    errors.push(...validateCategory(category, `catalog.categories[${index}]`));
-    const key = str(category.name).toLowerCase();
+  if (!catalog || typeof catalog !== "object") {
+    return ["catalog is required"];
+  }
+
+  if (!str(catalog.title)) errors.push("catalog.title is required");
+  if (!catalog.core || typeof catalog.core !== "object") errors.push("catalog.core is required");
+  if (!catalog.addons || typeof catalog.addons !== "object") errors.push("catalog.addons is required");
+  if (!Array.isArray(catalog.core?.plugins)) errors.push("catalog.core.plugins must be an array");
+  if (!Array.isArray(catalog.addons?.sections)) errors.push("catalog.addons.sections must be an array");
+
+  const corePlugins = Array.isArray(catalog.core?.plugins) ? catalog.core.plugins : [];
+  const coreNames = new Set();
+  corePlugins.forEach((plugin, index) => {
+    errors.push(...validatePlugin(plugin, `catalog.core.plugins[${index}]`));
+    const key = str(plugin.name).toLowerCase();
     if (key) {
-      if (categoryNames.has(key)) errors.push(`catalog.categories[${index}].name must be unique`);
-      categoryNames.add(key);
+      if (coreNames.has(key)) errors.push(`catalog.core.plugins[${index}].name must be unique`);
+      coreNames.add(key);
     }
   });
+
+  const sections = Array.isArray(catalog.addons?.sections) ? catalog.addons.sections : [];
+  const sectionNames = new Set();
+  sections.forEach((section, index) => {
+    errors.push(...validateSection(section, `catalog.addons.sections[${index}]`));
+    const key = str(section.name).toLowerCase();
+    if (key) {
+      if (sectionNames.has(key)) errors.push(`catalog.addons.sections[${index}].name must be unique`);
+      sectionNames.add(key);
+    }
+  });
+
   return errors;
 }
 

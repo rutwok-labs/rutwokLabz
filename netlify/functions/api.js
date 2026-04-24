@@ -3,7 +3,7 @@
 // Returns plugin catalog data from GitHub
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const REPO = process.env.REPO; // format: "user/repo"
+const REPO = process.env.REPO;
 const FILE_PATH = process.env.FILE_PATH || "data.json";
 
 exports.handler = async (event) => {
@@ -28,7 +28,6 @@ exports.handler = async (event) => {
 
   try {
     if (!GITHUB_TOKEN || !REPO) {
-      console.error("[API] Missing environment variables: GITHUB_TOKEN or REPO");
       return {
         statusCode: 500,
         headers,
@@ -58,13 +57,6 @@ exports.handler = async (event) => {
     const fileData = await response.json();
     const content = Buffer.from(fileData.content, "base64").toString("utf-8");
     const parsed = JSON.parse(content);
-
-    const categoryCount = Array.isArray(parsed.catalog?.categories) ? parsed.catalog.categories.length : 0;
-    const pluginCount = Array.isArray(parsed.catalog?.categories)
-      ? parsed.catalog.categories.reduce((sum, category) => sum + (Array.isArray(category.plugins) ? category.plugins.length : 0), 0)
-      : 0;
-
-    console.log(`[API] Loaded catalog with ${categoryCount} categories and ${pluginCount} plugins`);
 
     return {
       statusCode: 200,

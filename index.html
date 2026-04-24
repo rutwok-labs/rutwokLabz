@@ -3,268 +3,262 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plugin Catalog</title>
+  <title>Plugin Builds</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg: #f8fafc;
-      --panel: #ffffff;
-      --panel-soft: #f8fbff;
-      --line: #e5e7eb;
-      --line-strong: #d1d5db;
+      --surface: #ffffff;
+      --surface-muted: #f1f5f9;
+      --border: #e5e7eb;
+      --border-strong: #cbd5e1;
       --text: #111827;
       --muted: #6b7280;
-      --muted-2: #94a3b8;
-      --brand: #2563eb;
-      --brand-soft: #eff6ff;
-      --good: #16a34a;
-      --warn: #d97706;
-      --bad: #dc2626;
-      --shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
-      --r: 16px;
-      --rs: 10px;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --sans: "Manrope", sans-serif;
       --mono: "JetBrains Mono", monospace;
-      --sans: "Inter", sans-serif;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       min-height: 100vh;
       background: var(--bg);
       color: var(--text);
       font-family: var(--sans);
     }
-    button, input { font: inherit; }
+
+    button {
+      font: inherit;
+    }
 
     .page {
-      max-width: 1480px;
+      max-width: 1440px;
       margin: 0 auto;
       padding: 24px;
     }
-    header {
+
+    .header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
+      margin-bottom: 18px;
       flex-wrap: wrap;
-      margin-bottom: 20px;
     }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: var(--accent-soft);
+      border: 1px solid #bfdbfe;
+      color: var(--accent);
+      font: 800 0.95rem var(--mono);
+    }
+
     .brand h1 {
-      font-size: 2.1rem;
+      font-size: 1.9rem;
       line-height: 1;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
+
     .brand p {
       color: var(--muted);
-      font-size: 1rem;
+      font-size: 0.95rem;
     }
-    .topbar {
+
+    .toolbar {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      align-items: center;
     }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 18px;
+      min-height: calc(100vh - 128px);
+    }
+
+    .sidebar,
+    .detail {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+    }
+
+    .sidebar {
+      padding: 18px;
+    }
+
+    .detail {
+      padding: 22px;
+    }
+
+    .sidebar-head {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-head h2 {
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-head p {
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.55;
+    }
+
+    .group + .group {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    .group-label {
+      margin-bottom: 10px;
+      color: var(--muted);
+      font: 700 0.68rem var(--mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .tree {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .tree-btn {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .tree-btn:hover {
+      background: var(--surface-muted);
+      border-color: var(--border);
+    }
+
+    .tree-btn.active {
+      background: var(--accent-soft);
+      border-color: #bfdbfe;
+      color: var(--accent);
+    }
+
+    .tree-btn strong {
+      display: block;
+      font-size: 0.92rem;
+      margin-bottom: 4px;
+    }
+
+    .tree-btn span {
+      color: var(--muted);
+      font-size: 0.77rem;
+    }
+
+    .tree-empty {
+      padding: 10px 12px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+    }
+
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 10px 16px;
-      border-radius: 999px;
-      border: 1px solid var(--line-strong);
-      background: var(--panel);
+      min-height: 42px;
+      padding: 0 15px;
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      background: var(--surface);
       color: var(--text);
+      cursor: pointer;
       text-decoration: none;
-      cursor: pointer;
-      font-weight: 600;
-      transition: 0.16s ease;
+      font-weight: 700;
     }
+
     .btn:hover {
-      border-color: var(--brand);
-      color: var(--brand);
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
-    .hero {
-      margin-bottom: 20px;
-      padding: 22px 24px;
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--r);
-      box-shadow: var(--shadow);
-    }
-    .hero h2 {
-      font-size: 1.8rem;
-      margin-bottom: 8px;
-    }
-    .hero p {
-      color: var(--muted);
-      line-height: 1.65;
-      max-width: 760px;
-    }
-    .hero-meta {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 16px;
-    }
-    .meta-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 12px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: var(--panel-soft);
-      color: var(--muted);
-      font: 700 0.72rem var(--mono);
-    }
-
-    .app {
-      display: grid;
-      grid-template-columns: 320px 1fr;
-      gap: 18px;
-      align-items: start;
-    }
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--r);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-    .panel-head {
-      padding: 16px 18px;
-      border-bottom: 1px solid var(--line);
-    }
-    .panel-head strong {
-      display: block;
-      font-size: 0.95rem;
-    }
-    .panel-head span {
-      display: block;
-      margin-top: 4px;
-      color: var(--muted-2);
-      font: 700 0.64rem var(--mono);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .panel-body {
-      padding: 18px;
-    }
-    .sidebar-panel + .sidebar-panel {
-      margin-top: 14px;
-    }
-
-    .search {
-      width: 100%;
-      padding: 11px 13px;
-      border: 1px solid var(--line-strong);
-      border-radius: 12px;
-      background: #fff;
-      color: var(--text);
-      outline: none;
-    }
-    .search:focus { border-color: var(--brand); }
-    .list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 12px;
-      max-height: 240px;
-      overflow: auto;
-      padding-right: 4px;
-    }
-    .item {
-      width: 100%;
-      text-align: left;
-      padding: 12px 13px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: #fff;
-      cursor: pointer;
-      transition: 0.16s ease;
-    }
-    .item:hover {
-      border-color: var(--line-strong);
-      background: #fbfdff;
-    }
-    .item.active {
-      border-color: rgba(37, 99, 235, 0.28);
-      background: var(--brand-soft);
-    }
-    .item strong {
-      display: block;
-      font-size: 0.9rem;
-      margin-bottom: 4px;
-    }
-    .item span {
-      color: var(--muted);
-      font-size: 0.78rem;
-    }
-
-    .content-panel .panel-body {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
     .crumbs {
+      margin-bottom: 18px;
       color: var(--muted);
       font-size: 0.92rem;
     }
-    .crumbs strong { color: var(--text); }
-    .plugin-summary {
-      padding-bottom: 18px;
-      border-bottom: 1px solid var(--line);
+
+    .crumbs strong {
+      color: var(--text);
     }
-    .plugin-summary h3 {
-      font-size: 1.8rem;
+
+    .plugin-head {
+      padding-bottom: 18px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .plugin-head h2 {
+      font-size: 1.7rem;
+      line-height: 1.1;
       margin-bottom: 8px;
     }
-    .plugin-summary p {
-      color: var(--muted);
-      line-height: 1.65;
-      max-width: 760px;
-      margin-bottom: 14px;
-    }
-    .plugin-links {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-    .tag-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .tag {
+
+    .plugin-meta {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 6px 10px;
-      border: 1px solid var(--line);
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
       border-radius: 999px;
-      background: var(--panel-soft);
       color: var(--muted);
       font: 700 0.68rem var(--mono);
+      background: var(--surface-muted);
     }
 
     .release-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
+
     .release {
       padding: 16px;
-      border: 1px solid var(--line);
+      border: 1px solid var(--border);
       border-radius: 14px;
-      background: #fff;
+      background: #ffffff;
     }
+
     .release.latest {
-      border-color: rgba(37, 99, 235, 0.28);
-      background: var(--brand-soft);
+      border-color: #bfdbfe;
+      background: #f8fbff;
     }
+
     .release-top {
       display: flex;
       align-items: flex-start;
@@ -273,222 +267,134 @@
       flex-wrap: wrap;
       margin-bottom: 10px;
     }
+
     .release-top strong {
       display: block;
       font-size: 1rem;
       margin-bottom: 4px;
     }
+
     .release-top span {
       color: var(--muted);
       font: 700 0.72rem var(--mono);
     }
+
     .badges {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
     }
+
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 5px 9px;
+      min-height: 28px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
       border-radius: 999px;
-      border: 1px solid;
-      font: 700 0.64rem var(--mono);
-    }
-    .latest { color: var(--brand); border-color: rgba(37, 99, 235, 0.2); background: rgba(37, 99, 235, 0.08); }
-    .stable { color: var(--good); border-color: rgba(22, 163, 74, 0.2); background: rgba(22, 163, 74, 0.08); }
-    .pre { color: var(--warn); border-color: rgba(217, 119, 6, 0.2); background: rgba(217, 119, 6, 0.08); }
-    .success { color: var(--good); border-color: rgba(22, 163, 74, 0.2); background: rgba(22, 163, 74, 0.08); }
-    .maintenance { color: var(--warn); border-color: rgba(217, 119, 6, 0.2); background: rgba(217, 119, 6, 0.08); }
-    .fail { color: var(--bad); border-color: rgba(220, 38, 38, 0.2); background: rgba(220, 38, 38, 0.08); }
-    .release p {
       color: var(--muted);
-      line-height: 1.6;
-      margin-bottom: 12px;
-    }
-    .notes {
-      padding: 14px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: var(--panel-soft);
-      margin-bottom: 12px;
-    }
-    .notes strong {
-      display: block;
-      margin-bottom: 8px;
-      color: var(--muted-2);
       font: 700 0.66rem var(--mono);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .notes ul {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .notes li {
-      color: var(--muted);
-      font-size: 0.84rem;
-      line-height: 1.5;
-    }
-    .notes li::before {
-      content: "-> ";
-      color: var(--brand);
-      font-family: var(--mono);
-    }
-    .empty {
-      color: var(--muted);
-      font-size: 0.88rem;
-      line-height: 1.6;
-      padding: 8px 0;
+      background: #ffffff;
     }
 
-    @media (max-width: 1180px) {
-      .app { grid-template-columns: 1fr; }
+    .badge.latest {
+      color: var(--accent);
+      border-color: #bfdbfe;
+      background: var(--accent-soft);
     }
+
+    .empty-state {
+      padding: 18px;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 1100px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media (max-width: 760px) {
-      .page { padding: 16px; }
-      .topbar { flex-direction: column; align-items: stretch; }
+      .page {
+        padding: 16px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="page">
-    <header>
+    <header class="header">
       <div class="brand">
-        <h1 id="brandTitle">Plugin Catalog</h1>
-        <p id="brandDesc">Browse category, plugin section, plugin, and release builds.</p>
+        <div class="brand-mark">SB</div>
+        <div>
+          <h1 id="pageTitle">Plugin Builds</h1>
+          <p>Browse Core and Addons releases like a file explorer.</p>
+        </div>
       </div>
-      <div class="topbar">
+      <div class="toolbar">
         <a href="admin.html" class="btn">Admin</a>
-        <button class="btn" type="button" onclick="loadCatalog()">Refresh</button>
+        <button id="refreshBtn" class="btn" type="button">Refresh</button>
       </div>
     </header>
 
-    <section class="hero">
-      <h2 id="heroTitle">Loading catalog...</h2>
-      <p id="heroDescription">Fetching plugin categories, sections, and builds.</p>
-      <div class="hero-meta">
-        <div class="meta-pill">Categories <span id="statCategories">0</span></div>
-        <div class="meta-pill">Sections <span id="statSections">0</span></div>
-        <div class="meta-pill">Plugins <span id="statPlugins">0</span></div>
-        <div class="meta-pill">Releases <span id="statReleases">0</span></div>
-      </div>
-    </section>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="sidebar-head">
+          <h2>Explorer</h2>
+          <p>Select Core or Addons, then open a plugin to view its releases.</p>
+        </div>
 
-    <div class="app">
-      <aside>
-        <div class="panel sidebar-panel">
-          <div class="panel-head">
-            <strong>Categories</strong>
-            <span>Level 1</span>
-          </div>
-          <div class="panel-body">
-            <input id="categorySearch" class="search" type="text" placeholder="Search categories..." />
-            <div id="categoryList" class="list"></div>
+        <div class="group">
+          <div class="group-label">Type</div>
+          <div class="tree">
+            <button id="rootCoreBtn" class="tree-btn" type="button">
+              <strong>Core</strong>
+              <span id="coreCount">0 plugins</span>
+            </button>
+            <button id="rootAddonsBtn" class="tree-btn" type="button">
+              <strong>Addons</strong>
+              <span id="addonsCount">0 sections</span>
+            </button>
           </div>
         </div>
 
-        <div class="panel sidebar-panel">
-          <div class="panel-head">
-            <strong>Plugin Sections</strong>
-            <span>Level 2</span>
-          </div>
-          <div class="panel-body">
-            <input id="subcategorySearch" class="search" type="text" placeholder="Search sections..." />
-            <div id="subcategoryList" class="list"></div>
-          </div>
+        <div id="sectionGroup" class="group">
+          <div class="group-label">Plugin Sections</div>
+          <div id="sectionList" class="tree"></div>
         </div>
 
-        <div class="panel sidebar-panel">
-          <div class="panel-head">
-            <strong>Plugins</strong>
-            <span>Level 3</span>
-          </div>
-          <div class="panel-body">
-            <input id="pluginSearch" class="search" type="text" placeholder="Search plugins..." />
-            <div id="pluginList" class="list"></div>
-          </div>
+        <div class="group">
+          <div class="group-label">Plugins</div>
+          <div id="pluginList" class="tree"></div>
         </div>
       </aside>
 
-      <main class="panel content-panel">
-        <div class="panel-head">
-          <strong id="detailHead">Plugin Details</strong>
-          <span id="detailSub">Select a plugin to view releases</span>
-        </div>
-        <div class="panel-body">
-          <div class="crumbs">
-            Category: <strong id="crumbCategory">-</strong>
-            &nbsp;/&nbsp;
-            Section: <strong id="crumbSection">-</strong>
-            &nbsp;/&nbsp;
-            Plugin: <strong id="crumbPlugin">-</strong>
-          </div>
-
-          <div id="pluginDetail" class="plugin-summary"></div>
-          <div id="releaseList" class="release-list"></div>
-        </div>
+      <main class="detail">
+        <div id="crumbs" class="crumbs"></div>
+        <div id="contentBody"></div>
       </main>
     </div>
   </div>
 
   <script>
-    let catalogData = { catalog: { title: "", description: "", categories: [] } };
-    let selectedCategoryIndex = 0;
-    let selectedSubcategoryIndex = 0;
-    let selectedPluginIndex = 0;
+    let catalogData = createEmptyCatalog();
+    let selectedRoot = "core";
+    let selectedSectionIndex = -1;
+    let selectedPluginIndex = -1;
 
-    document.getElementById("categorySearch").addEventListener("input", renderCategories);
-    document.getElementById("subcategorySearch").addEventListener("input", renderSubcategories);
-    document.getElementById("pluginSearch").addEventListener("input", renderPlugins);
+    document.getElementById("rootCoreBtn").addEventListener("click", () => selectRoot("core"));
+    document.getElementById("rootAddonsBtn").addEventListener("click", () => selectRoot("addons"));
+    document.getElementById("refreshBtn").addEventListener("click", loadCatalog);
 
-    async function loadCatalog() {
-      try {
-        const response = await fetch("/.netlify/functions/api");
-        if (!response.ok) throw new Error(`API error: ${response.status}`);
-        catalogData = normalizeCatalog(await response.json());
-        clampSelection();
-        renderAll();
-      } catch (error) {
-        document.getElementById("pluginDetail").innerHTML = `<div class="empty">Failed to load catalog: ${escapeHtml(error.message)}</div>`;
-        document.getElementById("releaseList").innerHTML = "";
-      }
-    }
-
-    function normalizeCatalog(input) {
-      const catalog = input?.catalog || {};
+    function createEmptyCatalog() {
       return {
         catalog: {
-          title: stringValue(catalog.title) || "Plugin Catalog",
-          description: stringValue(catalog.description),
-          categories: Array.isArray(catalog.categories) ? catalog.categories.map((category) => ({
-            name: stringValue(category.name),
-            subcategories: Array.isArray(category.subcategories) ? category.subcategories.map((subcategory) => ({
-              name: stringValue(subcategory.name),
-              plugins: Array.isArray(subcategory.plugins) ? subcategory.plugins.map((plugin) => ({
-                name: stringValue(plugin.name),
-                description: stringValue(plugin.description),
-                author: stringValue(plugin.author),
-                website: stringValue(plugin.website),
-                source: stringValue(plugin.source),
-                releases: Array.isArray(plugin.releases) ? plugin.releases.map((release) => ({
-                  name: stringValue(release.name),
-                  version: stringValue(release.version),
-                  type: stringValue(release.type) || "stable",
-                  latest: Boolean(release.latest),
-                  status: stringValue(release.status) || "success",
-                  loader: stringValue(release.loader) || "PaperMC",
-                  minecraft: stringValue(release.minecraft),
-                  description: stringValue(release.description),
-                  changelog: Array.isArray(release.changelog) ? release.changelog.map(stringValue).filter(Boolean) : [],
-                  download: stringValue(release.download),
-                })) : [],
-              })) : [],
-            })) : [],
-          })) : [],
+          title: "Plugin Catalog",
+          core: { plugins: [] },
+          addons: { sections: [] },
         },
       };
     }
@@ -497,198 +403,69 @@
       return typeof value === "string" ? value.trim() : "";
     }
 
-    function clampSelection() {
-      const categories = catalogData.catalog.categories;
-      if (selectedCategoryIndex >= categories.length) selectedCategoryIndex = 0;
-      const subcategories = currentCategory()?.subcategories || [];
-      if (selectedSubcategoryIndex >= subcategories.length) selectedSubcategoryIndex = 0;
-      const plugins = currentSubcategory()?.plugins || [];
-      if (selectedPluginIndex >= plugins.length) selectedPluginIndex = 0;
+    function normalizeRelease(release) {
+      return {
+        name: stringValue(release.name),
+        version: stringValue(release.version),
+        type: stringValue(release.type) || "stable",
+        latest: Boolean(release.latest),
+        status: stringValue(release.status) || "success",
+        loader: stringValue(release.loader) || "PaperMC",
+        download: stringValue(release.download),
+      };
     }
 
-    function currentCategory() {
-      return catalogData.catalog.categories[selectedCategoryIndex] || null;
+    function normalizePlugin(plugin) {
+      return {
+        name: stringValue(plugin.name),
+        releases: Array.isArray(plugin.releases) ? plugin.releases.map(normalizeRelease) : [],
+      };
     }
 
-    function currentSubcategory() {
-      return currentCategory()?.subcategories?.[selectedSubcategoryIndex] || null;
+    function normalizeCatalog(input) {
+      const catalog = input?.catalog || {};
+      return {
+        catalog: {
+          title: stringValue(catalog.title) || "Plugin Catalog",
+          core: {
+            plugins: Array.isArray(catalog.core?.plugins) ? catalog.core.plugins.map(normalizePlugin) : [],
+          },
+          addons: {
+            sections: Array.isArray(catalog.addons?.sections) ? catalog.addons.sections.map((section) => ({
+              name: stringValue(section.name),
+              plugins: Array.isArray(section.plugins) ? section.plugins.map(normalizePlugin) : [],
+            })) : [],
+          },
+        },
+      };
+    }
+
+    function currentSection() {
+      if (selectedRoot !== "addons" || selectedSectionIndex < 0) return null;
+      return catalogData.catalog.addons.sections[selectedSectionIndex] || null;
+    }
+
+    function currentPlugins() {
+      if (selectedRoot === "core") return catalogData.catalog.core.plugins;
+      return currentSection()?.plugins || [];
     }
 
     function currentPlugin() {
-      return currentSubcategory()?.plugins?.[selectedPluginIndex] || null;
+      if (selectedPluginIndex < 0) return null;
+      return currentPlugins()[selectedPluginIndex] || null;
     }
 
-    function renderAll() {
-      const categories = catalogData.catalog.categories;
-      const sectionCount = categories.reduce((sum, category) => sum + category.subcategories.length, 0);
-      const pluginCount = categories.reduce((sum, category) => sum + category.subcategories.reduce((inner, sub) => inner + sub.plugins.length, 0), 0);
-      const releaseCount = categories.reduce((sum, category) => sum + category.subcategories.reduce((inner, sub) => inner + sub.plugins.reduce((deep, plugin) => deep + plugin.releases.length, 0), 0), 0);
-
-      document.title = `${catalogData.catalog.title} - Plugin Catalog`;
-      document.getElementById("brandTitle").textContent = catalogData.catalog.title;
-      document.getElementById("brandDesc").textContent = catalogData.catalog.description || "Browse category, plugin section, plugin, and release builds.";
-      document.getElementById("heroTitle").textContent = catalogData.catalog.title;
-      document.getElementById("heroDescription").textContent = catalogData.catalog.description || "Browse category, plugin section, plugin, and release builds.";
-      document.getElementById("statCategories").textContent = categories.length;
-      document.getElementById("statSections").textContent = sectionCount;
-      document.getElementById("statPlugins").textContent = pluginCount;
-      document.getElementById("statReleases").textContent = releaseCount;
-      document.getElementById("crumbCategory").textContent = currentCategory()?.name || "-";
-      document.getElementById("crumbSection").textContent = currentSubcategory()?.name || "-";
-      document.getElementById("crumbPlugin").textContent = currentPlugin()?.name || "-";
-
-      renderCategories();
-      renderSubcategories();
-      renderPlugins();
-      renderPluginDetail();
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
     }
 
-    function renderCategories() {
-      const query = document.getElementById("categorySearch").value.trim().toLowerCase();
-      const items = catalogData.catalog.categories.filter((category) => !query || category.name.toLowerCase().includes(query));
-      const list = document.getElementById("categoryList");
-      if (!items.length) {
-        list.innerHTML = '<div class="empty">No categories found.</div>';
-        return;
-      }
-      list.innerHTML = items.map((category) => {
-        const idx = catalogData.catalog.categories.indexOf(category);
-        return `<button class="item ${idx === selectedCategoryIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(category.name)}</strong><span>${category.subcategories.length} sections</span></button>`;
-      }).join("");
-      list.querySelectorAll("[data-index]").forEach((button) => {
-        button.addEventListener("click", () => {
-          selectedCategoryIndex = Number(button.dataset.index);
-          selectedSubcategoryIndex = 0;
-          selectedPluginIndex = 0;
-          renderAll();
-        });
-      });
-    }
-
-    function renderSubcategories() {
-      const category = currentCategory();
-      const query = document.getElementById("subcategorySearch").value.trim().toLowerCase();
-      const list = document.getElementById("subcategoryList");
-      if (!category) {
-        list.innerHTML = '<div class="empty">No category selected.</div>';
-        return;
-      }
-      const items = category.subcategories.filter((subcategory) => !query || subcategory.name.toLowerCase().includes(query));
-      if (!items.length) {
-        list.innerHTML = '<div class="empty">No sections found.</div>';
-        return;
-      }
-      list.innerHTML = items.map((subcategory) => {
-        const idx = category.subcategories.indexOf(subcategory);
-        return `<button class="item ${idx === selectedSubcategoryIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(subcategory.name)}</strong><span>${subcategory.plugins.length} plugins</span></button>`;
-      }).join("");
-      list.querySelectorAll("[data-index]").forEach((button) => {
-        button.addEventListener("click", () => {
-          selectedSubcategoryIndex = Number(button.dataset.index);
-          selectedPluginIndex = 0;
-          renderAll();
-        });
-      });
-    }
-
-    function renderPlugins() {
-      const subcategory = currentSubcategory();
-      const query = document.getElementById("pluginSearch").value.trim().toLowerCase();
-      const list = document.getElementById("pluginList");
-      if (!subcategory) {
-        list.innerHTML = '<div class="empty">No section selected.</div>';
-        return;
-      }
-      const items = subcategory.plugins.filter((plugin) => !query || plugin.name.toLowerCase().includes(query));
-      if (!items.length) {
-        list.innerHTML = '<div class="empty">No plugins found.</div>';
-        return;
-      }
-      list.innerHTML = items.map((plugin) => {
-        const idx = subcategory.plugins.indexOf(plugin);
-        const latest = plugin.releases.find((release) => release.latest) || plugin.releases[0];
-        return `<button class="item ${idx === selectedPluginIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(plugin.name)}</strong><span>${plugin.releases.length} releases${latest ? ` · latest ${escapeHtml(latest.version)}` : ""}</span></button>`;
-      }).join("");
-      list.querySelectorAll("[data-index]").forEach((button) => {
-        button.addEventListener("click", () => {
-          selectedPluginIndex = Number(button.dataset.index);
-          renderAll();
-        });
-      });
-    }
-
-    function renderPluginDetail() {
-      const category = currentCategory();
-      const subcategory = currentSubcategory();
-      const plugin = currentPlugin();
-      const detail = document.getElementById("pluginDetail");
-      const releases = document.getElementById("releaseList");
-
-      if (!category || !subcategory || !plugin) {
-        document.getElementById("detailHead").textContent = "Plugin Details";
-        document.getElementById("detailSub").textContent = "Select a plugin to view releases";
-        detail.innerHTML = '<div class="empty">Choose a category, then a section, then a plugin.</div>';
-        releases.innerHTML = "";
-        return;
-      }
-
-      document.getElementById("detailHead").textContent = plugin.name;
-      document.getElementById("detailSub").textContent = `${category.name} / ${subcategory.name}`;
-
-      detail.innerHTML = `
-        <h3>${escapeHtml(plugin.name)}</h3>
-        <p>${escapeHtml(plugin.description || "No plugin description yet.")}</p>
-        <div class="plugin-links">
-          ${renderLink(plugin.website, "Website")}
-          ${renderLink(plugin.source, "Source")}
-        </div>
-        <div class="tag-row">
-          <span class="tag">category ${escapeHtml(category.name)}</span>
-          <span class="tag">section ${escapeHtml(subcategory.name)}</span>
-          ${plugin.author ? `<span class="tag">author ${escapeHtml(plugin.author)}</span>` : ""}
-          <span class="tag">${plugin.releases.length} releases</span>
-        </div>
-      `;
-
-      if (!plugin.releases.length) {
-        releases.innerHTML = '<div class="empty">No releases uploaded for this plugin yet.</div>';
-        return;
-      }
-
-      releases.innerHTML = [...plugin.releases]
-        .sort((a, b) => Number(b.latest) - Number(a.latest))
-        .map((release) => `
-          <div class="release ${release.latest ? "latest" : ""}">
-            <div class="release-top">
-              <div>
-                <strong>${escapeHtml(release.name || release.version)}</strong>
-                <span>v${escapeHtml(release.version)}</span>
-              </div>
-              <div class="badges">
-                ${release.latest ? '<span class="badge latest">latest</span>' : ""}
-                <span class="badge ${release.type === "stable" ? "stable" : "pre"}">${escapeHtml(release.type || "unknown")}</span>
-                <span class="badge ${release.status || "maintenance"}">${escapeHtml(release.status || "unknown")}</span>
-                ${release.loader ? `<span class="badge latest" style="color:var(--muted);border-color:var(--line);background:#f8fbff;">${escapeHtml(release.loader)}</span>` : ""}
-                ${release.minecraft ? `<span class="badge latest" style="color:var(--muted);border-color:var(--line);background:#f8fbff;">MC ${escapeHtml(release.minecraft)}</span>` : ""}
-              </div>
-            </div>
-            <p>${escapeHtml(release.description || "No release description yet.")}</p>
-            ${Array.isArray(release.changelog) && release.changelog.length ? `
-              <div class="notes">
-                <strong>Changelog</strong>
-                <ul>${release.changelog.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-              </div>
-            ` : ""}
-            <div class="plugin-links">
-              ${renderLink(release.download, "Download Build")}
-            </div>
-          </div>
-        `).join("");
-    }
-
-    function renderLink(url, label) {
-      const safe = toSafeExternalUrl(url);
-      return safe ? `<a href="${escapeAttr(safe)}" target="_blank" rel="noopener" class="btn">${label}</a>` : "";
+    function escapeAttr(value) {
+      return escapeHtml(value);
     }
 
     function toSafeExternalUrl(value) {
@@ -700,16 +477,190 @@
       }
     }
 
-    function escapeHtml(value) {
-      return String(value || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
+    function clampSelection() {
+      if (selectedRoot === "core") {
+        selectedSectionIndex = -1;
+        const plugins = catalogData.catalog.core.plugins;
+        if (plugins.length === 0) {
+          selectedPluginIndex = -1;
+          return;
+        }
+        if (selectedPluginIndex >= plugins.length) selectedPluginIndex = plugins.length - 1;
+        return;
+      }
+
+      const sections = catalogData.catalog.addons.sections;
+      if (sections.length === 0) {
+        selectedSectionIndex = -1;
+        selectedPluginIndex = -1;
+        return;
+      }
+      if (selectedSectionIndex < 0) selectedSectionIndex = 0;
+      if (selectedSectionIndex >= sections.length) selectedSectionIndex = sections.length - 1;
+      const plugins = currentPlugins();
+      if (plugins.length === 0) {
+        selectedPluginIndex = -1;
+        return;
+      }
+      if (selectedPluginIndex >= plugins.length) selectedPluginIndex = plugins.length - 1;
     }
 
-    function escapeAttr(value) {
-      return escapeHtml(value).replace(/'/g, "&#39;");
+    function selectRoot(root) {
+      selectedRoot = root;
+      selectedPluginIndex = -1;
+      if (root === "core") {
+        selectedSectionIndex = -1;
+      } else if (catalogData.catalog.addons.sections.length > 0) {
+        selectedSectionIndex = Math.max(0, Math.min(selectedSectionIndex, catalogData.catalog.addons.sections.length - 1));
+      }
+      renderAll();
+    }
+
+    function selectSection(index) {
+      selectedRoot = "addons";
+      selectedSectionIndex = index;
+      selectedPluginIndex = -1;
+      renderAll();
+    }
+
+    function selectPlugin(index) {
+      selectedPluginIndex = index;
+      renderAll();
+    }
+
+    async function loadCatalog() {
+      try {
+        const response = await fetch("/.netlify/functions/api");
+        if (!response.ok) throw new Error(`API error: ${response.status}`);
+        catalogData = normalizeCatalog(await response.json());
+        clampSelection();
+        renderAll();
+      } catch (error) {
+        document.getElementById("contentBody").innerHTML = `<div class="empty-state">Failed to load catalog: ${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    function renderAll() {
+      clampSelection();
+      document.getElementById("pageTitle").textContent = catalogData.catalog.title;
+      document.getElementById("coreCount").textContent = `${catalogData.catalog.core.plugins.length} plugins`;
+      document.getElementById("addonsCount").textContent = `${catalogData.catalog.addons.sections.length} sections`;
+      document.getElementById("rootCoreBtn").classList.toggle("active", selectedRoot === "core");
+      document.getElementById("rootAddonsBtn").classList.toggle("active", selectedRoot === "addons");
+      renderSections();
+      renderPlugins();
+      renderContent();
+    }
+
+    function renderSections() {
+      const group = document.getElementById("sectionGroup");
+      const list = document.getElementById("sectionList");
+
+      if (selectedRoot !== "addons") {
+        group.style.display = "none";
+        return;
+      }
+
+      group.style.display = "block";
+      const sections = catalogData.catalog.addons.sections;
+      if (!sections.length) {
+        list.innerHTML = '<div class="tree-empty">No plugin sections yet.</div>';
+        return;
+      }
+
+      list.innerHTML = sections.map((section, index) => `
+        <button class="tree-btn ${index === selectedSectionIndex ? "active" : ""}" type="button" data-index="${index}">
+          <strong>${escapeHtml(section.name)}</strong>
+          <span>${section.plugins.length} plugins</span>
+        </button>
+      `).join("");
+
+      list.querySelectorAll("[data-index]").forEach((button) => {
+        button.addEventListener("click", () => selectSection(Number(button.dataset.index)));
+      });
+    }
+
+    function renderPlugins() {
+      const list = document.getElementById("pluginList");
+      const plugins = currentPlugins();
+
+      if (selectedRoot === "addons" && !currentSection()) {
+        list.innerHTML = '<div class="tree-empty">Select a plugin section first.</div>';
+        return;
+      }
+
+      if (!plugins.length) {
+        list.innerHTML = '<div class="tree-empty">No plugins here yet.</div>';
+        return;
+      }
+
+      list.innerHTML = plugins.map((plugin, index) => {
+        const latest = plugin.releases.find((release) => release.latest) || plugin.releases[0];
+        const suffix = latest ? ` · latest ${escapeHtml(latest.version)}` : "";
+        return `
+          <button class="tree-btn ${index === selectedPluginIndex ? "active" : ""}" type="button" data-index="${index}">
+            <strong>${escapeHtml(plugin.name)}</strong>
+            <span>${plugin.releases.length} releases${suffix}</span>
+          </button>
+        `;
+      }).join("");
+
+      list.querySelectorAll("[data-index]").forEach((button) => {
+        button.addEventListener("click", () => selectPlugin(Number(button.dataset.index)));
+      });
+    }
+
+    function renderContent() {
+      const content = document.getElementById("contentBody");
+      const plugin = currentPlugin();
+      const section = currentSection();
+      const parts = [`Type: <strong>${selectedRoot === "core" ? "Core" : "Addons"}</strong>`];
+      if (selectedRoot === "addons") {
+        parts.push(`Section: <strong>${escapeHtml(section?.name || "-")}</strong>`);
+      }
+      parts.push(`Plugin: <strong>${escapeHtml(plugin?.name || "-")}</strong>`);
+      document.getElementById("crumbs").innerHTML = parts.join(" &nbsp;/&nbsp; ");
+
+      if (selectedRoot === "addons" && !section) {
+        content.innerHTML = '<div class="empty-state">Select a plugin section from the left to browse Addons plugins.</div>';
+        return;
+      }
+
+      if (!plugin) {
+        content.innerHTML = '<div class="empty-state">Select a plugin from the left to view its releases.</div>';
+        return;
+      }
+
+      content.innerHTML = `
+        <div class="plugin-head">
+          <h2>${escapeHtml(plugin.name)}</h2>
+          <div class="plugin-meta">${plugin.releases.length} releases</div>
+        </div>
+        <div class="release-list">
+          ${plugin.releases.length ? plugin.releases.map(renderRelease).join("") : '<div class="empty-state">No releases for this plugin yet.</div>'}
+        </div>
+      `;
+    }
+
+    function renderRelease(release) {
+      const safeUrl = toSafeExternalUrl(release.download);
+      return `
+        <article class="release ${release.latest ? "latest" : ""}">
+          <div class="release-top">
+            <div>
+              <strong>${escapeHtml(release.name || release.version)}</strong>
+              <span>v${escapeHtml(release.version)}</span>
+            </div>
+            <div class="badges">
+              ${release.latest ? '<span class="badge latest">latest</span>' : ""}
+              <span class="badge">${escapeHtml(release.type)}</span>
+              <span class="badge">${escapeHtml(release.status)}</span>
+              <span class="badge">${escapeHtml(release.loader)}</span>
+            </div>
+          </div>
+          ${safeUrl ? `<a href="${escapeAttr(safeUrl)}" target="_blank" rel="noopener" class="btn">Download</a>` : '<div class="empty-state">Download unavailable.</div>'}
+        </article>
+      `;
     }
 
     loadCatalog();
