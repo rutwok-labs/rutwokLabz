@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin — Plugin Dashboard</title>
+  <title>Admin - Plugin Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <style>
@@ -11,881 +11,1254 @@
       --bg: #0b0d12;
       --surface: #111520;
       --surface2: #161b27;
-      --surface3: #1c2236;
-      --border: #1e2535;
-      --border2: #252d40;
-      --accent: #4f8ef7;
-      --accent2: #7b61ff;
+      --surface3: #1d2540;
+      --border: #1f2738;
+      --border2: #2b3450;
+      --accent: #25b7ff;
+      --accent2: #6d5cff;
+      --good: #22c55e;
+      --warn: #f59e0b;
+      --bad: #ef4444;
       --text: #e2e8f4;
-      --text2: #8b95b0;
-      --text3: #555e78;
-      --green: #22c55e;
-      --yellow: #f59e0b;
-      --red: #ef4444;
-      --radius: 12px;
-      --radius-sm: 8px;
-      --mono: 'JetBrains Mono', monospace;
-      --sans: 'Sora', sans-serif;
+      --text2: #95a2c2;
+      --text3: #5f6c89;
+      --radius: 14px;
+      --radius-sm: 10px;
+      --mono: "JetBrains Mono", monospace;
+      --sans: "Sora", sans-serif;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      font-family: var(--sans);
-      background: var(--bg);
-      color: var(--text);
       min-height: 100vh;
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(37,183,255,0.08), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(109,92,255,0.12), transparent 30%),
+        var(--bg);
     }
-
     body::before {
-      content: '';
+      content: "";
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(rgba(79,142,247,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(79,142,247,0.03) 1px, transparent 1px);
-      background-size: 40px 40px;
+        linear-gradient(rgba(37,183,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37,183,255,0.03) 1px, transparent 1px);
+      background-size: 38px 38px;
       pointer-events: none;
+      z-index: 0;
     }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
 
-    /* ── Auth Gate ── */
     #authGate {
       position: fixed;
       inset: 0;
-      background: rgba(11,13,18,0.97);
+      z-index: 50;
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 9999;
-      backdrop-filter: blur(8px);
+      padding: 1rem;
+      background: rgba(8, 10, 15, 0.94);
+      backdrop-filter: blur(12px);
     }
-
     .auth-box {
+      width: min(420px, 100%);
       background: var(--surface);
       border: 1px solid var(--border2);
-      border-radius: var(--radius);
-      padding: 2.5rem;
-      width: 380px;
-      text-align: center;
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
     }
-
-    .auth-icon { font-size: 2.5rem; margin-bottom: 1rem; }
-    .auth-title {
+    .auth-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1rem;
+      padding: 6px 10px;
+      border: 1px solid rgba(37,183,255,0.22);
+      border-radius: 999px;
       font-family: var(--mono);
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 0.4rem;
+      font-size: 0.68rem;
+      color: var(--accent);
+      background: rgba(37,183,255,0.08);
     }
-    .auth-sub { font-size: 0.8rem; color: var(--text3); margin-bottom: 1.5rem; }
-
+    .auth-box h1 {
+      font-size: 1.45rem;
+      margin-bottom: 0.5rem;
+    }
+    .auth-box p {
+      color: var(--text2);
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+      font-size: 0.92rem;
+    }
     .auth-input {
       width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border2);
+      margin-bottom: 0.9rem;
+      padding: 12px 14px;
       border-radius: var(--radius-sm);
+      border: 1px solid var(--border2);
+      background: var(--surface2);
       color: var(--text);
       font-family: var(--mono);
-      font-size: 0.85rem;
-      padding: 10px 14px;
-      outline: none;
-      transition: border-color 0.2s;
-      margin-bottom: 1rem;
       text-align: center;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
+      outline: none;
     }
     .auth-input:focus { border-color: var(--accent); }
-
-    .auth-btn {
-      width: 100%;
-      padding: 10px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border: none;
-      border-radius: var(--radius-sm);
-      color: #fff;
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-    .auth-btn:hover { opacity: 0.85; }
-
+    .auth-actions { display: flex; gap: 10px; }
     .auth-error {
+      margin-top: 0.9rem;
+      color: var(--bad);
       font-family: var(--mono);
-      font-size: 0.73rem;
-      color: var(--red);
-      margin-top: 0.75rem;
+      font-size: 0.75rem;
       display: none;
     }
 
-    /* ── Header ── */
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+    }
     header {
       position: sticky;
       top: 0;
-      z-index: 100;
-      background: rgba(11,13,18,0.9);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 2rem;
-      height: 60px;
+      z-index: 10;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(11, 13, 18, 0.85);
+      backdrop-filter: blur(14px);
     }
-
-    .header-logo {
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #081018;
+      font-size: 20px;
+      box-shadow: 0 10px 30px rgba(37,183,255,0.28);
+    }
+    .brand-copy h1 {
+      font-size: 1rem;
+      margin-bottom: 2px;
+    }
+    .brand-copy p {
+      color: var(--text3);
+      font-size: 0.72rem;
+      font-family: var(--mono);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .statusbar {
       display: flex;
       align-items: center;
       gap: 10px;
-      font-family: var(--mono);
-      font-weight: 700;
-      font-size: 0.95rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
-    .logo-icon {
-      width: 28px; height: 28px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px;
-    }
-    .logo-badge {
-      font-size: 0.62rem;
-      background: rgba(239,68,68,0.15);
-      color: var(--red);
-      border: 1px solid rgba(239,68,68,0.3);
-      padding: 2px 7px;
-      border-radius: 4px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-    }
-
-    .header-right { display: flex; align-items: center; gap: 10px; }
-
-    .autosave-indicator {
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      color: var(--text3);
-      display: flex;
+    .pill {
+      display: inline-flex;
       align-items: center;
-      gap: 5px;
-      transition: color 0.3s;
+      gap: 8px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--border2);
+      background: rgba(255,255,255,0.03);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text2);
     }
-    .autosave-indicator.saving { color: var(--yellow); }
-    .autosave-indicator.saved  { color: var(--green); }
-    .autosave-indicator.error  { color: var(--red); }
-
-    .autosave-dot {
-      width: 6px; height: 6px;
+    .pill-dot {
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background: currentColor;
     }
+    .pill.good { color: var(--good); }
+    .pill.warn { color: var(--warn); }
+    .pill.bad { color: var(--bad); }
 
-    .link-btn {
-      background: var(--surface2);
-      border: 1px solid var(--border2);
-      color: var(--text2);
-      padding: 6px 14px;
-      border-radius: var(--radius-sm);
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-    }
-    .link-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-    /* ── Main Layout ── */
-    .admin-layout {
-      display: grid;
-      grid-template-columns: 1fr 380px;
-      gap: 1.5rem;
-      padding: 2rem;
-      max-width: 1200px;
+    .shell {
+      max-width: 1500px;
       margin: 0 auto;
-      position: relative;
-      z-index: 1;
+      padding: 1.5rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr);
+      gap: 1.25rem;
     }
-
-    /* ── Panels ── */
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      min-width: 0;
+    }
     .panel {
-      background: var(--surface);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
       border: 1px solid var(--border);
       border-radius: var(--radius);
       overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
     }
-
     .panel-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1rem 1.5rem;
+      gap: 1rem;
+      padding: 1rem 1.2rem;
       border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.015);
     }
-
     .panel-title {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .panel-title strong {
+      font-size: 0.95rem;
+    }
+    .panel-title span {
+      color: var(--text3);
       font-family: var(--mono);
-      font-size: 0.72rem;
+      font-size: 0.68rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .panel-body {
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .subgrid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .full { grid-column: 1 / -1; }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field label {
+      color: var(--text3);
+      font-family: var(--mono);
+      font-size: 0.67rem;
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--text2);
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
-
-    .panel-body { padding: 1.5rem; }
-
-    /* ── Form ── */
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-    .form-full { grid-column: 1 / -1; }
-
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-
-    label {
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text3);
-    }
-
-    input[type="text"], input[type="url"], select {
-      background: var(--surface2);
-      border: 1px solid var(--border2);
+    .input, .select, .textarea {
+      width: 100%;
       border-radius: var(--radius-sm);
+      border: 1px solid var(--border2);
+      background: var(--surface2);
       color: var(--text);
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      padding: 9px 12px;
+      padding: 11px 12px;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
-      width: 100%;
     }
-    input:focus, select:focus {
+    .textarea {
+      min-height: 110px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+    .input:focus, .select:focus, .textarea:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(79,142,247,0.1);
+      box-shadow: 0 0 0 3px rgba(37,183,255,0.1);
     }
-    input.invalid { border-color: var(--red) !important; }
+    .input.invalid, .textarea.invalid { border-color: var(--bad); }
+    .hint {
+      color: var(--text3);
+      font-size: 0.76rem;
+      line-height: 1.5;
+    }
+    .error-text {
+      color: var(--bad);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      display: none;
+    }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .toolbar.spread { justify-content: space-between; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border2);
+      background: var(--surface2);
+      color: var(--text2);
+      text-decoration: none;
+      transition: all 0.18s;
+    }
+    .btn:hover { border-color: var(--accent); color: var(--accent); }
+    .btn.primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-color: transparent;
+      color: #081018;
+      font-weight: 700;
+    }
+    .btn.primary:hover { color: #081018; transform: translateY(-1px); box-shadow: 0 10px 25px rgba(37,183,255,0.25); }
+    .btn.warn { color: var(--warn); }
+    .btn.bad { color: var(--bad); }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
 
-    select option { background: var(--surface2); }
+    .version-tools {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+    }
+    .version-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: calc(100vh - 290px);
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .version-card {
+      width: 100%;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      text-align: left;
+      color: var(--text);
+      transition: all 0.18s;
+    }
+    .version-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+    .version-card.active {
+      border-color: rgba(37,183,255,0.4);
+      background: rgba(37,183,255,0.08);
+      box-shadow: inset 0 0 0 1px rgba(37,183,255,0.08);
+    }
+    .version-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .version-name {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .version-meta {
+      color: var(--text3);
+      font-size: 0.72rem;
+      line-height: 1.5;
+    }
+    .mini-tags {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .mini-tag {
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid var(--border2);
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--text2);
+    }
+    .mini-tag.latest { color: var(--warn); border-color: rgba(245,158,11,0.28); background: rgba(245,158,11,0.12); }
 
-    /* Toggle */
-    .toggle-group {
+    .toggle-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: var(--surface2);
-      border: 1px solid var(--border2);
+      gap: 1rem;
+      padding: 10px 12px;
       border-radius: var(--radius-sm);
-      padding: 9px 12px;
+      border: 1px solid var(--border2);
+      background: var(--surface2);
     }
-    .toggle-label { font-family: var(--mono); font-size: 0.8rem; color: var(--text2); }
-
+    .toggle-copy strong {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 2px;
+    }
+    .toggle-copy span {
+      color: var(--text3);
+      font-size: 0.75rem;
+    }
     .toggle {
       position: relative;
-      width: 38px;
-      height: 20px;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
     }
     .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle-slider {
+    .toggle span {
       position: absolute;
       inset: 0;
+      border-radius: 999px;
       background: var(--border2);
-      border-radius: 10px;
-      cursor: pointer;
       transition: background 0.2s;
     }
-    .toggle-slider::after {
-      content: '';
+    .toggle span::after {
+      content: "";
       position: absolute;
-      width: 14px; height: 14px;
-      left: 3px; top: 3px;
-      background: var(--text3);
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
-      transition: transform 0.2s, background 0.2s;
+      background: #b7c4df;
+      transition: transform 0.2s;
     }
-    .toggle input:checked + .toggle-slider { background: rgba(245,158,11,0.3); }
-    .toggle input:checked + .toggle-slider::after {
-      transform: translateX(18px);
-      background: var(--yellow);
+    .toggle input:checked + span {
+      background: rgba(37,183,255,0.35);
     }
-
-    /* Action buttons */
-    .form-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 1.25rem;
+    .toggle input:checked + span::after {
+      transform: translateX(20px);
+      background: #fff;
     }
 
-    .btn-primary {
-      flex: 1;
-      padding: 10px 20px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border: none;
-      border-radius: var(--radius-sm);
-      color: #fff;
-      font-family: var(--mono);
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-    .btn-primary:hover { box-shadow: 0 4px 16px rgba(79,142,247,0.3); transform: translateY(-1px); }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-    .btn-secondary {
-      padding: 10px 16px;
-      background: var(--surface2);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius-sm);
-      color: var(--text2);
-      font-family: var(--mono);
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-
-    .validation-error {
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      color: var(--red);
-      margin-top: 4px;
-      display: none;
-    }
-
-    /* ── Version List (right panel) ── */
-    .version-list { display: flex; flex-direction: column; gap: 8px; }
-
-    .vl-item {
-      background: var(--surface2);
+    details.preview {
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 10px 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      transition: border-color 0.15s;
-    }
-    .vl-item:hover { border-color: var(--border2); }
-    .vl-item.selected { border-color: var(--accent); background: rgba(79,142,247,0.06); }
-
-    .vl-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .vl-dot.success { background: var(--green); }
-    .vl-dot.fail    { background: var(--red); }
-    .vl-dot.maintenance { background: var(--yellow); }
-
-    .vl-info { flex: 1; min-width: 0; }
-    .vl-name {
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      font-weight: 600;
-      white-space: nowrap;
+      border-radius: var(--radius);
       overflow: hidden;
-      text-overflow: ellipsis;
     }
-    .vl-meta { font-size: 0.65rem; color: var(--text3); margin-top: 2px; }
-
-    .vl-badges { display: flex; gap: 4px; flex-shrink: 0; }
-    .mini-badge {
-      font-family: var(--mono);
-      font-size: 0.58rem;
-      font-weight: 700;
-      padding: 1px 5px;
-      border-radius: 3px;
-    }
-    .mini-latest {
-      background: rgba(245,158,11,0.15);
-      color: var(--yellow);
-    }
-
-    .vl-delete {
-      background: none;
-      border: none;
-      color: var(--text3);
+    details.preview summary {
+      list-style: none;
       cursor: pointer;
+      padding: 1rem 1.2rem;
+      background: rgba(255,255,255,0.02);
+      font-family: var(--mono);
       font-size: 0.75rem;
-      padding: 2px 4px;
-      transition: color 0.15s;
-      flex-shrink: 0;
+      color: var(--text2);
     }
-    .vl-delete:hover { color: var(--red); }
+    details.preview summary::-webkit-details-marker { display: none; }
+    pre.preview-body {
+      padding: 1.2rem;
+      overflow: auto;
+      max-height: 320px;
+      background: rgba(0,0,0,0.2);
+      color: #cfe9ff;
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      line-height: 1.55;
+    }
 
-    /* ── Toast ── */
     #toast {
       position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      z-index: 9999;
+      right: 1rem;
+      bottom: 1rem;
+      z-index: 60;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      pointer-events: none;
-    }
-
-    .toast-item {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      padding: 10px 16px;
-      border-radius: var(--radius-sm);
-      border: 1px solid;
-      animation: toastIn 0.25s ease, toastOut 0.3s ease 2.5s forwards;
-      pointer-events: none;
-    }
-    .toast-item.success { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); color: var(--green); }
-    .toast-item.error   { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.3); color: var(--red); }
-    .toast-item.info    { background: rgba(79,142,247,0.12); border-color: rgba(79,142,247,0.3); color: var(--accent); }
-
-    @keyframes toastIn { from { opacity: 0; transform: translateX(20px); } }
-    @keyframes toastOut { to   { opacity: 0; transform: translateX(20px); } }
-
-    /* ── Plugin name section ── */
-    .plugin-name-row {
-      display: flex;
-      align-items: center;
       gap: 10px;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border);
+    }
+    .toast {
+      min-width: 240px;
+      padding: 11px 14px;
+      border-radius: 12px;
+      border: 1px solid;
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      animation: slideIn 0.2s ease;
+      backdrop-filter: blur(10px);
+    }
+    .toast.info { background: rgba(37,183,255,0.12); border-color: rgba(37,183,255,0.26); color: var(--accent); }
+    .toast.good { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.26); color: var(--good); }
+    .toast.bad { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.26); color: var(--bad); }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-
-    @media (max-width: 900px) {
-      .admin-layout { grid-template-columns: 1fr; }
-      .form-grid { grid-template-columns: 1fr; }
+    @media (max-width: 1100px) {
+      .shell { grid-template-columns: 1fr; }
+      .version-list { max-height: none; }
+    }
+    @media (max-width: 720px) {
+      header, .shell { padding: 1rem; }
+      .subgrid { grid-template-columns: 1fr; }
+      .version-tools { grid-template-columns: 1fr; }
+      .auth-actions, .toolbar.spread { flex-direction: column; align-items: stretch; }
+      .statusbar { justify-content: flex-start; }
     }
   </style>
 </head>
 <body>
-
-<!-- ── Auth Gate ── -->
-<div id="authGate">
-  <div class="auth-box">
-    <div class="auth-icon">🔐</div>
-    <div class="auth-title">Admin Access</div>
-    <div class="auth-sub">Enter your admin token to continue</div>
-    <input type="password" id="authInput" class="auth-input" placeholder="••••••••••••"
-           autocomplete="current-password" />
-    <button class="auth-btn" onclick="authenticate()">Unlock Panel</button>
-    <div class="auth-error" id="authError">Invalid token. Try again.</div>
-  </div>
-</div>
-
-<!-- ── Header ── -->
-<header>
-  <div class="header-logo">
-    <div class="logo-icon">⚡</div>
-    <span>Plugin Dashboard</span>
-    <span class="logo-badge">ADMIN</span>
-  </div>
-  <div class="header-right">
-    <div class="autosave-indicator" id="autosaveIndicator">
-      <span class="autosave-dot"></span>
-      <span id="autosaveText">Ready</span>
+  <div id="authGate">
+    <div class="auth-box">
+      <div class="auth-kicker">🔐 Verified Admin Access</div>
+      <h1>Unlock the release workspace</h1>
+      <p>The panel now checks your token with the server before opening, so wrong tokens fail early instead of after you edit data.</p>
+      <input id="authInput" class="auth-input" type="password" autocomplete="current-password" placeholder="Enter admin token" />
+      <div class="auth-actions">
+        <button id="authBtn" class="btn primary" type="button">Unlock Panel</button>
+        <a href="index.html" class="btn">Open Public Page</a>
+      </div>
+      <div id="authError" class="auth-error"></div>
     </div>
-    <a href="index.html" class="link-btn">← Public View</a>
   </div>
-</header>
 
-<!-- ── Admin Layout ── -->
-<div class="admin-layout">
-  <!-- Left: Form -->
-  <div class="panel">
-    <div class="panel-header">
-      <div class="panel-title">📝 Version Editor</div>
-      <div id="editingBadge" style="font-family:var(--mono);font-size:0.65rem;color:var(--text3);">New Release</div>
-    </div>
-    <div class="panel-body">
-
-      <!-- Plugin name -->
-      <div class="plugin-name-row">
-        <div class="form-group" style="flex:1">
-          <label>Plugin Name</label>
-          <input type="text" id="pluginName" placeholder="ExamplePlugin" />
+  <div class="page">
+    <header>
+      <div class="brand">
+        <div class="brand-mark">⚡</div>
+        <div class="brand-copy">
+          <h1>Plugin Control Center</h1>
+          <p>Metadata, versions, changelogs, categories, and publishing</p>
         </div>
       </div>
+      <div class="statusbar">
+        <div id="saveState" class="pill"><span class="pill-dot"></span><span>Ready</span></div>
+        <div class="pill"><span id="versionCount">0 versions</span></div>
+        <a href="index.html" class="btn">↗ Public View</a>
+      </div>
+    </header>
 
-      <!-- Version form -->
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Release Name</label>
-          <input type="text" id="vName" placeholder="Stable Release" />
-          <span class="validation-error" id="err-vName">Required</span>
-        </div>
-        <div class="form-group">
-          <label>Version Number</label>
-          <input type="text" id="vVersion" placeholder="1.0.0" />
-          <span class="validation-error" id="err-vVersion">Required</span>
-        </div>
-        <div class="form-group">
-          <label>Release Type</label>
-          <select id="vType">
-            <option value="stable">Stable</option>
-            <option value="pre-release">Pre-Release</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Loader</label>
-          <select id="vLoader">
-            <option value="PaperMC">PaperMC</option>
-            <option value="Bukkit">Bukkit</option>
-            <option value="Purpur">Purpur</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Status</label>
-          <select id="vStatus">
-            <option value="success">Success</option>
-            <option value="fail">Fail</option>
-            <option value="maintenance">Maintenance</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Mark as Latest</label>
-          <div class="toggle-group">
-            <span class="toggle-label">Latest Version</span>
-            <label class="toggle">
-              <input type="checkbox" id="vLatest" />
-              <span class="toggle-slider"></span>
-            </label>
+    <main class="shell">
+      <section class="column">
+        <article class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <strong>Plugin Settings</strong>
+              <span>Edit all top-level plugin metadata</span>
+            </div>
           </div>
-        </div>
-        <div class="form-group form-full">
-          <label>Download Link</label>
-          <input type="text" id="vDownload" placeholder="https://github.com/.../releases/download/..." />
-          <span class="validation-error" id="err-vDownload">Must be a valid URL</span>
-        </div>
-      </div>
+          <div class="panel-body">
+            <div class="subgrid">
+              <div class="field">
+                <label for="pluginName">Plugin Name</label>
+                <input id="pluginName" class="input plugin-field" type="text" />
+              </div>
+              <div class="field">
+                <label for="pluginAuthor">Author</label>
+                <input id="pluginAuthor" class="input plugin-field" type="text" />
+              </div>
+              <div class="field">
+                <label for="pluginWebsite">Website URL</label>
+                <input id="pluginWebsite" class="input plugin-field" type="url" placeholder="https://example.com" />
+              </div>
+              <div class="field">
+                <label for="pluginSource">Source URL</label>
+                <input id="pluginSource" class="input plugin-field" type="url" placeholder="https://github.com/owner/repo" />
+              </div>
+              <div class="field full">
+                <label for="pluginDescription">Description</label>
+                <textarea id="pluginDescription" class="textarea plugin-field" placeholder="Describe what this plugin does."></textarea>
+              </div>
+              <div class="field full">
+                <label for="pluginCategories">Categories</label>
+                <input id="pluginCategories" class="input plugin-field" type="text" placeholder="Core, Addon, Utility" />
+                <div class="hint">Comma-separated categories used on the public dashboard and in the version editor.</div>
+              </div>
+            </div>
+          </div>
+        </article>
 
-      <div class="form-actions">
-        <button class="btn-secondary" onclick="resetForm()">✕ Clear</button>
-        <button class="btn-primary" id="saveBtn" onclick="saveVersion()">
-          ⬆ Save & Push to GitHub
-        </button>
-      </div>
+        <article class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <strong>Release Editor</strong>
+              <span id="editorLabel">Create a new release draft</span>
+            </div>
+            <div class="toolbar">
+              <button id="newVersionBtn" class="btn" type="button">＋ New</button>
+              <button id="duplicateVersionBtn" class="btn" type="button">⧉ Duplicate</button>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="subgrid">
+              <div class="field">
+                <label for="vName">Release Name</label>
+                <input id="vName" class="input version-field" type="text" placeholder="Stable Release" />
+                <div id="err-vName" class="error-text">Release name is required.</div>
+              </div>
+              <div class="field">
+                <label for="vVersion">Version Number</label>
+                <input id="vVersion" class="input version-field" type="text" placeholder="1.0.0" />
+                <div id="err-vVersion" class="error-text">Version number is required.</div>
+              </div>
+              <div class="field">
+                <label for="vType">Release Type</label>
+                <select id="vType" class="select version-field">
+                  <option value="stable">Stable</option>
+                  <option value="pre-release">Pre-Release</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="vLoader">Loader</label>
+                <select id="vLoader" class="select version-field">
+                  <option value="PaperMC">PaperMC</option>
+                  <option value="Bukkit">Bukkit</option>
+                  <option value="Purpur">Purpur</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="vStatus">Status</label>
+                <select id="vStatus" class="select version-field">
+                  <option value="success">Success</option>
+                  <option value="maintenance">Maintenance</option>
+                  <option value="fail">Fail</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="vCategory">Category</label>
+                <input id="vCategory" list="categoryOptions" class="input version-field" type="text" placeholder="Core" />
+              </div>
+              <div class="field">
+                <label for="vMinecraft">Minecraft Version</label>
+                <input id="vMinecraft" class="input version-field" type="text" placeholder="1.21.x" />
+              </div>
+              <div class="field">
+                <label for="vDownload">Download URL</label>
+                <input id="vDownload" class="input version-field" type="url" placeholder="https://..." />
+                <div id="err-vDownload" class="error-text">Download URL must be https.</div>
+              </div>
+              <div class="field full">
+                <label for="vDescription">Release Description</label>
+                <textarea id="vDescription" class="textarea version-field" placeholder="Summarize this release."></textarea>
+              </div>
+              <div class="field full">
+                <label for="vChangelog">Changelog</label>
+                <textarea id="vChangelog" class="textarea version-field" placeholder="One item per line"></textarea>
+                <div class="hint">Each line becomes one changelog bullet on the public page.</div>
+              </div>
+              <div class="field full">
+                <div class="toggle-row">
+                  <div class="toggle-copy">
+                    <strong>Mark as latest release</strong>
+                    <span>When enabled, this release becomes the only latest entry.</span>
+                  </div>
+                  <label class="toggle">
+                    <input id="vLatest" class="version-field" type="checkbox" />
+                    <span></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="toolbar spread">
+              <div class="toolbar">
+                <button id="applyVersionBtn" class="btn primary" type="button">⬆ Apply To Draft</button>
+                <button id="resetVersionBtn" class="btn" type="button">↺ Reset Form</button>
+              </div>
+              <button id="deleteVersionBtn" class="btn bad" type="button">✕ Delete Selected</button>
+            </div>
+          </div>
+        </article>
 
-      <div id="formError" style="font-family:var(--mono);font-size:0.73rem;color:var(--red);margin-top:1rem;display:none;"></div>
-    </div>
+        <article class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <strong>Publishing</strong>
+              <span>Draft changes stay local until you push them</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="toolbar spread">
+              <div class="toolbar">
+                <button id="saveAllBtn" class="btn primary" type="button">🚀 Save All To GitHub</button>
+                <button id="discardBtn" class="btn warn" type="button">↩ Discard Draft</button>
+              </div>
+              <div class="hint">Safe save flow: if the server rejects a write, your last synced data remains intact.</div>
+            </div>
+          </div>
+        </article>
+
+        <details class="preview">
+          <summary>Raw JSON Preview</summary>
+          <pre id="jsonPreview" class="preview-body">{}</pre>
+        </details>
+      </section>
+
+      <aside class="column">
+        <article class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <strong>Release Library</strong>
+              <span>Search, select, duplicate, and clean up entries</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="version-tools">
+              <input id="versionSearch" class="input" type="text" placeholder="Search versions, loaders, categories..." />
+              <button id="reloadBtn" class="btn" type="button">↻ Reload</button>
+            </div>
+            <div id="versionList" class="version-list"></div>
+          </div>
+        </article>
+      </aside>
+    </main>
   </div>
 
-  <!-- Right: Version list -->
-  <div class="panel">
-    <div class="panel-header">
-      <div class="panel-title">📦 Versions <span id="vCount" style="color:var(--text3);font-weight:400;">— 0</span></div>
-      <button class="link-btn" onclick="loadData()">↻</button>
-    </div>
-    <div class="panel-body" style="max-height:calc(100vh - 200px);overflow-y:auto;">
-      <div id="versionList">
-        <div style="color:var(--text3);font-family:var(--mono);font-size:0.75rem;text-align:center;padding:2rem;">
-          Loading...
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+  <datalist id="categoryOptions"></datalist>
+  <div id="toast"></div>
 
-<div id="toast"></div>
+  <script>
+    const ADMIN_TOKEN_KEY = "pluginAdminToken";
+    const UPDATE_ENDPOINT = "/.netlify/functions/update";
+    const API_ENDPOINT = "/.netlify/functions/api";
 
-<script>
-/* ─── State ─────────────────────────────────────────────────────── */
-let adminToken = '';
-let currentData = { plugin: { name: '', versions: [] } };
-let editingVersion = null; // null = new, string = version number being edited
-let autoSaveTimer = null;
+    let adminToken = "";
+    let currentData = createEmptyData();
+    let draftData = createEmptyData();
+    let selectedIndex = null;
+    let isDirty = false;
 
-const ADMIN_TOKEN_KEY = 'pluginAdminToken';
+    const authGate = document.getElementById("authGate");
+    const authInput = document.getElementById("authInput");
+    const authBtn = document.getElementById("authBtn");
+    const authError = document.getElementById("authError");
+    const saveAllBtn = document.getElementById("saveAllBtn");
+    const saveState = document.getElementById("saveState");
+    const versionSearch = document.getElementById("versionSearch");
 
-/* ─── Auth ──────────────────────────────────────────────────────── */
-function authenticate() {
-  const token = document.getElementById('authInput').value.trim();
-  if (!token) return;
-  adminToken = token;
-  sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
-  document.getElementById('authGate').style.display = 'none';
-  loadData();
-}
-
-document.getElementById('authInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') authenticate();
-});
-
-// Restore session
-(function() {
-  const saved = sessionStorage.getItem(ADMIN_TOKEN_KEY);
-  if (saved) {
-    adminToken = saved;
-    document.getElementById('authGate').style.display = 'none';
-    loadData();
-  }
-})();
-
-/* ─── Load data ─────────────────────────────────────────────────── */
-async function loadData() {
-  try {
-    const res = await fetch('/.netlify/functions/api');
-    if (!res.ok) throw new Error(`API error ${res.status}`);
-    const data = await res.json();
-    currentData = data;
-    document.getElementById('pluginName').value = data.plugin?.name || '';
-    renderVersionList();
-    console.log('[Admin] Data loaded:', data);
-  } catch (err) {
-    console.error('[Admin] Load error:', err);
-    toast('Failed to load data: ' + err.message, 'error');
-  }
-}
-
-/* ─── Render version list ───────────────────────────────────────── */
-function renderVersionList() {
-  const versions = currentData.plugin?.versions || [];
-  document.getElementById('vCount').textContent = `— ${versions.length}`;
-
-  if (!versions.length) {
-    document.getElementById('versionList').innerHTML =
-      `<div style="color:var(--text3);font-family:var(--mono);font-size:0.75rem;text-align:center;padding:2rem;">No versions yet</div>`;
-    return;
-  }
-
-  document.getElementById('versionList').innerHTML = versions.map((v, i) => `
-    <div class="vl-item ${editingVersion === v.version ? 'selected' : ''}" onclick="editVersion(${i})">
-      <span class="vl-dot ${v.status}"></span>
-      <div class="vl-info">
-        <div class="vl-name">v${escHtml(v.version)} — ${escHtml(v.name)}</div>
-        <div class="vl-meta">${v.type} · ${v.loader} · ${v.status}</div>
-      </div>
-      <div class="vl-badges">
-        ${v.latest ? '<span class="mini-badge mini-latest">LATEST</span>' : ''}
-      </div>
-      <button class="vl-delete" onclick="event.stopPropagation(); deleteVersion(${i})" title="Delete">✕</button>
-    </div>
-  `).join('');
-}
-
-/* ─── Edit existing version ─────────────────────────────────────── */
-function editVersion(idx) {
-  const v = currentData.plugin.versions[idx];
-  editingVersion = v.version;
-  document.getElementById('editingBadge').textContent = `Editing v${v.version}`;
-
-  document.getElementById('vName').value    = v.name;
-  document.getElementById('vVersion').value = v.version;
-  document.getElementById('vType').value    = v.type;
-  document.getElementById('vLoader').value  = v.loader;
-  document.getElementById('vStatus').value  = v.status;
-  document.getElementById('vLatest').checked = v.latest;
-  document.getElementById('vDownload').value = v.download;
-
-  renderVersionList();
-  clearErrors();
-}
-
-/* ─── Delete version ────────────────────────────────────────────── */
-async function deleteVersion(idx) {
-  const v = currentData.plugin.versions[idx];
-  if (!confirm(`Delete v${v.version}?`)) return;
-
-  currentData.plugin.versions.splice(idx, 1);
-
-  if (editingVersion === v.version) {
-    resetForm();
-  }
-
-  await pushToGitHub(currentData);
-  renderVersionList();
-}
-
-/* ─── Save version ──────────────────────────────────────────────── */
-async function saveVersion() {
-  if (!validate()) return;
-
-  const btn = document.getElementById('saveBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Saving...';
-
-  const pluginName = document.getElementById('pluginName').value.trim() || 'Plugin';
-  const newVersion = {
-    name:     document.getElementById('vName').value.trim(),
-    version:  document.getElementById('vVersion').value.trim(),
-    type:     document.getElementById('vType').value,
-    latest:   document.getElementById('vLatest').checked,
-    status:   document.getElementById('vStatus').value,
-    loader:   document.getElementById('vLoader').value,
-    download: document.getElementById('vDownload').value.trim(),
-  };
-
-  // Update local state
-  currentData.plugin.name = pluginName;
-  const existingIdx = currentData.plugin.versions.findIndex(v => v.version === newVersion.version);
-  if (existingIdx >= 0) {
-    currentData.plugin.versions[existingIdx] = newVersion;
-  } else {
-    currentData.plugin.versions.push(newVersion);
-  }
-
-  // Enforce single latest
-  if (newVersion.latest) {
-    currentData.plugin.versions = currentData.plugin.versions.map(v => ({
-      ...v, latest: v.version === newVersion.version
-    }));
-  }
-
-  const ok = await pushToGitHub(currentData);
-
-  btn.disabled = false;
-  btn.textContent = '⬆ Save & Push to GitHub';
-
-  if (ok) {
-    editingVersion = newVersion.version;
-    renderVersionList();
-    toast(`v${newVersion.version} saved successfully!`, 'success');
-  }
-}
-
-/* ─── Push to GitHub via serverless function ────────────────────── */
-async function pushToGitHub(data) {
-  setAutosave('saving', 'Saving...');
-  try {
-    const res = await fetch('/.netlify/functions/update', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Admin-Token': adminToken,
-      },
-      body: JSON.stringify({ plugin: data.plugin }),
+    authBtn.addEventListener("click", authenticate);
+    authInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") authenticate();
     });
 
-    const result = await res.json();
+    document.getElementById("reloadBtn").addEventListener("click", loadData);
+    document.getElementById("newVersionBtn").addEventListener("click", () => selectVersion(null));
+    document.getElementById("duplicateVersionBtn").addEventListener("click", duplicateSelectedVersion);
+    document.getElementById("applyVersionBtn").addEventListener("click", applyVersionDraft);
+    document.getElementById("resetVersionBtn").addEventListener("click", renderVersionForm);
+    document.getElementById("deleteVersionBtn").addEventListener("click", deleteSelectedVersion);
+    document.getElementById("saveAllBtn").addEventListener("click", saveAll);
+    document.getElementById("discardBtn").addEventListener("click", discardDraft);
+    versionSearch.addEventListener("input", renderVersionList);
 
-    if (!res.ok) {
-      throw new Error(result.error || `HTTP ${res.status}`);
+    document.querySelectorAll(".plugin-field").forEach((field) => {
+      field.addEventListener("input", syncPluginFieldsFromForm);
+    });
+
+    restoreSession();
+
+    function createEmptyData() {
+      return {
+        plugin: {
+          name: "",
+          description: "",
+          author: "",
+          website: "",
+          source: "",
+          categories: [],
+          versions: [],
+        },
+      };
     }
 
-    console.log('[Admin] Pushed to GitHub:', result.sha);
-    setAutosave('saved', 'Saved ✓');
-    setTimeout(() => setAutosave('', 'Ready'), 2500);
-    return true;
-  } catch (err) {
-    console.error('[Admin] Push error:', err);
-    setAutosave('error', 'Save failed');
-    toast('Error: ' + err.message, 'error');
-    document.getElementById('formError').textContent = err.message;
-    document.getElementById('formError').style.display = 'block';
-    return false;
-  }
-}
+    function clone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
 
-/* ─── Auto-save ─────────────────────────────────────────────────── */
-function scheduleAutosave() {
-  clearTimeout(autoSaveTimer);
-  setAutosave('', 'Pending...');
-  autoSaveTimer = setTimeout(() => {
-    if (validate(true)) saveVersion();
-  }, 1800);
-}
+    function normalizeData(input) {
+      const plugin = input?.plugin || {};
+      return {
+        plugin: {
+          name: stringValue(plugin.name),
+          description: stringValue(plugin.description),
+          author: stringValue(plugin.author),
+          website: stringValue(plugin.website),
+          source: stringValue(plugin.source),
+          categories: Array.isArray(plugin.categories) ? plugin.categories.map(stringValue).filter(Boolean) : [],
+          versions: Array.isArray(plugin.versions) ? plugin.versions.map((version) => ({
+            name: stringValue(version.name),
+            version: stringValue(version.version),
+            type: version.type || "stable",
+            latest: Boolean(version.latest),
+            status: version.status || "success",
+            loader: version.loader || "PaperMC",
+            category: stringValue(version.category),
+            minecraft: stringValue(version.minecraft),
+            description: stringValue(version.description),
+            changelog: Array.isArray(version.changelog) ? version.changelog.map(stringValue).filter(Boolean) : [],
+            download: stringValue(version.download),
+          })) : [],
+        },
+      };
+    }
 
-// Attach auto-save listeners
-['vName','vVersion','vType','vLoader','vStatus','vDownload','vLatest','pluginName'].forEach(id => {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const evt = el.type === 'checkbox' ? 'change' : 'input';
-  el.addEventListener(evt, scheduleAutosave);
-});
+    function stringValue(value) {
+      return typeof value === "string" ? value.trim() : "";
+    }
 
-/* ─── Validation ─────────────────────────────────────────────────── */
-function validate(silent = false) {
-  let valid = true;
+    function setSaveState(kind, text) {
+      saveState.className = `pill ${kind || ""}`.trim();
+      saveState.innerHTML = `<span class="pill-dot"></span><span>${escapeHtml(text)}</span>`;
+    }
 
-  const fields = [
-    { id: 'vName',     errId: 'err-vName',     check: v => v.trim().length > 0,                    msg: 'Required' },
-    { id: 'vVersion',  errId: 'err-vVersion',  check: v => v.trim().length > 0,                    msg: 'Required' },
-    { id: 'vDownload', errId: 'err-vDownload', check: v => v.trim().startsWith('http'),             msg: 'Must be a valid URL' },
-  ];
+    function markDirty(value = true) {
+      isDirty = value;
+      setSaveState(value ? "warn" : "", value ? "Draft has unpublished changes" : "Ready");
+      updateJsonPreview();
+    }
 
-  fields.forEach(({ id, errId, check, msg }) => {
-    const el = document.getElementById(id);
-    const err = document.getElementById(errId);
-    if (!check(el.value)) {
-      valid = false;
-      if (!silent) {
-        el.classList.add('invalid');
-        err.textContent = msg;
-        err.style.display = 'block';
+    function toast(message, kind = "info") {
+      const host = document.getElementById("toast");
+      const item = document.createElement("div");
+      item.className = `toast ${kind}`;
+      item.textContent = message;
+      host.appendChild(item);
+      setTimeout(() => item.remove(), 3200);
+    }
+
+    async function authenticate() {
+      const candidate = authInput.value.trim();
+      authError.style.display = "none";
+      authError.textContent = "";
+
+      if (!candidate) {
+        authError.textContent = "Enter your admin token first.";
+        authError.style.display = "block";
+        return;
       }
-    } else {
-      el.classList.remove('invalid');
-      if (err) err.style.display = 'none';
+
+      authBtn.disabled = true;
+      authBtn.textContent = "Checking...";
+
+      try {
+        await validateToken(candidate);
+
+        adminToken = candidate;
+        sessionStorage.setItem(ADMIN_TOKEN_KEY, candidate);
+        authGate.style.display = "none";
+        setSaveState("", "Ready");
+        await loadData();
+      } catch (error) {
+        authError.textContent = error.message || "Token validation failed.";
+        authError.style.display = "block";
+      } finally {
+        authBtn.disabled = false;
+        authBtn.textContent = "Unlock Panel";
+      }
     }
-  });
 
-  return valid;
-}
+    async function restoreSession() {
+      const saved = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+      if (!saved) return;
+      try {
+        await validateToken(saved);
+        adminToken = saved;
+        authGate.style.display = "none";
+        loadData();
+      } catch {
+        sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+      }
+    }
 
-function clearErrors() {
-  ['vName','vVersion','vDownload'].forEach(id => {
-    document.getElementById(id)?.classList.remove('invalid');
-  });
-  ['err-vName','err-vVersion','err-vDownload'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
-  });
-  document.getElementById('formError').style.display = 'none';
-}
+    async function validateToken(token) {
+      const response = await fetch(UPDATE_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Admin-Token": token,
+        },
+        body: JSON.stringify({ action: "validate" }),
+      });
 
-/* ─── Reset form ─────────────────────────────────────────────────── */
-function resetForm() {
-  editingVersion = null;
-  document.getElementById('editingBadge').textContent = 'New Release';
-  ['vName','vVersion','vDownload'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('vType').value   = 'stable';
-  document.getElementById('vLoader').value = 'PaperMC';
-  document.getElementById('vStatus').value = 'success';
-  document.getElementById('vLatest').checked = false;
-  clearErrors();
-  renderVersionList();
-}
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(result.error || `HTTP ${response.status}`);
+      }
+      return result;
+    }
 
-/* ─── Autosave indicator ─────────────────────────────────────────── */
-function setAutosave(type, text) {
-  const el = document.getElementById('autosaveIndicator');
-  const txt = document.getElementById('autosaveText');
-  el.className = 'autosave-indicator ' + type;
-  txt.textContent = text;
-}
+    async function loadData() {
+      setSaveState("", "Loading latest data...");
+      try {
+        const response = await fetch(API_ENDPOINT);
+        if (!response.ok) throw new Error(`API error ${response.status}`);
+        const data = normalizeData(await response.json());
+        currentData = clone(data);
+        draftData = clone(data);
+        selectedIndex = data.plugin.versions.length ? 0 : null;
+        renderAll();
+        markDirty(false);
+      } catch (error) {
+        setSaveState("bad", "Load failed");
+        toast(`Failed to load data: ${error.message}`, "bad");
+      }
+    }
 
-/* ─── Toast ──────────────────────────────────────────────────────── */
-function toast(msg, type = 'info') {
-  const container = document.getElementById('toast');
-  const el = document.createElement('div');
-  el.className = `toast-item ${type}`;
-  el.textContent = msg;
-  container.appendChild(el);
-  setTimeout(() => el.remove(), 3000);
-}
+    function renderAll() {
+      renderPluginFields();
+      refreshCategoryOptions();
+      renderVersionList();
+      renderVersionForm();
+      updateJsonPreview();
+      document.getElementById("versionCount").textContent = `${draftData.plugin.versions.length} versions`;
+    }
 
-/* ─── Helpers ────────────────────────────────────────────────────── */
-function escHtml(str) {
-  return String(str)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-</script>
+    function renderPluginFields() {
+      const plugin = draftData.plugin;
+      document.getElementById("pluginName").value = plugin.name || "";
+      document.getElementById("pluginAuthor").value = plugin.author || "";
+      document.getElementById("pluginWebsite").value = plugin.website || "";
+      document.getElementById("pluginSource").value = plugin.source || "";
+      document.getElementById("pluginDescription").value = plugin.description || "";
+      document.getElementById("pluginCategories").value = (plugin.categories || []).join(", ");
+    }
+
+    function syncPluginFieldsFromForm() {
+      draftData.plugin.name = stringValue(document.getElementById("pluginName").value);
+      draftData.plugin.author = stringValue(document.getElementById("pluginAuthor").value);
+      draftData.plugin.website = stringValue(document.getElementById("pluginWebsite").value);
+      draftData.plugin.source = stringValue(document.getElementById("pluginSource").value);
+      draftData.plugin.description = stringValue(document.getElementById("pluginDescription").value);
+      draftData.plugin.categories = document.getElementById("pluginCategories").value
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .filter((item, index, array) => array.indexOf(item) === index);
+      refreshCategoryOptions();
+      markDirty(true);
+    }
+
+    function refreshCategoryOptions() {
+      const categories = draftData.plugin.categories || [];
+      document.getElementById("categoryOptions").innerHTML = categories
+        .map((category) => `<option value="${escapeAttr(category)}"></option>`)
+        .join("");
+    }
+
+    function renderVersionList() {
+      const query = versionSearch.value.trim().toLowerCase();
+      const versions = draftData.plugin.versions || [];
+      const filtered = versions.filter((version) => {
+        if (!query) return true;
+        const haystack = [
+          version.name,
+          version.version,
+          version.loader,
+          version.status,
+          version.type,
+          version.category,
+          version.minecraft,
+          version.description,
+          Array.isArray(version.changelog) ? version.changelog.join(" ") : "",
+        ].filter(Boolean).join(" ").toLowerCase();
+        return haystack.includes(query);
+      });
+
+      const list = document.getElementById("versionList");
+      if (!filtered.length) {
+        list.innerHTML = '<div class="hint">No release matches your current search.</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map((version) => {
+        const actualIndex = versions.indexOf(version);
+        const active = actualIndex === selectedIndex ? "active" : "";
+        return `
+          <button type="button" class="version-card ${active}" data-index="${actualIndex}">
+            <div class="version-top">
+              <div>
+                <div class="version-name">v${escapeHtml(version.version || "draft")} - ${escapeHtml(version.name || "Untitled release")}</div>
+                <div class="version-meta">${escapeHtml(version.type)} · ${escapeHtml(version.loader)} · ${escapeHtml(version.status)}</div>
+              </div>
+              <div>${version.latest ? '<span class="mini-tag latest">LATEST</span>' : ""}</div>
+            </div>
+            <div class="version-meta">${escapeHtml(version.category || "No category")} · ${escapeHtml(version.minecraft || "No MC version")}</div>
+            <div class="mini-tags">
+              ${version.download ? '<span class="mini-tag">link</span>' : ""}
+              ${version.description ? '<span class="mini-tag">description</span>' : ""}
+              ${version.changelog?.length ? `<span class="mini-tag">${version.changelog.length} notes</span>` : ""}
+            </div>
+          </button>
+        `;
+      }).join("");
+
+      list.querySelectorAll("[data-index]").forEach((button) => {
+        button.addEventListener("click", () => selectVersion(Number(button.dataset.index)));
+      });
+    }
+
+    function selectVersion(index) {
+      selectedIndex = Number.isInteger(index) ? index : null;
+      renderVersionList();
+      renderVersionForm();
+    }
+
+    function renderVersionForm() {
+      clearVersionErrors();
+      const version = selectedIndex == null ? createEmptyVersion() : draftData.plugin.versions[selectedIndex];
+      document.getElementById("editorLabel").textContent =
+        selectedIndex == null ? "Create a new release draft" : `Editing v${version.version || "draft"}`;
+      document.getElementById("vName").value = version.name || "";
+      document.getElementById("vVersion").value = version.version || "";
+      document.getElementById("vType").value = version.type || "stable";
+      document.getElementById("vLoader").value = version.loader || "PaperMC";
+      document.getElementById("vStatus").value = version.status || "success";
+      document.getElementById("vCategory").value = version.category || "";
+      document.getElementById("vMinecraft").value = version.minecraft || "";
+      document.getElementById("vDownload").value = version.download || "";
+      document.getElementById("vDescription").value = version.description || "";
+      document.getElementById("vChangelog").value = Array.isArray(version.changelog) ? version.changelog.join("\n") : "";
+      document.getElementById("vLatest").checked = Boolean(version.latest);
+      document.getElementById("deleteVersionBtn").disabled = selectedIndex == null;
+      document.getElementById("duplicateVersionBtn").disabled = selectedIndex == null;
+    }
+
+    function createEmptyVersion() {
+      return {
+        name: "",
+        version: "",
+        type: "stable",
+        latest: false,
+        status: "success",
+        loader: "PaperMC",
+        category: "",
+        minecraft: "",
+        description: "",
+        changelog: [],
+        download: "",
+      };
+    }
+
+    function readVersionForm() {
+      return {
+        name: stringValue(document.getElementById("vName").value),
+        version: stringValue(document.getElementById("vVersion").value),
+        type: document.getElementById("vType").value,
+        latest: document.getElementById("vLatest").checked,
+        status: document.getElementById("vStatus").value,
+        loader: document.getElementById("vLoader").value,
+        category: stringValue(document.getElementById("vCategory").value),
+        minecraft: stringValue(document.getElementById("vMinecraft").value),
+        description: stringValue(document.getElementById("vDescription").value),
+        changelog: document.getElementById("vChangelog").value
+          .split(/\r?\n/)
+          .map((item) => item.trim())
+          .filter(Boolean),
+        download: stringValue(document.getElementById("vDownload").value),
+      };
+    }
+
+    function validateVersion(version) {
+      clearVersionErrors();
+      let valid = true;
+
+      if (!version.name) {
+        setFieldError("vName", "err-vName");
+        valid = false;
+      }
+      if (!version.version) {
+        setFieldError("vVersion", "err-vVersion");
+        valid = false;
+      }
+      if (!isHttpsUrl(version.download)) {
+        setFieldError("vDownload", "err-vDownload");
+        valid = false;
+      }
+
+      const duplicateIndex = draftData.plugin.versions.findIndex((item, index) =>
+        item.version.toLowerCase() === version.version.toLowerCase() && index !== selectedIndex
+      );
+      if (duplicateIndex !== -1) {
+        document.getElementById("err-vVersion").textContent = "Version number must be unique.";
+        setFieldError("vVersion", "err-vVersion");
+        valid = false;
+      }
+
+      return valid;
+    }
+
+    function validatePluginDraft() {
+      const errors = [];
+      const plugin = draftData.plugin;
+      if (!plugin.name) errors.push("Plugin name is required.");
+      if (plugin.website && !isHttpsUrl(plugin.website)) errors.push("Website URL must use https.");
+      if (plugin.source && !isHttpsUrl(plugin.source)) errors.push("Source URL must use https.");
+      if ((plugin.versions || []).filter((version) => version.latest).length > 1) {
+        errors.push("Only one release can be marked as latest.");
+      }
+      (plugin.versions || []).forEach((version, index) => {
+        if (!version.name || !version.version || !isHttpsUrl(version.download)) {
+          errors.push(`Release ${index + 1} is incomplete. Apply a valid version draft before saving.`);
+        }
+      });
+      return errors;
+    }
+
+    function setFieldError(fieldId, errorId) {
+      document.getElementById(fieldId).classList.add("invalid");
+      document.getElementById(errorId).style.display = "block";
+    }
+
+    function clearVersionErrors() {
+      ["vName", "vVersion", "vDownload"].forEach((id) => {
+        document.getElementById(id).classList.remove("invalid");
+      });
+      ["err-vName", "err-vVersion", "err-vDownload"].forEach((id) => {
+        document.getElementById(id).style.display = "none";
+      });
+      document.getElementById("err-vVersion").textContent = "Version number is required.";
+    }
+
+    function isHttpsUrl(value) {
+      try {
+        const url = new URL(value);
+        return url.protocol === "https:";
+      } catch {
+        return false;
+      }
+    }
+
+    function applyVersionDraft() {
+      const version = readVersionForm();
+      if (!validateVersion(version)) return;
+
+      const versions = draftData.plugin.versions;
+      if (selectedIndex == null) {
+        versions.push(version);
+        selectedIndex = versions.length - 1;
+      } else {
+        versions[selectedIndex] = version;
+      }
+
+      if (version.latest) {
+        draftData.plugin.versions = versions.map((item, index) => ({
+          ...item,
+          latest: index === selectedIndex,
+        }));
+      }
+
+      if (version.category && !draftData.plugin.categories.includes(version.category)) {
+        draftData.plugin.categories.push(version.category);
+        draftData.plugin.categories.sort((a, b) => a.localeCompare(b));
+        renderPluginFields();
+      }
+
+      refreshCategoryOptions();
+      renderVersionList();
+      renderVersionForm();
+      markDirty(true);
+      document.getElementById("versionCount").textContent = `${draftData.plugin.versions.length} versions`;
+      toast(`Draft updated for v${version.version}.`, "good");
+    }
+
+    function duplicateSelectedVersion() {
+      if (selectedIndex == null) return;
+      const source = clone(draftData.plugin.versions[selectedIndex]);
+      source.latest = false;
+      source.version = source.version ? `${source.version}-copy` : "";
+      draftData.plugin.versions.push(source);
+      selectedIndex = draftData.plugin.versions.length - 1;
+      renderVersionList();
+      renderVersionForm();
+      markDirty(true);
+      toast("Release duplicated into a new draft entry.", "info");
+    }
+
+    function deleteSelectedVersion() {
+      if (selectedIndex == null) return;
+      const version = draftData.plugin.versions[selectedIndex];
+      if (!confirm(`Delete v${version.version || "draft"} from the draft?`)) return;
+      draftData.plugin.versions.splice(selectedIndex, 1);
+      selectedIndex = draftData.plugin.versions.length ? Math.min(selectedIndex, draftData.plugin.versions.length - 1) : null;
+      renderVersionList();
+      renderVersionForm();
+      markDirty(true);
+      document.getElementById("versionCount").textContent = `${draftData.plugin.versions.length} versions`;
+      toast("Release removed from draft.", "info");
+    }
+
+    function discardDraft() {
+      if (!isDirty) return;
+      if (!confirm("Discard all unpublished draft changes?")) return;
+      draftData = clone(currentData);
+      selectedIndex = draftData.plugin.versions.length ? 0 : null;
+      renderAll();
+      markDirty(false);
+      toast("Draft reset to last synced state.", "info");
+    }
+
+    async function saveAll() {
+      syncPluginFieldsFromForm();
+      const pluginErrors = validatePluginDraft();
+      if (pluginErrors.length) {
+        toast(pluginErrors[0], "bad");
+        setSaveState("bad", "Validation failed");
+        return;
+      }
+
+      saveAllBtn.disabled = true;
+      setSaveState("warn", "Saving to GitHub...");
+
+      try {
+        const response = await fetch(UPDATE_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Admin-Token": adminToken,
+          },
+          body: JSON.stringify({ plugin: draftData.plugin }),
+        });
+
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          const details = Array.isArray(result.details) && result.details.length ? ` ${result.details[0]}` : "";
+          throw new Error((result.error || `HTTP ${response.status}`) + details);
+        }
+
+        const synced = normalizeData(result.data || draftData);
+        currentData = clone(synced);
+        draftData = clone(synced);
+        selectedIndex = draftData.plugin.versions.length ? Math.min(selectedIndex ?? 0, draftData.plugin.versions.length - 1) : null;
+        renderAll();
+        markDirty(false);
+        setSaveState("good", "Saved to GitHub");
+        toast("All plugin data saved successfully.", "good");
+      } catch (error) {
+        setSaveState("bad", "Save failed");
+        toast(`Save failed: ${error.message}`, "bad");
+      } finally {
+        saveAllBtn.disabled = false;
+      }
+    }
+
+    function updateJsonPreview() {
+      document.getElementById("jsonPreview").textContent = JSON.stringify(draftData, null, 2);
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value).replace(/'/g, "&#39;");
+    }
+  </script>
 </body>
 </html>

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>SlimeFunCore — Plugin Hub</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>SlimeFunCore - Plugin Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
 :root{
   --bg:#080a0f;
@@ -18,262 +18,184 @@
   --accent:#00d4ff;
   --accent-dim:rgba(0,212,255,0.12);
   --accent2:#7c3aed;
-  --accent3:#10b981;
   --text:#f0f4ff;
   --text2:#8fa3cc;
   --text3:#4a5a7a;
   --green:#10b981;
   --yellow:#f59e0b;
   --red:#f43f5e;
-  --latest:#00d4ff;
   --mono:'JetBrains Mono',monospace;
   --sans:'Outfit',sans-serif;
-  --r:12px;--rs:8px;
+  --r:12px;
+  --rs:8px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
-
-/* ── Animated bg ── */
 body::before{
-  content:'';position:fixed;inset:0;
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
     radial-gradient(ellipse 80% 50% at 20% -10%,rgba(0,212,255,0.06) 0%,transparent 60%),
     radial-gradient(ellipse 60% 40% at 80% 110%,rgba(124,58,237,0.06) 0%,transparent 60%);
-  pointer-events:none;z-index:0;
 }
 body::after{
-  content:'';position:fixed;inset:0;
-  background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),
     linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);
   background-size:48px 48px;
-  pointer-events:none;z-index:0;
 }
-
-/* ── Header ── */
 header{
-  position:sticky;top:0;z-index:200;
+  position:sticky;top:0;z-index:10;height:64px;padding:0 2rem;
+  display:flex;align-items:center;justify-content:space-between;
   background:rgba(8,10,15,0.88);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
-  height:64px;padding:0 2rem;
-  display:flex;align-items:center;justify-content:space-between;
 }
 .hlogo{display:flex;align-items:center;gap:12px;}
-.hlogo-icon{
-  width:36px;height:36px;border-radius:10px;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
+.hlogo-icon,.hero-icon,.vcard-icon{
   display:flex;align-items:center;justify-content:center;
-  font-size:18px;box-shadow:0 0 20px rgba(0,212,255,0.3);
+  border:1px solid var(--border2);
 }
-.hlogo-name{font-size:1.1rem;font-weight:700;letter-spacing:-0.02em;color:var(--text);}
+.hlogo-icon{
+  width:36px;height:36px;border-radius:10px;font-size:18px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 0 20px rgba(0,212,255,0.28);
+}
+.hlogo-name{font-size:1.1rem;font-weight:700;letter-spacing:-0.02em;}
 .hlogo-ver{
   font-family:var(--mono);font-size:0.65rem;font-weight:600;
-  background:var(--accent-dim);color:var(--accent);
-  border:1px solid rgba(0,212,255,0.2);
-  padding:2px 8px;border-radius:20px;letter-spacing:0.04em;
+  color:var(--accent);background:var(--accent-dim);
+  border:1px solid rgba(0,212,255,0.2);padding:2px 8px;border-radius:999px;
 }
 .hnav{display:flex;align-items:center;gap:8px;}
 .hnav a,.hnav button{
-  font-family:var(--mono);font-size:0.72rem;font-weight:600;
-  background:var(--surface);border:1px solid var(--border2);
-  color:var(--text2);padding:7px 14px;border-radius:var(--rs);
-  cursor:pointer;text-decoration:none;transition:all 0.2s;letter-spacing:0.03em;
+  font-family:var(--mono);font-size:0.72rem;font-weight:600;letter-spacing:0.03em;
+  background:var(--surface);border:1px solid var(--border2);color:var(--text2);
+  padding:7px 14px;border-radius:var(--rs);cursor:pointer;text-decoration:none;
+  transition:all 0.2s;
 }
 .hnav a:hover,.hnav button:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
-
-/* ── Hero ── */
 .hero{
-  position:relative;z-index:1;
-  padding:4rem 2rem 2rem;max-width:1200px;margin:0 auto;
+  position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:4rem 2rem 2rem;
 }
 .hero-top{display:flex;align-items:flex-start;gap:2rem;margin-bottom:2.5rem;}
 .hero-icon{
-  width:80px;height:80px;border-radius:20px;flex-shrink:0;
+  width:80px;height:80px;border-radius:20px;flex-shrink:0;font-size:36px;
   background:linear-gradient(135deg,#0d1017 0%,#1c2438 100%);
-  border:1px solid var(--border2);
-  display:flex;align-items:center;justify-content:center;
-  font-size:36px;box-shadow:0 8px 32px rgba(0,0,0,0.4);
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);
 }
-.hero-info{flex:1;}
 .hero-title{
-  font-size:2.4rem;font-weight:800;letter-spacing:-0.04em;
-  color:var(--text);margin-bottom:0.5rem;line-height:1.1;
+  font-size:2.4rem;font-weight:800;letter-spacing:-0.04em;line-height:1.1;margin-bottom:0.5rem;
 }
 .hero-title span{
   background:linear-gradient(135deg,var(--accent),var(--accent2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.hero-desc{font-size:1rem;color:var(--text2);line-height:1.6;margin-bottom:1rem;max-width:600px;}
+.hero-desc{font-size:1rem;color:var(--text2);line-height:1.6;max-width:640px;margin-bottom:1rem;}
 .hero-tags{display:flex;flex-wrap:wrap;gap:8px;}
 .hero-tag{
-  display:flex;align-items:center;gap:6px;
-  font-family:var(--mono);font-size:0.7rem;font-weight:600;
-  background:var(--surface2);border:1px solid var(--border);
-  color:var(--text2);padding:5px 12px;border-radius:20px;
+  display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;
+  font-family:var(--mono);font-size:0.7rem;font-weight:600;text-decoration:none;
+  background:var(--surface2);border:1px solid var(--border);color:var(--text2);
 }
-.hero-tag svg{width:12px;height:12px;opacity:0.7;}
-
 .hero-stats{
   display:grid;grid-template-columns:repeat(4,1fr);gap:12px;
-  margin-bottom:2rem;
 }
 .stat-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-  padding:1rem 1.25rem;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;
 }
-.stat-val{font-size:1.5rem;font-weight:800;color:var(--text);letter-spacing:-0.03em;}
+.stat-val{font-size:1.4rem;font-weight:800;letter-spacing:-0.03em;}
 .stat-val.accent{color:var(--accent);}
-.stat-label{font-family:var(--mono);font-size:0.62rem;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-top:3px;}
-
-/* ── Layout ── */
+.stat-label{
+  margin-top:4px;font-family:var(--mono);font-size:0.62rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--text3);
+}
 .main-layout{
-  position:relative;z-index:1;
-  display:grid;grid-template-columns:240px 1fr;gap:0;
+  position:relative;z-index:1;display:grid;grid-template-columns:240px 1fr;
   max-width:1200px;margin:0 auto;padding:0 2rem 4rem;
 }
-
-/* ── Sidebar ── */
 .sidebar{
-  padding-right:1.5rem;
-  position:sticky;top:80px;
-  height:calc(100vh - 100px);overflow-y:auto;
+  padding-right:1.5rem;position:sticky;top:80px;height:calc(100vh - 100px);overflow-y:auto;
 }
 .sb-section{margin-bottom:1.5rem;}
 .sb-label{
-  font-family:var(--mono);font-size:0.6rem;font-weight:700;
-  letter-spacing:0.12em;text-transform:uppercase;
-  color:var(--text3);margin-bottom:8px;
-  padding-left:4px;
+  margin-bottom:8px;padding-left:4px;font-family:var(--mono);font-size:0.6rem;font-weight:700;
+  color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;
 }
+.cat-pills{display:flex;flex-direction:column;gap:4px;}
+.cat-pill{
+  display:flex;align-items:center;justify-content:space-between;width:100%;
+  padding:7px 10px;border-radius:var(--rs);cursor:pointer;
+  border:1px solid var(--border);background:var(--surface);color:var(--text2);
+  font:500 0.78rem var(--sans);transition:all 0.15s;
+}
+.cat-pill:hover{border-color:var(--border2);color:var(--text);}
+.cat-pill.active{background:var(--accent-dim);border-color:rgba(0,212,255,0.3);color:var(--accent);}
+.cat-count{
+  font-family:var(--mono);font-size:0.6rem;padding:1px 6px;border-radius:999px;
+  background:var(--surface3);color:var(--text3);
+}
+.cat-pill.active .cat-count{background:rgba(0,212,255,0.15);color:var(--accent);}
 .sb-item{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 10px;border-radius:var(--rs);
-  cursor:pointer;transition:all 0.15s;
-  border:1px solid transparent;margin-bottom:2px;
-  text-decoration:none;
+  display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--rs);
+  border:1px solid transparent;text-decoration:none;color:inherit;transition:all 0.15s;
 }
 .sb-item:hover{background:var(--surface2);border-color:var(--border);}
-.sb-item.active{background:var(--accent-dim);border-color:rgba(0,212,255,0.25);}
 .sb-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
 .dot-ok{background:var(--green);}
 .dot-warn{background:var(--yellow);}
 .dot-err{background:var(--red);}
 .sb-info{flex:1;min-width:0;}
-.sb-ver{font-family:var(--mono);font-size:0.75rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-ver{font-family:var(--mono);font-size:0.75rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sb-sub{font-size:0.62rem;color:var(--text3);margin-top:1px;}
 .sb-badge-latest{
-  font-family:var(--mono);font-size:0.55rem;font-weight:700;
-  background:rgba(0,212,255,0.12);color:var(--accent);
-  border:1px solid rgba(0,212,255,0.25);
-  padding:1px 5px;border-radius:3px;flex-shrink:0;
+  font-family:var(--mono);font-size:0.55rem;font-weight:700;padding:1px 5px;border-radius:4px;
+  background:rgba(0,212,255,0.12);color:var(--accent);border:1px solid rgba(0,212,255,0.25);
 }
-
-/* Category filter */
-.cat-pills{display:flex;flex-direction:column;gap:4px;}
-.cat-pill{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:7px 10px;border-radius:var(--rs);
-  cursor:pointer;transition:all 0.15s;
-  border:1px solid var(--border);background:var(--surface);
-  font-size:0.78rem;font-weight:500;color:var(--text2);
-}
-.cat-pill:hover{border-color:var(--border2);color:var(--text);}
-.cat-pill.active{background:var(--accent-dim);border-color:rgba(0,212,255,0.3);color:var(--accent);}
-.cat-count{
-  font-family:var(--mono);font-size:0.6rem;
-  background:var(--surface3);color:var(--text3);
-  padding:1px 6px;border-radius:10px;
-}
-.cat-pill.active .cat-count{background:rgba(0,212,255,0.15);color:var(--accent);}
-
-/* ── Main content ── */
-.content{min-width:0;}
-
-/* Filter bar */
 .filter-bar{
-  display:flex;align-items:center;gap:10px;
-  margin-bottom:1.5rem;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r);padding:10px 14px;
+  display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;padding:10px 14px;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
 }
-.search-wrap{flex:1;display:flex;align-items:center;gap:8px;}
-.search-icon{color:var(--text3);font-size:14px;flex-shrink:0;}
+.search-wrap{display:flex;align-items:center;gap:8px;flex:1;}
 .search-input{
-  flex:1;background:none;border:none;outline:none;
-  font-family:var(--sans);font-size:0.85rem;color:var(--text);
+  width:100%;background:none;border:none;outline:none;color:var(--text);
+  font:400 0.85rem var(--sans);
 }
 .search-input::placeholder{color:var(--text3);}
 .filter-divider{width:1px;height:20px;background:var(--border2);}
 .filter-select{
-  background:var(--surface2);border:1px solid var(--border2);
-  border-radius:var(--rs);color:var(--text2);
-  font-family:var(--mono);font-size:0.72rem;
-  padding:6px 10px;outline:none;cursor:pointer;
+  background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);
+  color:var(--text2);padding:6px 10px;outline:none;cursor:pointer;
+  font:400 0.72rem var(--mono);
 }
-
-/* Section header */
 .section-head{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:1rem;
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;
 }
-.section-title{
-  font-family:var(--mono);font-size:0.65rem;font-weight:700;
-  letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);
-  display:flex;align-items:center;gap:8px;
+.section-title,.result-count{
+  font-family:var(--mono);font-size:0.68rem;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;
 }
-.section-title::after{content:'';width:60px;height:1px;background:var(--border);}
-.result-count{font-family:var(--mono);font-size:0.7rem;color:var(--text3);}
-
-/* ── Version Cards ── */
 .cards-list{display:flex;flex-direction:column;gap:12px;}
-
 .vcard{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r);padding:1.5rem;
-  position:relative;overflow:hidden;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;
+  position:relative;overflow:hidden;animation:fadeUp 0.25s ease both;scroll-margin-top:90px;
   transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s;
-  animation:fadeUp 0.3s ease both;
-  scroll-margin-top:90px;
 }
-.vcard::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,0.015) 0%,transparent 60%);
-  pointer-events:none;
-}
-.vcard:hover{
-  border-color:var(--border2);
-  transform:translateY(-2px);
-  box-shadow:0 8px 32px rgba(0,0,0,0.3);
-}
-.vcard.is-latest{
-  border-color:rgba(0,212,255,0.3);
-  box-shadow:0 0 0 1px rgba(0,212,255,0.08);
-}
+.vcard:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+.vcard.is-latest{border-color:rgba(0,212,255,0.3);box-shadow:0 0 0 1px rgba(0,212,255,0.08);}
 .vcard.is-latest::after{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  content:"";position:absolute;top:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,var(--accent),transparent 70%);
 }
-
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-
-/* Card top row */
 .vcard-top{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem;}
 .vcard-icon{
-  width:48px;height:48px;border-radius:10px;flex-shrink:0;
-  background:var(--surface3);border:1px solid var(--border2);
-  display:flex;align-items:center;justify-content:center;font-size:22px;
+  width:48px;height:48px;border-radius:10px;flex-shrink:0;font-size:22px;background:var(--surface3);
 }
 .vcard-head{flex:1;min-width:0;}
-.vcard-name{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:3px;}
+.vcard-name{font-size:1rem;font-weight:700;margin-bottom:3px;}
 .vcard-version{font-family:var(--mono);font-size:0.75rem;color:var(--text3);}
-.vcard-badges{display:flex;flex-wrap:wrap;gap:5px;margin-left:auto;flex-shrink:0;}
-
-/* Badges */
+.vcard-badges{display:flex;flex-wrap:wrap;gap:5px;margin-left:auto;}
 .badge{
-  display:inline-flex;align-items:center;gap:4px;
-  font-family:var(--mono);font-size:0.62rem;font-weight:700;
-  padding:3px 8px;border-radius:4px;border:1px solid;
-  letter-spacing:0.03em;
+  display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;border:1px solid;
+  font-family:var(--mono);font-size:0.62rem;font-weight:700;letter-spacing:0.03em;
 }
 .b-latest{background:rgba(0,212,255,0.1);color:var(--accent);border-color:rgba(0,212,255,0.25);}
 .b-stable{background:rgba(16,185,129,0.1);color:var(--green);border-color:rgba(16,185,129,0.25);}
@@ -283,104 +205,62 @@ header{
 .b-fail{background:rgba(244,63,94,0.08);color:var(--red);border-color:rgba(244,63,94,0.2);}
 .b-cat{background:rgba(124,58,237,0.1);color:#a78bfa;border-color:rgba(124,58,237,0.25);}
 .b-mc{background:rgba(255,255,255,0.05);color:var(--text2);border-color:var(--border2);}
-
-/* Description */
-.vcard-desc{
-  font-size:0.85rem;color:var(--text2);line-height:1.6;
-  margin-bottom:1rem;
-  padding-left:0;
-}
-
-/* Changelog */
+.vcard-desc{font-size:0.85rem;line-height:1.6;color:var(--text2);margin-bottom:1rem;}
 .vcard-changelog{
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:var(--rs);padding:10px 14px;
-  margin-bottom:1rem;
+  margin-bottom:1rem;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);
 }
 .changelog-title{
-  font-family:var(--mono);font-size:0.6rem;font-weight:700;
-  letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);
-  margin-bottom:6px;
+  margin-bottom:6px;font-family:var(--mono);font-size:0.6rem;font-weight:700;color:var(--text3);
+  letter-spacing:0.08em;text-transform:uppercase;
 }
 .changelog-list{list-style:none;display:flex;flex-direction:column;gap:4px;}
-.changelog-list li{
-  font-size:0.78rem;color:var(--text2);
-  display:flex;align-items:baseline;gap:6px;
-}
-.changelog-list li::before{content:'→';color:var(--accent);font-family:var(--mono);font-size:0.7rem;flex-shrink:0;}
-
-/* Meta row */
+.changelog-list li{display:flex;align-items:baseline;gap:6px;font-size:0.78rem;color:var(--text2);}
+.changelog-list li::before{content:"→";color:var(--accent);font-family:var(--mono);font-size:0.7rem;}
 .vcard-meta{
-  display:flex;flex-wrap:wrap;gap:1.5rem;
-  padding:10px 0;
+  display:flex;flex-wrap:wrap;gap:1.5rem;padding:10px 0;margin-bottom:1rem;
   border-top:1px solid var(--border);border-bottom:1px solid var(--border);
-  margin-bottom:1rem;
 }
-.meta-item{}
-.meta-label{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);}
-.meta-val{font-family:var(--mono);font-size:0.78rem;font-weight:600;color:var(--text2);margin-top:2px;}
-
-/* Actions */
-.vcard-actions{display:flex;align-items:center;gap:8px;}
+.meta-label{
+  font-family:var(--mono);font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);
+}
+.meta-val{margin-top:2px;font-family:var(--mono);font-size:0.78rem;font-weight:600;color:var(--text2);}
+.vcard-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .btn-dl{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:9px 20px;border-radius:var(--rs);
-  font-family:var(--mono);font-size:0.75rem;font-weight:700;
-  text-decoration:none;border:none;cursor:pointer;
-  transition:all 0.2s;letter-spacing:0.02em;
+  display:inline-flex;align-items:center;gap:7px;padding:9px 20px;border-radius:var(--rs);
+  font-family:var(--mono);font-size:0.75rem;font-weight:700;letter-spacing:0.02em;
+  text-decoration:none;transition:all 0.2s;
 }
-.btn-primary{
-  background:linear-gradient(135deg,var(--accent),#0099cc);
-  color:#000;box-shadow:0 4px 16px rgba(0,212,255,0.25);
-}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#0099cc);color:#000;box-shadow:0 4px 16px rgba(0,212,255,0.25);}
 .btn-primary:hover{box-shadow:0 6px 24px rgba(0,212,255,0.4);transform:translateY(-1px);}
-.btn-secondary{
-  background:var(--surface2);color:var(--text2);
-  border:1px solid var(--border2);
-}
+.btn-secondary{background:var(--surface2);color:var(--text2);border:1px solid var(--border2);}
 .btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
-.btn-ghost{
-  background:none;color:var(--text3);border:1px solid var(--border);
-  padding:9px 14px;
-}
+.btn-ghost{background:none;color:var(--text3);border:1px solid var(--border);padding:9px 14px;}
 .btn-ghost:hover{border-color:var(--border2);color:var(--text2);}
-
-/* Empty state */
-.empty{
-  text-align:center;padding:4rem 2rem;color:var(--text3);
-}
-.empty-icon{font-size:3rem;margin-bottom:1rem;opacity:0.4;}
+.loading,.empty{display:flex;align-items:center;justify-content:center;gap:12px;padding:3rem;color:var(--text3);}
+.empty{flex-direction:column;text-align:center;}
 .empty-text{font-family:var(--mono);font-size:0.85rem;}
-
-/* Loading */
-.loading{display:flex;align-items:center;justify-content:center;gap:12px;padding:3rem;color:var(--text3);}
 .spinner{width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-
-/* Error */
 .error-box{
-  background:rgba(244,63,94,0.06);border:1px solid rgba(244,63,94,0.2);
-  border-radius:var(--r);padding:1rem 1.5rem;
-  font-family:var(--mono);font-size:0.78rem;color:var(--red);
+  background:rgba(244,63,94,0.06);border:1px solid rgba(244,63,94,0.2);border-radius:var(--r);
+  padding:1rem 1.5rem;font-family:var(--mono);font-size:0.78rem;color:var(--red);
 }
-
-/* Scrollbar */
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
-
 @media(max-width:900px){
-  .main-layout{grid-template-columns:1fr;}
-  .sidebar{display:none;}
-  .hero-stats{grid-template-columns:repeat(2,1fr);}
   header{padding:0 1rem;}
   .hero{padding:2rem 1rem 1.5rem;}
-  .main-layout{padding:0 1rem 3rem;}
+  .hero-top{flex-direction:column;}
+  .hero-stats{grid-template-columns:repeat(2,1fr);}
+  .main-layout{grid-template-columns:1fr;padding:0 1rem 3rem;}
+  .sidebar{display:none;}
+  .filter-bar{flex-wrap:wrap;}
 }
 </style>
 </head>
 <body>
-
 <header>
   <div class="hlogo">
     <div class="hlogo-icon">⚡</div>
@@ -388,7 +268,7 @@ header{
     <span class="hlogo-ver" id="hLatestVer">—</span>
   </div>
   <nav class="hnav">
-    <button onclick="loadData()">↻ Refresh</button>
+    <button type="button" onclick="loadData()">↻ Refresh</button>
     <a id="hSourceLink" href="#" target="_blank" rel="noopener">⌥ Source</a>
     <a href="admin.html">⚙ Admin</a>
   </nav>
@@ -427,11 +307,7 @@ header{
   <aside class="sidebar">
     <div class="sb-section">
       <div class="sb-label">Categories</div>
-      <div class="cat-pills" id="catPills">
-        <div class="cat-pill active" data-cat="all" onclick="filterCat('all')">
-          All Releases <span class="cat-count" id="cnt-all">0</span>
-        </div>
-      </div>
+      <div class="cat-pills" id="catPills"></div>
     </div>
     <div class="sb-section">
       <div class="sb-label">Versions</div>
@@ -442,8 +318,8 @@ header{
   <main class="content">
     <div class="filter-bar">
       <div class="search-wrap">
-        <span class="search-icon">⌕</span>
-        <input class="search-input" id="searchInput" placeholder="Search versions, loaders, types..." oninput="applyFilters()"/>
+        <span>⌕</span>
+        <input class="search-input" id="searchInput" placeholder="Search versions, loaders, types..." oninput="applyFilters()" />
       </div>
       <div class="filter-divider"></div>
       <select class="filter-select" id="typeFilter" onchange="applyFilters()">
@@ -477,173 +353,232 @@ header{
 </div>
 
 <script>
-const LOADER_ICONS={PaperMC:'📄',Bukkit:'🪣',Purpur:'💜'};
-const STATUS_ICONS={success:'●',fail:'✕',maintenance:'⚙'};
-const CAT_ICONS={'Core':'⚡','Addon':'🧩','Utility':'🔧','Magic':'✨','Tech':'⚙'};
+const LOADER_ICONS = { PaperMC: "📄", Bukkit: "🪣", Purpur: "💎" };
+const STATUS_ICONS = { success: "●", fail: "✕", maintenance: "⚙" };
+const CAT_ICONS = { Core: "⚡", Addon: "🧩", Utility: "🔧", Magic: "✨", Tech: "⚙" };
 
-let allData=null;
-let activeCat='all';
+let allData = null;
+let activeCat = "all";
 
-async function loadData(){
-  const list=document.getElementById('cardsList');
-  list.innerHTML='<div class="loading"><div class="spinner"></div><span>Fetching releases...</span></div>';
-  try{
-    const res=await fetch('/.netlify/functions/api');
-    if(!res.ok)throw new Error('API error: '+res.status);
-    allData=await res.json();
+document.getElementById("catPills").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-cat]");
+  if (button) filterCat(button.dataset.cat || "all");
+});
+
+async function loadData() {
+  const list = document.getElementById("cardsList");
+  list.innerHTML = '<div class="loading"><div class="spinner"></div><span>Fetching releases...</span></div>';
+  try {
+    const response = await fetch("/.netlify/functions/api");
+    if (!response.ok) throw new Error(`API error: ${response.status}`);
+    allData = await response.json();
     renderAll(allData);
-  }catch(err){
-    console.error('[Dashboard]',err);
-    list.innerHTML=`<div class="error-box">⚠ Failed to load plugin data: ${esc(err.message)}</div>`;
+  } catch (error) {
+    console.error("[Dashboard]", error);
+    list.innerHTML = `<div class="error-box">⚠ Failed to load plugin data: ${esc(error.message)}</div>`;
   }
 }
 
-function renderAll(data){
-  const p=data.plugin;
-  const versions=p.versions||[];
-  const cats=p.categories||[];
+function renderAll(data) {
+  const plugin = data?.plugin || {};
+  const versions = Array.isArray(plugin.versions) ? plugin.versions : [];
+  const categories = Array.isArray(plugin.categories) ? plugin.categories.filter(Boolean) : [];
+  const latest = versions.find((version) => version.latest);
+  const sourceLink = document.getElementById("hSourceLink");
+  const safeSource = toSafeExternalUrl(plugin.source);
 
-  // Header
-  document.title=(p.name||'Plugin')+' — Plugin Hub';
-  document.getElementById('hPluginName').textContent=p.name||'Plugin';
-  const latest=versions.find(v=>v.latest);
-  document.getElementById('hLatestVer').textContent=latest?'v'+latest.version:'—';
-  if(p.source)document.getElementById('hSourceLink').href=p.source;
+  document.title = `${plugin.name || "Plugin"} - Plugin Hub`;
+  document.getElementById("hPluginName").textContent = plugin.name || "Plugin";
+  document.getElementById("hLatestVer").textContent = latest ? `v${latest.version}` : "—";
+  document.getElementById("heroName").textContent = plugin.name || "Plugin";
+  document.getElementById("heroDesc").textContent = plugin.description || "No description provided.";
 
-  // Hero
-  document.getElementById('heroName').textContent=p.name||'Plugin';
-  document.getElementById('heroDesc').textContent=p.description||'No description provided.';
+  sourceLink.href = safeSource || "#";
+  sourceLink.style.pointerEvents = safeSource ? "auto" : "none";
+  sourceLink.style.opacity = safeSource ? "1" : "0.5";
 
-  const tagsEl=document.getElementById('heroTags');
-  const tagDefs=[
-    {icon:'👤',val:p.author},
-    {icon:'🔗',val:p.website,link:p.website},
-    {icon:'📦',val:versions.length+' releases'},
-    {icon:'🏷',val:cats.length+' categories'},
+  const discoveredCategories = uniqueValues(versions.map((version) => version.category));
+  const tagItems = [
+    { icon: "👤", value: plugin.author },
+    { icon: "🔗", value: plugin.website, link: toSafeExternalUrl(plugin.website) },
+    { icon: "📦", value: `${versions.length} releases` },
+    { icon: "🏷", value: `${(categories.length || discoveredCategories.length)} categories` },
   ];
-  tagsEl.innerHTML=tagDefs.filter(t=>t.val).map(t=>
-    t.link
-      ?`<a class="hero-tag" href="${esc(t.link)}" target="_blank" rel="noopener">${t.icon} ${esc(t.val)}</a>`
-      :`<span class="hero-tag">${t.icon} ${esc(t.val)}</span>`
-  ).join('');
 
-  // Stats
-  const loaders=[...new Set(versions.map(v=>v.loader).filter(Boolean))];
-  document.getElementById('statTotal').textContent=versions.length;
-  document.getElementById('statLatest').textContent=latest?'v'+latest.version:'—';
-  document.getElementById('statCategories').textContent=cats.length||[...new Set(versions.map(v=>v.category).filter(Boolean))].length||'—';
-  document.getElementById('statLoaders').textContent=loaders.join(', ')||'—';
+  document.getElementById("heroTags").innerHTML = tagItems
+    .filter((item) => item.value)
+    .map((item) => item.link
+      ? `<a class="hero-tag" href="${escAttr(item.link)}" target="_blank" rel="noopener">${item.icon} ${esc(item.value)}</a>`
+      : `<span class="hero-tag">${item.icon} ${esc(item.value)}</span>`)
+    .join("");
 
-  // Category pills
-  const usedCats=['all',...(cats.length?cats:[...new Set(versions.map(v=>v.category).filter(Boolean))])];
-  const catPills=document.getElementById('catPills');
-  catPills.innerHTML=usedCats.map(c=>{
-    const count=c==='all'?versions.length:versions.filter(v=>v.category===c).length;
-    return `<div class="cat-pill ${activeCat===c?'active':''}" data-cat="${esc(c)}" onclick="filterCat('${esc(c)}')">${c==='all'?'🗂 All':((CAT_ICONS[c]||'📦')+' '+c)} <span class="cat-count" id="cnt-${esc(c)}">${count}</span></div>`;
-  }).join('');
+  const loaders = uniqueValues(versions.map((version) => version.loader));
+  document.getElementById("statTotal").textContent = versions.length;
+  document.getElementById("statLatest").textContent = latest ? `v${latest.version}` : "—";
+  document.getElementById("statCategories").textContent = categories.length || discoveredCategories.length || "—";
+  document.getElementById("statLoaders").textContent = loaders.join(", ") || "—";
 
-  // Sidebar versions
-  const sb=document.getElementById('sidebarVersions');
-  const sorted=[...versions].sort((a,b)=>(b.latest?1:0)-(a.latest?1:0));
-  sb.innerHTML=sorted.map((v,i)=>`
-    <a class="sb-item" href="#vcard-${i}">
-      <span class="sb-dot dot-${v.status==='success'?'ok':v.status==='fail'?'err':'warn'}"></span>
-      <div class="sb-info">
-        <div class="sb-ver">v${esc(v.version)}</div>
-        <div class="sb-sub">${esc(v.category||v.type||'')}</div>
-      </div>
-      ${v.latest?'<span class="sb-badge-latest">LATEST</span>':''}
-    </a>
-  `).join('');
-
+  renderCategoryButtons(categories.length ? categories : discoveredCategories, versions);
+  renderSidebarVersions(versions);
   applyFilters();
 }
 
-function filterCat(cat){
-  activeCat=cat;
-  document.querySelectorAll('.cat-pill').forEach(p=>{
-    p.classList.toggle('active',p.dataset.cat===cat);
+function renderCategoryButtons(categories, versions) {
+  const items = ["all", ...categories];
+  document.getElementById("catPills").innerHTML = items.map((category) => {
+    const count = category === "all" ? versions.length : versions.filter((version) => version.category === category).length;
+    const label = category === "all" ? "🗂 All Releases" : `${CAT_ICONS[category] || "📦"} ${esc(category)}`;
+    return `<button type="button" class="cat-pill ${activeCat === category ? "active" : ""}" data-cat="${escAttr(category)}">${label}<span class="cat-count">${count}</span></button>`;
+  }).join("");
+}
+
+function renderSidebarVersions(versions) {
+  const sorted = [...versions].sort((a, b) => Number(b.latest) - Number(a.latest));
+  document.getElementById("sidebarVersions").innerHTML = sorted.map((version) => {
+    const originalIndex = versions.indexOf(version);
+    const dotClass = version.status === "success" ? "ok" : version.status === "fail" ? "err" : "warn";
+    return `
+      <a class="sb-item" href="#vcard-${originalIndex}">
+        <span class="sb-dot dot-${dotClass}"></span>
+        <div class="sb-info">
+          <div class="sb-ver">v${esc(version.version)}</div>
+          <div class="sb-sub">${esc(version.category || version.type || "")}</div>
+        </div>
+        ${version.latest ? '<span class="sb-badge-latest">LATEST</span>' : ""}
+      </a>
+    `;
+  }).join("");
+}
+
+function filterCat(category) {
+  activeCat = category;
+  document.querySelectorAll(".cat-pill").forEach((pill) => {
+    pill.classList.toggle("active", pill.dataset.cat === category);
   });
   applyFilters();
 }
 
-function applyFilters(){
-  if(!allData)return;
-  const versions=allData.plugin.versions||[];
-  const search=document.getElementById('searchInput').value.toLowerCase();
-  const type=document.getElementById('typeFilter').value;
-  const status=document.getElementById('statusFilter').value;
-  const loader=document.getElementById('loaderFilter').value;
+function applyFilters() {
+  if (!allData?.plugin) return;
+  const versions = Array.isArray(allData.plugin.versions) ? allData.plugin.versions : [];
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  const type = document.getElementById("typeFilter").value;
+  const status = document.getElementById("statusFilter").value;
+  const loader = document.getElementById("loaderFilter").value;
 
-  let filtered=versions.filter(v=>{
-    if(activeCat!=='all'&&v.category!==activeCat)return false;
-    if(type!=='all'&&v.type!==type)return false;
-    if(status!=='all'&&v.status!==status)return false;
-    if(loader!=='all'&&v.loader!==loader)return false;
-    if(search){
-      const hay=(v.name+v.version+v.loader+v.type+v.status+(v.description||'')+(v.category||'')).toLowerCase();
-      if(!hay.includes(search))return false;
-    }
-    return true;
-  });
+  const filtered = versions.filter((version) => {
+    if (activeCat !== "all" && version.category !== activeCat) return false;
+    if (type !== "all" && version.type !== type) return false;
+    if (status !== "all" && version.status !== status) return false;
+    if (loader !== "all" && version.loader !== loader) return false;
+    if (!search) return true;
 
-  // Latest first
-  filtered.sort((a,b)=>(b.latest?1:0)-(a.latest?1:0));
+    const haystack = [
+      version.name,
+      version.version,
+      version.loader,
+      version.type,
+      version.status,
+      version.description,
+      version.category,
+      version.minecraft,
+      Array.isArray(version.changelog) ? version.changelog.join(" ") : "",
+    ].filter(Boolean).join(" ").toLowerCase();
 
-  document.getElementById('resultCount').textContent=`${filtered.length} result${filtered.length!==1?'s':''}`;
+    return haystack.includes(search);
+  }).sort((a, b) => Number(b.latest) - Number(a.latest));
+
+  document.getElementById("resultCount").textContent = `${filtered.length} result${filtered.length === 1 ? "" : "s"}`;
   renderCards(filtered, versions);
 }
 
-function renderCards(filtered, allVersions){
-  const list=document.getElementById('cardsList');
-  if(!filtered.length){
-    list.innerHTML=`<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">No releases match your filters.</div></div>`;
+function renderCards(filtered, allVersions) {
+  const list = document.getElementById("cardsList");
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty"><div style="font-size:3rem;opacity:0.4;">🔍</div><div class="empty-text">No releases match your filters.</div></div>';
     return;
   }
-  list.innerHTML=filtered.map((v,i)=>{
-    const origIdx=allVersions.indexOf(v);
-    const changelog=Array.isArray(v.changelog)&&v.changelog.length
-      ?`<div class="vcard-changelog">
+
+  list.innerHTML = filtered.map((version, index) => {
+    const originalIndex = allVersions.indexOf(version);
+    const changelog = Array.isArray(version.changelog) && version.changelog.length
+      ? `
+        <div class="vcard-changelog">
           <div class="changelog-title">Changelog</div>
-          <ul class="changelog-list">${v.changelog.map(c=>`<li>${esc(c)}</li>`).join('')}</ul>
-        </div>`:'';
+          <ul class="changelog-list">${version.changelog.map((entry) => `<li>${esc(entry)}</li>`).join("")}</ul>
+        </div>
+      `
+      : "";
+
     return `
-    <div class="vcard ${v.latest?'is-latest':''}" id="vcard-${origIdx}" style="animation-delay:${i*0.05}s">
-      <div class="vcard-top">
-        <div class="vcard-icon">${LOADER_ICONS[v.loader]||'🔌'}</div>
-        <div class="vcard-head">
-          <div class="vcard-name">${esc(v.name)}</div>
-          <div class="vcard-version">v${esc(v.version)}</div>
+      <div class="vcard ${version.latest ? "is-latest" : ""}" id="vcard-${originalIndex}" style="animation-delay:${index * 0.05}s">
+        <div class="vcard-top">
+          <div class="vcard-icon">${LOADER_ICONS[version.loader] || "🔌"}</div>
+          <div class="vcard-head">
+            <div class="vcard-name">${esc(version.name)}</div>
+            <div class="vcard-version">v${esc(version.version)}</div>
+          </div>
+          <div class="vcard-badges">
+            ${version.latest ? '<span class="badge b-latest">★ LATEST</span>' : ""}
+            <span class="badge ${version.type === "stable" ? "b-stable" : "b-pre"}">${version.type === "stable" ? "Stable" : "Pre-Release"}</span>
+            <span class="badge ${version.status === "success" ? "b-ok" : version.status === "fail" ? "b-fail" : "b-maint"}">${STATUS_ICONS[version.status] || ""} ${esc(version.status)}</span>
+            ${version.category ? `<span class="badge b-cat">${CAT_ICONS[version.category] || "📦"} ${esc(version.category)}</span>` : ""}
+            ${version.minecraft ? `<span class="badge b-mc">MC ${esc(version.minecraft)}</span>` : ""}
+          </div>
         </div>
-        <div class="vcard-badges">
-          ${v.latest?'<span class="badge b-latest">★ LATEST</span>':''}
-          <span class="badge ${v.type==='stable'?'b-stable':'b-pre'}">${v.type==='stable'?'Stable':'Pre-Release'}</span>
-          <span class="badge ${v.status==='success'?'b-ok':v.status==='fail'?'b-fail':'b-maint'}">${STATUS_ICONS[v.status]||''} ${esc(v.status)}</span>
-          ${v.category?`<span class="badge b-cat">${CAT_ICONS[v.category]||'📦'} ${esc(v.category)}</span>`:''}
-          ${v.minecraft?`<span class="badge b-mc">MC ${esc(v.minecraft)}</span>`:''}
+        ${version.description ? `<div class="vcard-desc">${esc(version.description)}</div>` : ""}
+        ${changelog}
+        <div class="vcard-meta">
+          <div class="meta-item"><div class="meta-label">Loader</div><div class="meta-val">${esc(version.loader || "—")}</div></div>
+          <div class="meta-item"><div class="meta-label">Type</div><div class="meta-val">${esc(version.type || "—")}</div></div>
+          <div class="meta-item"><div class="meta-label">Status</div><div class="meta-val">${esc(version.status || "—")}</div></div>
+          ${version.category ? `<div class="meta-item"><div class="meta-label">Category</div><div class="meta-val">${esc(version.category)}</div></div>` : ""}
+          ${version.minecraft ? `<div class="meta-item"><div class="meta-label">Minecraft</div><div class="meta-val">${esc(version.minecraft)}</div></div>` : ""}
+        </div>
+        <div class="vcard-actions">
+          ${renderDownloadActions(version)}
         </div>
       </div>
-      ${v.description?`<div class="vcard-desc">${esc(v.description)}</div>`:''}
-      ${changelog}
-      <div class="vcard-meta">
-        <div class="meta-item"><div class="meta-label">Loader</div><div class="meta-val">${esc(v.loader||'—')}</div></div>
-        <div class="meta-item"><div class="meta-label">Type</div><div class="meta-val">${esc(v.type||'—')}</div></div>
-        <div class="meta-item"><div class="meta-label">Status</div><div class="meta-val">${esc(v.status||'—')}</div></div>
-        ${v.category?`<div class="meta-item"><div class="meta-label">Category</div><div class="meta-val">${esc(v.category)}</div></div>`:''}
-        ${v.minecraft?`<div class="meta-item"><div class="meta-label">Minecraft</div><div class="meta-val">${esc(v.minecraft)}</div></div>`:''}
-      </div>
-      <div class="vcard-actions">
-        <a href="${esc(v.download)}" target="_blank" rel="noopener" class="btn-dl ${v.latest?'btn-primary':'btn-secondary'}">
-          ⬇ Download${v.latest?' (Latest)':' v'+esc(v.version)}
-        </a>
-        <a href="${esc(v.download)}" target="_blank" rel="noopener" class="btn-dl btn-ghost">⌥ Direct Link</a>
-      </div>
-    </div>`;
-  }).join('');
+    `;
+  }).join("");
 }
 
-function esc(s){
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function uniqueValues(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+
+function esc(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function escAttr(value) {
+  return esc(value).replace(/'/g, "&#39;");
+}
+
+function toSafeExternalUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" ? url.toString() : "";
+  } catch {
+    return "";
+  }
+}
+
+function renderDownloadActions(version) {
+  const safeUrl = toSafeExternalUrl(version.download);
+  if (!safeUrl) {
+    return '<span class="btn-dl btn-ghost">Download unavailable</span>';
+  }
+  return `
+    <a href="${escAttr(safeUrl)}" target="_blank" rel="noopener" class="btn-dl ${version.latest ? "btn-primary" : "btn-secondary"}">
+      ⬇ Download${version.latest ? " (Latest)" : ` v${esc(version.version)}`}
+    </a>
+    <a href="${escAttr(safeUrl)}" target="_blank" rel="noopener" class="btn-dl btn-ghost">⌥ Direct Link</a>
+  `;
 }
 
 loadData();
