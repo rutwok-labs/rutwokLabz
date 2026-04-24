@@ -23,7 +23,12 @@
       "sections": [
         {
           "name": "General",
-          "plugins": []
+          "plugins": [
+            {
+              "name": "New Plugin 1",
+              "releases": []
+            }
+          ]
         }
       ]
     }
