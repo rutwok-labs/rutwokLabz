@@ -7,10 +7,7 @@
     "source": "https://github.com/rutwok-labs/SlimeFun.Blob",
     "categories": [
       "Core",
-      "Addon",
-      "Utility",
-      "Magic",
-      "Tech"
+      "Addon"
     ],
     "versions": [
       {
@@ -24,9 +21,8 @@
         "minecraft": "1.21.x",
         "description": "Latest stable build with bug fixes and performance improvements.",
         "changelog": [
-          "Fixed dupe exploit in backpacks",
+          "Updated to modrith api for plugin update",
           "Improved machine tick performance",
-          "Added 12 new items"
         ],
         "download": "https://cdn.modrinth.com/data/Fz9hstnG/versions/1fCkq2KW/SlimefunCore4-2614.jar"
       }
