@@ -3,560 +3,497 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>SlimeFunCore - Plugin Hub</title>
+<title>Plugin Catalog</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
 :root{
-  --bg:#080a0f;
-  --bg2:#0d1017;
-  --surface:#111520;
-  --surface2:#161c2a;
-  --surface3:#1c2438;
-  --border:#1e2840;
-  --border2:#26324f;
-  --accent:#00d4ff;
-  --accent-dim:rgba(0,212,255,0.12);
-  --accent2:#7c3aed;
-  --text:#f0f4ff;
-  --text2:#8fa3cc;
-  --text3:#4a5a7a;
-  --green:#10b981;
-  --yellow:#f59e0b;
-  --red:#f43f5e;
-  --mono:'JetBrains Mono',monospace;
-  --sans:'Outfit',sans-serif;
-  --r:12px;
-  --rs:8px;
+  --bg:#081019;
+  --surface:#101827;
+  --surface2:#162033;
+  --surface3:#1b2942;
+  --border:#233149;
+  --border2:#30415f;
+  --accent:#27c1ff;
+  --accent2:#7a5cff;
+  --good:#22c55e;
+  --warn:#f59e0b;
+  --bad:#ef4444;
+  --text:#eef4ff;
+  --text2:#9aabc7;
+  --text3:#60728f;
+  --mono:"JetBrains Mono",monospace;
+  --sans:"Outfit",sans-serif;
+  --r:14px;
+  --rs:10px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
-body::before{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:
-    radial-gradient(ellipse 80% 50% at 20% -10%,rgba(0,212,255,0.06) 0%,transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 110%,rgba(124,58,237,0.06) 0%,transparent 60%);
+body{
+  font-family:var(--sans);background:
+  radial-gradient(circle at top left,rgba(39,193,255,.08),transparent 30%),
+  radial-gradient(circle at bottom right,rgba(122,92,255,.1),transparent 35%),
+  var(--bg);
+  color:var(--text);min-height:100vh;overflow-x:hidden;
 }
-body::after{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-  background-image:
-    linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);
-  background-size:48px 48px;
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(39,193,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(39,193,255,.03) 1px,transparent 1px);
+  background-size:42px 42px;
 }
 header{
-  position:sticky;top:0;z-index:10;height:64px;padding:0 2rem;
-  display:flex;align-items:center;justify-content:space-between;
-  background:rgba(8,10,15,0.88);backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(8,16,25,.82);backdrop-filter:blur(14px);
 }
-.hlogo{display:flex;align-items:center;gap:12px;}
-.hlogo-icon,.hero-icon,.vcard-icon{
-  display:flex;align-items:center;justify-content:center;
-  border:1px solid var(--border2);
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-mark{
+  width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));color:#061018;font-size:20px;font-weight:800;
+  box-shadow:0 10px 28px rgba(39,193,255,.25);
 }
-.hlogo-icon{
-  width:36px;height:36px;border-radius:10px;font-size:18px;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  box-shadow:0 0 20px rgba(0,212,255,0.28);
+.brand-copy strong{display:block;font-size:1rem;}
+.brand-copy span{display:block;color:var(--text3);font:700 .68rem var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-top:2px;}
+.header-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.header-btn{
+  display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:var(--rs);text-decoration:none;
+  border:1px solid var(--border2);background:var(--surface);color:var(--text2);font:600 .74rem var(--mono);transition:.18s;
 }
-.hlogo-name{font-size:1.1rem;font-weight:700;letter-spacing:-0.02em;}
-.hlogo-ver{
-  font-family:var(--mono);font-size:0.65rem;font-weight:600;
-  color:var(--accent);background:var(--accent-dim);
-  border:1px solid rgba(0,212,255,0.2);padding:2px 8px;border-radius:999px;
+.header-btn:hover{border-color:var(--accent);color:var(--accent);}
+.hero{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:2rem 1.5rem 1rem;}
+.hero-top{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:1rem;}
+.hero-copy h1{font-size:2.2rem;line-height:1.08;letter-spacing:-.04em;margin-bottom:.5rem;}
+.hero-copy p{max-width:720px;color:var(--text2);line-height:1.6;}
+.hero-stats{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:12px;width:min(520px,100%);}
+.stat{padding:1rem;border:1px solid var(--border);border-radius:var(--r);background:rgba(255,255,255,.03);}
+.stat strong{display:block;font-size:1.3rem;}
+.stat span{display:block;margin-top:4px;color:var(--text3);font:700 .64rem var(--mono);letter-spacing:.08em;text-transform:uppercase;}
+.layout{
+  position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 1.5rem 2rem;
+  display:grid;grid-template-columns:280px 1fr;gap:1.25rem;
 }
-.hnav{display:flex;align-items:center;gap:8px;}
-.hnav a,.hnav button{
-  font-family:var(--mono);font-size:0.72rem;font-weight:600;letter-spacing:0.03em;
-  background:var(--surface);border:1px solid var(--border2);color:var(--text2);
-  padding:7px 14px;border-radius:var(--rs);cursor:pointer;text-decoration:none;
-  transition:all 0.2s;
+.panel{
+  border:1px solid var(--border);border-radius:var(--r);background:rgba(255,255,255,.03);overflow:hidden;
 }
-.hnav a:hover,.hnav button:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
-.hero{
-  position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:4rem 2rem 2rem;
+.panel-header{
+  padding:1rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem;
 }
-.hero-top{display:flex;align-items:flex-start;gap:2rem;margin-bottom:2.5rem;}
-.hero-icon{
-  width:80px;height:80px;border-radius:20px;flex-shrink:0;font-size:36px;
-  background:linear-gradient(135deg,#0d1017 0%,#1c2438 100%);
-  box-shadow:0 8px 32px rgba(0,0,0,0.4);
+.panel-title strong{display:block;font-size:.92rem;}
+.panel-title span{display:block;margin-top:4px;color:var(--text3);font:700 .64rem var(--mono);letter-spacing:.06em;text-transform:uppercase;}
+.panel-body{padding:1rem 1.1rem;}
+.sidebar{display:flex;flex-direction:column;gap:1rem;}
+.search{
+  width:100%;padding:11px 12px;border-radius:var(--rs);border:1px solid var(--border2);background:var(--surface2);color:var(--text);outline:none;
 }
-.hero-title{
-  font-size:2.4rem;font-weight:800;letter-spacing:-0.04em;line-height:1.1;margin-bottom:0.5rem;
+.search:focus{border-color:var(--accent);}
+.category-list,.plugin-list,.release-list{display:flex;flex-direction:column;gap:10px;}
+.category-btn,.plugin-btn{
+  width:100%;text-align:left;padding:10px 12px;border-radius:var(--rs);border:1px solid var(--border);background:var(--surface);color:var(--text2);transition:.18s;
 }
-.hero-title span{
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+.category-btn:hover,.plugin-btn:hover{border-color:var(--border2);color:var(--text);}
+.category-btn.active,.plugin-btn.active{border-color:rgba(39,193,255,.35);background:rgba(39,193,255,.08);color:var(--accent);}
+.category-btn strong,.plugin-btn strong{display:block;font-size:.85rem;color:inherit;}
+.category-btn span,.plugin-btn span{display:block;margin-top:4px;font-size:.72rem;color:var(--text3);}
+.content{display:flex;flex-direction:column;gap:1.25rem;min-width:0;}
+.plugin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+.plugin-card{
+  border:1px solid var(--border);border-radius:var(--r);padding:1rem;background:var(--surface);cursor:pointer;transition:.18s;
 }
-.hero-desc{font-size:1rem;color:var(--text2);line-height:1.6;max-width:640px;margin-bottom:1rem;}
-.hero-tags{display:flex;flex-wrap:wrap;gap:8px;}
-.hero-tag{
-  display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;
-  font-family:var(--mono);font-size:0.7rem;font-weight:600;text-decoration:none;
-  background:var(--surface2);border:1px solid var(--border);color:var(--text2);
+.plugin-card:hover{border-color:var(--border2);transform:translateY(-1px);}
+.plugin-card.active{border-color:rgba(39,193,255,.35);background:rgba(39,193,255,.08);}
+.plugin-card strong{display:block;font-size:1rem;margin-bottom:4px;}
+.plugin-card p{font-size:.8rem;line-height:1.55;color:var(--text2);}
+.meta-row,.tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.tag{
+  display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;border:1px solid var(--border2);
+  font:700 .62rem var(--mono);color:var(--text2);background:rgba(255,255,255,.03);
 }
-.hero-stats{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;
+.plugin-detail{display:flex;flex-direction:column;gap:1rem;}
+.plugin-top{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.plugin-copy h2{font-size:1.55rem;line-height:1.1;margin-bottom:.45rem;}
+.plugin-copy p{max-width:780px;color:var(--text2);line-height:1.65;}
+.plugin-links{display:flex;gap:10px;flex-wrap:wrap;}
+.link-btn{
+  display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:var(--rs);border:1px solid var(--border2);background:var(--surface2);
+  color:var(--text2);text-decoration:none;font:600 .74rem var(--mono);
 }
-.stat-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;
+.link-btn:hover{border-color:var(--accent);color:var(--accent);}
+.empty{
+  padding:2.5rem 1rem;text-align:center;color:var(--text3);font:700 .78rem var(--mono);
 }
-.stat-val{font-size:1.4rem;font-weight:800;letter-spacing:-0.03em;}
-.stat-val.accent{color:var(--accent);}
-.stat-label{
-  margin-top:4px;font-family:var(--mono);font-size:0.62rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--text3);
+.release-card{
+  border:1px solid var(--border);border-radius:var(--r);padding:1.2rem;background:var(--surface);transition:.18s;
 }
-.main-layout{
-  position:relative;z-index:1;display:grid;grid-template-columns:240px 1fr;
-  max-width:1200px;margin:0 auto;padding:0 2rem 4rem;
-}
-.sidebar{
-  padding-right:1.5rem;position:sticky;top:80px;height:calc(100vh - 100px);overflow-y:auto;
-}
-.sb-section{margin-bottom:1.5rem;}
-.sb-label{
-  margin-bottom:8px;padding-left:4px;font-family:var(--mono);font-size:0.6rem;font-weight:700;
-  color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;
-}
-.cat-pills{display:flex;flex-direction:column;gap:4px;}
-.cat-pill{
-  display:flex;align-items:center;justify-content:space-between;width:100%;
-  padding:7px 10px;border-radius:var(--rs);cursor:pointer;
-  border:1px solid var(--border);background:var(--surface);color:var(--text2);
-  font:500 0.78rem var(--sans);transition:all 0.15s;
-}
-.cat-pill:hover{border-color:var(--border2);color:var(--text);}
-.cat-pill.active{background:var(--accent-dim);border-color:rgba(0,212,255,0.3);color:var(--accent);}
-.cat-count{
-  font-family:var(--mono);font-size:0.6rem;padding:1px 6px;border-radius:999px;
-  background:var(--surface3);color:var(--text3);
-}
-.cat-pill.active .cat-count{background:rgba(0,212,255,0.15);color:var(--accent);}
-.sb-item{
-  display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--rs);
-  border:1px solid transparent;text-decoration:none;color:inherit;transition:all 0.15s;
-}
-.sb-item:hover{background:var(--surface2);border-color:var(--border);}
-.sb-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.dot-ok{background:var(--green);}
-.dot-warn{background:var(--yellow);}
-.dot-err{background:var(--red);}
-.sb-info{flex:1;min-width:0;}
-.sb-ver{font-family:var(--mono);font-size:0.75rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sb-sub{font-size:0.62rem;color:var(--text3);margin-top:1px;}
-.sb-badge-latest{
-  font-family:var(--mono);font-size:0.55rem;font-weight:700;padding:1px 5px;border-radius:4px;
-  background:rgba(0,212,255,0.12);color:var(--accent);border:1px solid rgba(0,212,255,0.25);
-}
-.filter-bar{
-  display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;padding:10px 14px;
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-}
-.search-wrap{display:flex;align-items:center;gap:8px;flex:1;}
-.search-input{
-  width:100%;background:none;border:none;outline:none;color:var(--text);
-  font:400 0.85rem var(--sans);
-}
-.search-input::placeholder{color:var(--text3);}
-.filter-divider{width:1px;height:20px;background:var(--border2);}
-.filter-select{
-  background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);
-  color:var(--text2);padding:6px 10px;outline:none;cursor:pointer;
-  font:400 0.72rem var(--mono);
-}
-.section-head{
-  display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;
-}
-.section-title,.result-count{
-  font-family:var(--mono);font-size:0.68rem;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;
-}
-.cards-list{display:flex;flex-direction:column;gap:12px;}
-.vcard{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;
-  position:relative;overflow:hidden;animation:fadeUp 0.25s ease both;scroll-margin-top:90px;
-  transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s;
-}
-.vcard:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
-.vcard.is-latest{border-color:rgba(0,212,255,0.3);box-shadow:0 0 0 1px rgba(0,212,255,0.08);}
-.vcard.is-latest::after{
-  content:"";position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--accent),transparent 70%);
-}
-.vcard-top{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem;}
-.vcard-icon{
-  width:48px;height:48px;border-radius:10px;flex-shrink:0;font-size:22px;background:var(--surface3);
-}
-.vcard-head{flex:1;min-width:0;}
-.vcard-name{font-size:1rem;font-weight:700;margin-bottom:3px;}
-.vcard-version{font-family:var(--mono);font-size:0.75rem;color:var(--text3);}
-.vcard-badges{display:flex;flex-wrap:wrap;gap:5px;margin-left:auto;}
+.release-card:hover{border-color:var(--border2);}
+.release-card.latest{border-color:rgba(39,193,255,.35);box-shadow:inset 0 0 0 1px rgba(39,193,255,.08);}
+.release-top{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:.85rem;}
+.release-name strong{display:block;font-size:1rem;}
+.release-name span{display:block;margin-top:3px;color:var(--text3);font:700 .72rem var(--mono);}
+.badges{display:flex;gap:6px;flex-wrap:wrap;}
 .badge{
-  display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;border:1px solid;
-  font-family:var(--mono);font-size:0.62rem;font-weight:700;letter-spacing:0.03em;
+  display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border:1px solid;border-radius:999px;font:700 .62rem var(--mono);
 }
-.b-latest{background:rgba(0,212,255,0.1);color:var(--accent);border-color:rgba(0,212,255,0.25);}
-.b-stable{background:rgba(16,185,129,0.1);color:var(--green);border-color:rgba(16,185,129,0.25);}
-.b-pre{background:rgba(245,158,11,0.1);color:var(--yellow);border-color:rgba(245,158,11,0.25);}
-.b-ok{background:rgba(16,185,129,0.08);color:var(--green);border-color:rgba(16,185,129,0.2);}
-.b-maint{background:rgba(245,158,11,0.08);color:var(--yellow);border-color:rgba(245,158,11,0.2);}
-.b-fail{background:rgba(244,63,94,0.08);color:var(--red);border-color:rgba(244,63,94,0.2);}
-.b-cat{background:rgba(124,58,237,0.1);color:#a78bfa;border-color:rgba(124,58,237,0.25);}
-.b-mc{background:rgba(255,255,255,0.05);color:var(--text2);border-color:var(--border2);}
-.vcard-desc{font-size:0.85rem;line-height:1.6;color:var(--text2);margin-bottom:1rem;}
-.vcard-changelog{
-  margin-bottom:1rem;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);
+.b-latest{color:var(--accent);border-color:rgba(39,193,255,.26);background:rgba(39,193,255,.1);}
+.b-stable{color:var(--good);border-color:rgba(34,197,94,.26);background:rgba(34,197,94,.1);}
+.b-pre{color:var(--warn);border-color:rgba(245,158,11,.28);background:rgba(245,158,11,.1);}
+.b-good{color:var(--good);border-color:rgba(34,197,94,.26);background:rgba(34,197,94,.08);}
+.b-bad{color:var(--bad);border-color:rgba(239,68,68,.26);background:rgba(239,68,68,.08);}
+.b-warn{color:var(--warn);border-color:rgba(245,158,11,.28);background:rgba(245,158,11,.08);}
+.release-card p{color:var(--text2);line-height:1.6;margin-bottom:.9rem;}
+.changelog{padding:.9rem 1rem;border-radius:var(--rs);border:1px solid var(--border);background:var(--surface2);margin-bottom:.9rem;}
+.changelog strong{display:block;margin-bottom:8px;font:700 .64rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--text3);}
+.changelog ul{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.changelog li{display:flex;gap:8px;color:var(--text2);font-size:.8rem;}
+.changelog li::before{content:"→";color:var(--accent);font-family:var(--mono);}
+.release-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.download-btn{
+  display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--rs);text-decoration:none;font:700 .74rem var(--mono);
 }
-.changelog-title{
-  margin-bottom:6px;font-family:var(--mono);font-size:0.6rem;font-weight:700;color:var(--text3);
-  letter-spacing:0.08em;text-transform:uppercase;
+.download-primary{background:linear-gradient(135deg,var(--accent),#0696ce);color:#061018;}
+.download-secondary{background:var(--surface2);border:1px solid var(--border2);color:var(--text2);}
+@media(max-width:980px){
+  .layout{grid-template-columns:1fr;}
+  .hero-stats{grid-template-columns:repeat(2,minmax(0,1fr));width:100%;}
 }
-.changelog-list{list-style:none;display:flex;flex-direction:column;gap:4px;}
-.changelog-list li{display:flex;align-items:baseline;gap:6px;font-size:0.78rem;color:var(--text2);}
-.changelog-list li::before{content:"→";color:var(--accent);font-family:var(--mono);font-size:0.7rem;}
-.vcard-meta{
-  display:flex;flex-wrap:wrap;gap:1.5rem;padding:10px 0;margin-bottom:1rem;
-  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
-}
-.meta-label{
-  font-family:var(--mono);font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);
-}
-.meta-val{margin-top:2px;font-family:var(--mono);font-size:0.78rem;font-weight:600;color:var(--text2);}
-.vcard-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.btn-dl{
-  display:inline-flex;align-items:center;gap:7px;padding:9px 20px;border-radius:var(--rs);
-  font-family:var(--mono);font-size:0.75rem;font-weight:700;letter-spacing:0.02em;
-  text-decoration:none;transition:all 0.2s;
-}
-.btn-primary{background:linear-gradient(135deg,var(--accent),#0099cc);color:#000;box-shadow:0 4px 16px rgba(0,212,255,0.25);}
-.btn-primary:hover{box-shadow:0 6px 24px rgba(0,212,255,0.4);transform:translateY(-1px);}
-.btn-secondary{background:var(--surface2);color:var(--text2);border:1px solid var(--border2);}
-.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
-.btn-ghost{background:none;color:var(--text3);border:1px solid var(--border);padding:9px 14px;}
-.btn-ghost:hover{border-color:var(--border2);color:var(--text2);}
-.loading,.empty{display:flex;align-items:center;justify-content:center;gap:12px;padding:3rem;color:var(--text3);}
-.empty{flex-direction:column;text-align:center;}
-.empty-text{font-family:var(--mono);font-size:0.85rem;}
-.spinner{width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;}
-.error-box{
-  background:rgba(244,63,94,0.06);border:1px solid rgba(244,63,94,0.2);border-radius:var(--r);
-  padding:1rem 1.5rem;font-family:var(--mono);font-size:0.78rem;color:var(--red);
-}
-@keyframes spin{to{transform:rotate(360deg);}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-::-webkit-scrollbar{width:4px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
-@media(max-width:900px){
-  header{padding:0 1rem;}
-  .hero{padding:2rem 1rem 1.5rem;}
-  .hero-top{flex-direction:column;}
-  .hero-stats{grid-template-columns:repeat(2,1fr);}
-  .main-layout{grid-template-columns:1fr;padding:0 1rem 3rem;}
-  .sidebar{display:none;}
-  .filter-bar{flex-wrap:wrap;}
+@media(max-width:680px){
+  header,.hero,.layout{padding-left:1rem;padding-right:1rem;}
+  .hero-copy h1{font-size:1.8rem;}
+  .hero-stats{grid-template-columns:1fr 1fr;}
+  .release-top,.plugin-top{flex-direction:column;}
 }
 </style>
 </head>
 <body>
 <header>
-  <div class="hlogo">
-    <div class="hlogo-icon">⚡</div>
-    <span class="hlogo-name" id="hPluginName">Loading...</span>
-    <span class="hlogo-ver" id="hLatestVer">—</span>
+  <div class="brand">
+    <div class="brand-mark">⚡</div>
+    <div class="brand-copy">
+      <strong id="brandTitle">Plugin Catalog</strong>
+      <span>Category -> Plugin -> Releases</span>
+    </div>
   </div>
-  <nav class="hnav">
-    <button type="button" onclick="loadData()">↻ Refresh</button>
-    <a id="hSourceLink" href="#" target="_blank" rel="noopener">⌥ Source</a>
-    <a href="admin.html">⚙ Admin</a>
-  </nav>
+  <div class="header-actions">
+    <a href="admin.html" class="header-btn">⚙ Admin</a>
+    <button class="header-btn" type="button" onclick="loadCatalog()">↻ Refresh</button>
+  </div>
 </header>
 
-<div class="hero">
+<section class="hero">
   <div class="hero-top">
-    <div class="hero-icon">⚡</div>
-    <div class="hero-info">
-      <div class="hero-title"><span id="heroName">SlimeFunCore</span></div>
-      <div class="hero-desc" id="heroDesc">Loading plugin info...</div>
-      <div class="hero-tags" id="heroTags"></div>
+    <div class="hero-copy">
+      <h1 id="heroTitle">Loading catalog...</h1>
+      <p id="heroDescription">Fetching plugin categories, plugin names, and release builds.</p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><strong id="statCategories">0</strong><span>Categories</span></div>
+      <div class="stat"><strong id="statPlugins">0</strong><span>Plugins</span></div>
+      <div class="stat"><strong id="statReleases">0</strong><span>Releases</span></div>
+      <div class="stat"><strong id="statLatest">0</strong><span>Latest Builds</span></div>
     </div>
   </div>
-  <div class="hero-stats">
-    <div class="stat-card">
-      <div class="stat-val accent" id="statTotal">—</div>
-      <div class="stat-label">Total Releases</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val" id="statLatest">—</div>
-      <div class="stat-label">Latest Version</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val" id="statCategories">—</div>
-      <div class="stat-label">Categories</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val" id="statLoaders">—</div>
-      <div class="stat-label">Loaders</div>
-    </div>
-  </div>
-</div>
+</section>
 
-<div class="main-layout">
+<main class="layout">
   <aside class="sidebar">
-    <div class="sb-section">
-      <div class="sb-label">Categories</div>
-      <div class="cat-pills" id="catPills"></div>
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <strong>Categories</strong>
+          <span>Pick a top-level category</span>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div id="categoryList" class="category-list"></div>
+      </div>
     </div>
-    <div class="sb-section">
-      <div class="sb-label">Versions</div>
-      <div id="sidebarVersions"></div>
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <strong>Plugins</strong>
+          <span>Search inside selected category</span>
+        </div>
+      </div>
+      <div class="panel-body">
+        <input id="pluginSearch" class="search" type="text" placeholder="Search plugin name..." />
+        <div id="pluginList" class="plugin-list" style="margin-top:12px;"></div>
+      </div>
     </div>
   </aside>
 
-  <main class="content">
-    <div class="filter-bar">
-      <div class="search-wrap">
-        <span>⌕</span>
-        <input class="search-input" id="searchInput" placeholder="Search versions, loaders, types..." oninput="applyFilters()" />
+  <section class="content">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <strong>Plugins In Category</strong>
+          <span id="pluginGridLabel">Select a category to browse plugins</span>
+        </div>
       </div>
-      <div class="filter-divider"></div>
-      <select class="filter-select" id="typeFilter" onchange="applyFilters()">
-        <option value="all">All Types</option>
-        <option value="stable">Stable</option>
-        <option value="pre-release">Pre-Release</option>
-      </select>
-      <select class="filter-select" id="statusFilter" onchange="applyFilters()">
-        <option value="all">All Status</option>
-        <option value="success">Success</option>
-        <option value="maintenance">Maintenance</option>
-        <option value="fail">Failed</option>
-      </select>
-      <select class="filter-select" id="loaderFilter" onchange="applyFilters()">
-        <option value="all">All Loaders</option>
-        <option value="PaperMC">PaperMC</option>
-        <option value="Bukkit">Bukkit</option>
-        <option value="Purpur">Purpur</option>
-      </select>
+      <div class="panel-body">
+        <div id="pluginGrid" class="plugin-grid"></div>
+      </div>
     </div>
 
-    <div class="section-head">
-      <div class="section-title">Releases</div>
-      <div class="result-count" id="resultCount"></div>
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <strong>Plugin Releases</strong>
+          <span id="releaseLabel">Choose a plugin to see its builds</span>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div id="pluginDetail" class="plugin-detail"></div>
+        <div id="releaseList" class="release-list"></div>
+      </div>
     </div>
-
-    <div class="cards-list" id="cardsList">
-      <div class="loading"><div class="spinner"></div><span>Fetching releases...</span></div>
-    </div>
-  </main>
-</div>
+  </section>
+</main>
 
 <script>
-const LOADER_ICONS = { PaperMC: "📄", Bukkit: "🪣", Purpur: "💎" };
-const STATUS_ICONS = { success: "●", fail: "✕", maintenance: "⚙" };
-const CAT_ICONS = { Core: "⚡", Addon: "🧩", Utility: "🔧", Magic: "✨", Tech: "⚙" };
+const TYPE_BADGE = { stable: "b-stable", "pre-release": "b-pre" };
+const STATUS_BADGE = { success: "b-good", fail: "b-bad", maintenance: "b-warn" };
 
-let allData = null;
-let activeCat = "all";
+let catalogData = { catalog: { title: "", description: "", categories: [] } };
+let selectedCategoryIndex = 0;
+let selectedPluginIndex = 0;
 
-document.getElementById("catPills").addEventListener("click", (event) => {
-  const button = event.target.closest("[data-cat]");
-  if (button) filterCat(button.dataset.cat || "all");
-});
+document.getElementById("pluginSearch").addEventListener("input", renderCategoryPlugins);
 
-async function loadData() {
-  const list = document.getElementById("cardsList");
-  list.innerHTML = '<div class="loading"><div class="spinner"></div><span>Fetching releases...</span></div>';
+async function loadCatalog() {
   try {
     const response = await fetch("/.netlify/functions/api");
     if (!response.ok) throw new Error(`API error: ${response.status}`);
-    allData = await response.json();
-    renderAll(allData);
+    const data = await response.json();
+    catalogData = normalizeCatalog(data);
+    if (selectedCategoryIndex >= catalogData.catalog.categories.length) selectedCategoryIndex = 0;
+    if (selectedPluginIndex >= currentPlugins().length) selectedPluginIndex = 0;
+    renderAll();
   } catch (error) {
-    console.error("[Dashboard]", error);
-    list.innerHTML = `<div class="error-box">⚠ Failed to load plugin data: ${esc(error.message)}</div>`;
+    document.getElementById("pluginDetail").innerHTML = `<div class="empty">Failed to load catalog: ${escapeHtml(error.message)}</div>`;
+    document.getElementById("releaseList").innerHTML = "";
   }
 }
 
-function renderAll(data) {
-  const plugin = data?.plugin || {};
-  const versions = Array.isArray(plugin.versions) ? plugin.versions : [];
-  const categories = Array.isArray(plugin.categories) ? plugin.categories.filter(Boolean) : [];
-  const latest = versions.find((version) => version.latest);
-  const sourceLink = document.getElementById("hSourceLink");
-  const safeSource = toSafeExternalUrl(plugin.source);
-
-  document.title = `${plugin.name || "Plugin"} - Plugin Hub`;
-  document.getElementById("hPluginName").textContent = plugin.name || "Plugin";
-  document.getElementById("hLatestVer").textContent = latest ? `v${latest.version}` : "—";
-  document.getElementById("heroName").textContent = plugin.name || "Plugin";
-  document.getElementById("heroDesc").textContent = plugin.description || "No description provided.";
-
-  sourceLink.href = safeSource || "#";
-  sourceLink.style.pointerEvents = safeSource ? "auto" : "none";
-  sourceLink.style.opacity = safeSource ? "1" : "0.5";
-
-  const discoveredCategories = uniqueValues(versions.map((version) => version.category));
-  const tagItems = [
-    { icon: "👤", value: plugin.author },
-    { icon: "🔗", value: plugin.website, link: toSafeExternalUrl(plugin.website) },
-    { icon: "📦", value: `${versions.length} releases` },
-    { icon: "🏷", value: `${(categories.length || discoveredCategories.length)} categories` },
-  ];
-
-  document.getElementById("heroTags").innerHTML = tagItems
-    .filter((item) => item.value)
-    .map((item) => item.link
-      ? `<a class="hero-tag" href="${escAttr(item.link)}" target="_blank" rel="noopener">${item.icon} ${esc(item.value)}</a>`
-      : `<span class="hero-tag">${item.icon} ${esc(item.value)}</span>`)
-    .join("");
-
-  const loaders = uniqueValues(versions.map((version) => version.loader));
-  document.getElementById("statTotal").textContent = versions.length;
-  document.getElementById("statLatest").textContent = latest ? `v${latest.version}` : "—";
-  document.getElementById("statCategories").textContent = categories.length || discoveredCategories.length || "—";
-  document.getElementById("statLoaders").textContent = loaders.join(", ") || "—";
-
-  renderCategoryButtons(categories.length ? categories : discoveredCategories, versions);
-  renderSidebarVersions(versions);
-  applyFilters();
+function normalizeCatalog(input) {
+  const catalog = input?.catalog || { title: "Plugin Catalog", description: "", categories: [] };
+  return {
+    catalog: {
+      title: stringValue(catalog.title) || "Plugin Catalog",
+      description: stringValue(catalog.description),
+      categories: Array.isArray(catalog.categories) ? catalog.categories.map((category) => ({
+        name: stringValue(category.name),
+        plugins: Array.isArray(category.plugins) ? category.plugins.map((plugin) => ({
+          name: stringValue(plugin.name),
+          description: stringValue(plugin.description),
+          author: stringValue(plugin.author),
+          website: stringValue(plugin.website),
+          source: stringValue(plugin.source),
+          releases: Array.isArray(plugin.releases) ? plugin.releases.map((release) => ({
+            name: stringValue(release.name),
+            version: stringValue(release.version),
+            type: stringValue(release.type),
+            latest: Boolean(release.latest),
+            status: stringValue(release.status),
+            loader: stringValue(release.loader),
+            minecraft: stringValue(release.minecraft),
+            description: stringValue(release.description),
+            changelog: Array.isArray(release.changelog) ? release.changelog.map(stringValue).filter(Boolean) : [],
+            download: stringValue(release.download),
+          })) : [],
+        })) : [],
+      })) : [],
+    },
+  };
 }
 
-function renderCategoryButtons(categories, versions) {
-  const items = ["all", ...categories];
-  document.getElementById("catPills").innerHTML = items.map((category) => {
-    const count = category === "all" ? versions.length : versions.filter((version) => version.category === category).length;
-    const label = category === "all" ? "🗂 All Releases" : `${CAT_ICONS[category] || "📦"} ${esc(category)}`;
-    return `<button type="button" class="cat-pill ${activeCat === category ? "active" : ""}" data-cat="${escAttr(category)}">${label}<span class="cat-count">${count}</span></button>`;
-  }).join("");
+function renderAll() {
+  const categories = catalogData.catalog.categories;
+  const pluginCount = categories.reduce((sum, category) => sum + category.plugins.length, 0);
+  const releaseCount = categories.reduce((sum, category) => sum + category.plugins.reduce((inner, plugin) => inner + plugin.releases.length, 0), 0);
+  const latestCount = categories.reduce((sum, category) => sum + category.plugins.reduce((inner, plugin) => inner + plugin.releases.filter((release) => release.latest).length, 0), 0);
+
+  document.title = `${catalogData.catalog.title} - Plugin Catalog`;
+  document.getElementById("brandTitle").textContent = catalogData.catalog.title;
+  document.getElementById("heroTitle").textContent = catalogData.catalog.title;
+  document.getElementById("heroDescription").textContent = catalogData.catalog.description || "Browse your categories, plugins, and uploaded builds.";
+  document.getElementById("statCategories").textContent = categories.length;
+  document.getElementById("statPlugins").textContent = pluginCount;
+  document.getElementById("statReleases").textContent = releaseCount;
+  document.getElementById("statLatest").textContent = latestCount;
+
+  renderCategories();
+  renderCategoryPlugins();
+  renderSelectedPlugin();
 }
 
-function renderSidebarVersions(versions) {
-  const sorted = [...versions].sort((a, b) => Number(b.latest) - Number(a.latest));
-  document.getElementById("sidebarVersions").innerHTML = sorted.map((version) => {
-    const originalIndex = versions.indexOf(version);
-    const dotClass = version.status === "success" ? "ok" : version.status === "fail" ? "err" : "warn";
-    return `
-      <a class="sb-item" href="#vcard-${originalIndex}">
-        <span class="sb-dot dot-${dotClass}"></span>
-        <div class="sb-info">
-          <div class="sb-ver">v${esc(version.version)}</div>
-          <div class="sb-sub">${esc(version.category || version.type || "")}</div>
-        </div>
-        ${version.latest ? '<span class="sb-badge-latest">LATEST</span>' : ""}
-      </a>
-    `;
-  }).join("");
-}
-
-function filterCat(category) {
-  activeCat = category;
-  document.querySelectorAll(".cat-pill").forEach((pill) => {
-    pill.classList.toggle("active", pill.dataset.cat === category);
-  });
-  applyFilters();
-}
-
-function applyFilters() {
-  if (!allData?.plugin) return;
-  const versions = Array.isArray(allData.plugin.versions) ? allData.plugin.versions : [];
-  const search = document.getElementById("searchInput").value.toLowerCase();
-  const type = document.getElementById("typeFilter").value;
-  const status = document.getElementById("statusFilter").value;
-  const loader = document.getElementById("loaderFilter").value;
-
-  const filtered = versions.filter((version) => {
-    if (activeCat !== "all" && version.category !== activeCat) return false;
-    if (type !== "all" && version.type !== type) return false;
-    if (status !== "all" && version.status !== status) return false;
-    if (loader !== "all" && version.loader !== loader) return false;
-    if (!search) return true;
-
-    const haystack = [
-      version.name,
-      version.version,
-      version.loader,
-      version.type,
-      version.status,
-      version.description,
-      version.category,
-      version.minecraft,
-      Array.isArray(version.changelog) ? version.changelog.join(" ") : "",
-    ].filter(Boolean).join(" ").toLowerCase();
-
-    return haystack.includes(search);
-  }).sort((a, b) => Number(b.latest) - Number(a.latest));
-
-  document.getElementById("resultCount").textContent = `${filtered.length} result${filtered.length === 1 ? "" : "s"}`;
-  renderCards(filtered, versions);
-}
-
-function renderCards(filtered, allVersions) {
-  const list = document.getElementById("cardsList");
-  if (!filtered.length) {
-    list.innerHTML = '<div class="empty"><div style="font-size:3rem;opacity:0.4;">🔍</div><div class="empty-text">No releases match your filters.</div></div>';
+function renderCategories() {
+  const categories = catalogData.catalog.categories;
+  const list = document.getElementById("categoryList");
+  if (!categories.length) {
+    list.innerHTML = '<div class="empty">No categories yet.</div>';
     return;
   }
 
-  list.innerHTML = filtered.map((version, index) => {
-    const originalIndex = allVersions.indexOf(version);
-    const changelog = Array.isArray(version.changelog) && version.changelog.length
-      ? `
-        <div class="vcard-changelog">
-          <div class="changelog-title">Changelog</div>
-          <ul class="changelog-list">${version.changelog.map((entry) => `<li>${esc(entry)}</li>`).join("")}</ul>
-        </div>
-      `
-      : "";
+  list.innerHTML = categories.map((category, index) => `
+    <button type="button" class="category-btn ${index === selectedCategoryIndex ? "active" : ""}" data-index="${index}">
+      <strong>${escapeHtml(category.name)}</strong>
+      <span>${category.plugins.length} plugin${category.plugins.length === 1 ? "" : "s"}</span>
+    </button>
+  `).join("");
 
+  list.querySelectorAll("[data-index]").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectedCategoryIndex = Number(button.dataset.index);
+      selectedPluginIndex = 0;
+      renderAll();
+    });
+  });
+}
+
+function currentCategory() {
+  return catalogData.catalog.categories[selectedCategoryIndex] || null;
+}
+
+function currentPlugins() {
+  return currentCategory()?.plugins || [];
+}
+
+function currentPlugin() {
+  return currentPlugins()[selectedPluginIndex] || null;
+}
+
+function renderCategoryPlugins() {
+  const category = currentCategory();
+  const query = document.getElementById("pluginSearch").value.trim().toLowerCase();
+  const plugins = currentPlugins().filter((plugin) => !query || plugin.name.toLowerCase().includes(query));
+
+  document.getElementById("pluginGridLabel").textContent = category ? `${category.name} plugins` : "Select a category to browse plugins";
+
+  const list = document.getElementById("pluginList");
+  const grid = document.getElementById("pluginGrid");
+
+  if (!category) {
+    list.innerHTML = '<div class="empty">No category selected.</div>';
+    grid.innerHTML = '<div class="empty">No category selected.</div>';
+    return;
+  }
+
+  if (!plugins.length) {
+    list.innerHTML = '<div class="empty">No plugins in this category.</div>';
+    grid.innerHTML = '<div class="empty">No plugins match this category search.</div>';
+    return;
+  }
+
+  list.innerHTML = plugins.map((plugin) => {
+    const actualIndex = currentPlugins().indexOf(plugin);
+    const latest = plugin.releases.find((release) => release.latest) || plugin.releases[0];
     return `
-      <div class="vcard ${version.latest ? "is-latest" : ""}" id="vcard-${originalIndex}" style="animation-delay:${index * 0.05}s">
-        <div class="vcard-top">
-          <div class="vcard-icon">${LOADER_ICONS[version.loader] || "🔌"}</div>
-          <div class="vcard-head">
-            <div class="vcard-name">${esc(version.name)}</div>
-            <div class="vcard-version">v${esc(version.version)}</div>
-          </div>
-          <div class="vcard-badges">
-            ${version.latest ? '<span class="badge b-latest">★ LATEST</span>' : ""}
-            <span class="badge ${version.type === "stable" ? "b-stable" : "b-pre"}">${version.type === "stable" ? "Stable" : "Pre-Release"}</span>
-            <span class="badge ${version.status === "success" ? "b-ok" : version.status === "fail" ? "b-fail" : "b-maint"}">${STATUS_ICONS[version.status] || ""} ${esc(version.status)}</span>
-            ${version.category ? `<span class="badge b-cat">${CAT_ICONS[version.category] || "📦"} ${esc(version.category)}</span>` : ""}
-            ${version.minecraft ? `<span class="badge b-mc">MC ${esc(version.minecraft)}</span>` : ""}
-          </div>
-        </div>
-        ${version.description ? `<div class="vcard-desc">${esc(version.description)}</div>` : ""}
-        ${changelog}
-        <div class="vcard-meta">
-          <div class="meta-item"><div class="meta-label">Loader</div><div class="meta-val">${esc(version.loader || "—")}</div></div>
-          <div class="meta-item"><div class="meta-label">Type</div><div class="meta-val">${esc(version.type || "—")}</div></div>
-          <div class="meta-item"><div class="meta-label">Status</div><div class="meta-val">${esc(version.status || "—")}</div></div>
-          ${version.category ? `<div class="meta-item"><div class="meta-label">Category</div><div class="meta-val">${esc(version.category)}</div></div>` : ""}
-          ${version.minecraft ? `<div class="meta-item"><div class="meta-label">Minecraft</div><div class="meta-val">${esc(version.minecraft)}</div></div>` : ""}
-        </div>
-        <div class="vcard-actions">
-          ${renderDownloadActions(version)}
-        </div>
-      </div>
+      <button type="button" class="plugin-btn ${actualIndex === selectedPluginIndex ? "active" : ""}" data-index="${actualIndex}">
+        <strong>${escapeHtml(plugin.name)}</strong>
+        <span>${plugin.releases.length} release${plugin.releases.length === 1 ? "" : "s"}${latest ? ` · latest ${escapeHtml(latest.version)}` : ""}</span>
+      </button>
     `;
   }).join("");
+
+  grid.innerHTML = plugins.map((plugin) => {
+    const actualIndex = currentPlugins().indexOf(plugin);
+    const latest = plugin.releases.find((release) => release.latest) || plugin.releases[0];
+    return `
+      <button type="button" class="plugin-card ${actualIndex === selectedPluginIndex ? "active" : ""}" data-index="${actualIndex}">
+        <strong>${escapeHtml(plugin.name)}</strong>
+        <p>${escapeHtml(plugin.description || "No plugin description yet.")}</p>
+        <div class="meta-row">
+          <span class="tag">category ${escapeHtml(category.name)}</span>
+          <span class="tag">${plugin.releases.length} releases</span>
+          ${latest ? `<span class="tag">latest ${escapeHtml(latest.version)}</span>` : ""}
+        </div>
+      </button>
+    `;
+  }).join("");
+
+  document.querySelectorAll("[data-index]").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectedPluginIndex = Number(button.dataset.index);
+      renderAll();
+    });
+  });
 }
 
-function uniqueValues(values) {
-  return [...new Set(values.filter(Boolean))];
+function renderSelectedPlugin() {
+  const category = currentCategory();
+  const plugin = currentPlugin();
+  const detail = document.getElementById("pluginDetail");
+  const releases = document.getElementById("releaseList");
+  const releaseLabel = document.getElementById("releaseLabel");
+
+  if (!category || !plugin) {
+    detail.innerHTML = '<div class="empty">Create a category, add a plugin, then upload releases from the admin panel.</div>';
+    releases.innerHTML = "";
+    releaseLabel.textContent = "Choose a plugin to see its builds";
+    return;
+  }
+
+  releaseLabel.textContent = `${plugin.name} builds in ${category.name}`;
+  detail.innerHTML = `
+    <div class="plugin-top">
+      <div class="plugin-copy">
+        <h2>${escapeHtml(plugin.name)}</h2>
+        <p>${escapeHtml(plugin.description || "No plugin description yet.")}</p>
+        <div class="tag-row">
+          <span class="tag">category ${escapeHtml(category.name)}</span>
+          ${plugin.author ? `<span class="tag">author ${escapeHtml(plugin.author)}</span>` : ""}
+          <span class="tag">${plugin.releases.length} releases</span>
+        </div>
+      </div>
+      <div class="plugin-links">
+        ${renderExternalLink(plugin.website, "↗ Website")}
+        ${renderExternalLink(plugin.source, "⌥ Source")}
+      </div>
+    </div>
+  `;
+
+  if (!plugin.releases.length) {
+    releases.innerHTML = '<div class="empty">No releases uploaded for this plugin yet.</div>';
+    return;
+  }
+
+  releases.innerHTML = [...plugin.releases]
+    .sort((a, b) => Number(b.latest) - Number(a.latest))
+    .map((release) => {
+      const safeDownload = toSafeExternalUrl(release.download);
+      return `
+        <div class="release-card ${release.latest ? "latest" : ""}">
+          <div class="release-top">
+            <div class="release-name">
+              <strong>${escapeHtml(release.name || release.version)}</strong>
+              <span>v${escapeHtml(release.version)}</span>
+            </div>
+            <div class="badges">
+              ${release.latest ? '<span class="badge b-latest">latest</span>' : ""}
+              <span class="badge ${TYPE_BADGE[release.type] || "b-pre"}">${escapeHtml(release.type || "unknown")}</span>
+              <span class="badge ${STATUS_BADGE[release.status] || "b-warn"}">${escapeHtml(release.status || "unknown")}</span>
+              ${release.loader ? `<span class="badge b-latest" style="background:rgba(255,255,255,.05);border-color:var(--border2);color:var(--text2);">${escapeHtml(release.loader)}</span>` : ""}
+              ${release.minecraft ? `<span class="badge b-latest" style="background:rgba(255,255,255,.05);border-color:var(--border2);color:var(--text2);">MC ${escapeHtml(release.minecraft)}</span>` : ""}
+            </div>
+          </div>
+          <p>${escapeHtml(release.description || "No release description yet.")}</p>
+          ${Array.isArray(release.changelog) && release.changelog.length ? `
+            <div class="changelog">
+              <strong>Changelog</strong>
+              <ul>${release.changelog.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+            </div>
+          ` : ""}
+          <div class="release-actions">
+            ${safeDownload ? `
+              <a href="${escapeAttr(safeDownload)}" target="_blank" rel="noopener" class="download-btn download-primary">⬇ Download Build</a>
+              <a href="${escapeAttr(safeDownload)}" target="_blank" rel="noopener" class="download-btn download-secondary">⌥ Direct Link</a>
+            ` : '<span class="download-btn download-secondary">Download unavailable</span>'}
+          </div>
+        </div>
+      `;
+    }).join("");
 }
 
-function esc(value) {
-  return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
-function escAttr(value) {
-  return esc(value).replace(/'/g, "&#39;");
+function renderExternalLink(url, label) {
+  const safe = toSafeExternalUrl(url);
+  return safe ? `<a href="${escapeAttr(safe)}" target="_blank" rel="noopener" class="link-btn">${label}</a>` : "";
 }
 
 function toSafeExternalUrl(value) {
@@ -568,20 +505,19 @@ function toSafeExternalUrl(value) {
   }
 }
 
-function renderDownloadActions(version) {
-  const safeUrl = toSafeExternalUrl(version.download);
-  if (!safeUrl) {
-    return '<span class="btn-dl btn-ghost">Download unavailable</span>';
-  }
-  return `
-    <a href="${escAttr(safeUrl)}" target="_blank" rel="noopener" class="btn-dl ${version.latest ? "btn-primary" : "btn-secondary"}">
-      ⬇ Download${version.latest ? " (Latest)" : ` v${esc(version.version)}`}
-    </a>
-    <a href="${escAttr(safeUrl)}" target="_blank" rel="noopener" class="btn-dl btn-ghost">⌥ Direct Link</a>
-  `;
+function stringValue(value) {
+  return typeof value === "string" ? value.trim() : "";
 }
 
-loadData();
+function escapeHtml(value) {
+  return String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value).replace(/'/g, "&#39;");
+}
+
+loadCatalog();
 </script>
 </body>
 </html>

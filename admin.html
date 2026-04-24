@@ -3,521 +3,221 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin - Plugin Dashboard</title>
+  <title>Admin - Plugin Catalog</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0b0d12;
-      --surface: #111520;
-      --surface2: #161b27;
-      --surface3: #1d2540;
-      --border: #1f2738;
-      --border2: #2b3450;
+      --bg: #0b0f16;
+      --surface: #111827;
+      --surface2: #182233;
+      --surface3: #1f2c45;
+      --border: #24314a;
+      --border2: #30405f;
       --accent: #25b7ff;
-      --accent2: #6d5cff;
+      --accent2: #6b63ff;
       --good: #22c55e;
       --warn: #f59e0b;
       --bad: #ef4444;
-      --text: #e2e8f4;
-      --text2: #95a2c2;
-      --text3: #5f6c89;
-      --radius: 14px;
-      --radius-sm: 10px;
+      --text: #ecf3ff;
+      --text2: #98a8c5;
+      --text3: #62728d;
       --mono: "JetBrains Mono", monospace;
       --sans: "Sora", sans-serif;
+      --r: 14px;
+      --rs: 10px;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
       font-family: var(--sans);
       color: var(--text);
       background:
-        radial-gradient(circle at top left, rgba(37,183,255,0.08), transparent 30%),
-        radial-gradient(circle at bottom right, rgba(109,92,255,0.12), transparent 30%),
+        radial-gradient(circle at top left, rgba(37,183,255,.08), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(107,99,255,.1), transparent 35%),
         var(--bg);
     }
     body::before {
       content: "";
       position: fixed;
       inset: 0;
-      background-image:
-        linear-gradient(rgba(37,183,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(37,183,255,0.03) 1px, transparent 1px);
-      background-size: 38px 38px;
       pointer-events: none;
-      z-index: 0;
+      background-image:
+        linear-gradient(rgba(37,183,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37,183,255,.03) 1px, transparent 1px);
+      background-size: 40px 40px;
     }
-    button, input, select, textarea { font: inherit; }
-    button { cursor: pointer; }
+    button, input, textarea, select { font: inherit; }
 
     #authGate {
       position: fixed;
       inset: 0;
-      z-index: 50;
+      z-index: 30;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 1rem;
-      background: rgba(8, 10, 15, 0.94);
+      background: rgba(7, 11, 17, .95);
       backdrop-filter: blur(12px);
     }
     .auth-box {
       width: min(420px, 100%);
-      background: var(--surface);
       border: 1px solid var(--border2);
       border-radius: 24px;
+      background: var(--surface);
       padding: 2rem;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 18px 60px rgba(0,0,0,.35);
     }
-    .auth-kicker {
+    .auth-box strong {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       margin-bottom: 1rem;
       padding: 6px 10px;
-      border: 1px solid rgba(37,183,255,0.22);
       border-radius: 999px;
-      font-family: var(--mono);
-      font-size: 0.68rem;
+      border: 1px solid rgba(37,183,255,.25);
+      background: rgba(37,183,255,.08);
       color: var(--accent);
-      background: rgba(37,183,255,0.08);
+      font: 700 .7rem var(--mono);
     }
-    .auth-box h1 {
-      font-size: 1.45rem;
-      margin-bottom: 0.5rem;
-    }
-    .auth-box p {
-      color: var(--text2);
-      line-height: 1.6;
-      margin-bottom: 1.25rem;
-      font-size: 0.92rem;
-    }
+    .auth-box h1 { font-size: 1.4rem; margin-bottom: .55rem; }
+    .auth-box p { color: var(--text2); line-height: 1.6; margin-bottom: 1rem; }
     .auth-input {
-      width: 100%;
-      margin-bottom: 0.9rem;
-      padding: 12px 14px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border2);
-      background: var(--surface2);
-      color: var(--text);
-      font-family: var(--mono);
-      text-align: center;
-      letter-spacing: 0.08em;
-      outline: none;
+      width: 100%; padding: 12px 14px; border-radius: var(--rs);
+      border: 1px solid var(--border2); background: var(--surface2); color: var(--text);
+      outline: none; margin-bottom: .8rem; text-align: center; letter-spacing: .08em; font-family: var(--mono);
     }
     .auth-input:focus { border-color: var(--accent); }
-    .auth-actions { display: flex; gap: 10px; }
-    .auth-error {
-      margin-top: 0.9rem;
-      color: var(--bad);
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      display: none;
-    }
+    .auth-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .auth-error { display: none; margin-top: .8rem; color: var(--bad); font: 700 .74rem var(--mono); }
 
-    .page {
-      position: relative;
-      z-index: 1;
-      min-height: 100vh;
-    }
+    .page { position: relative; z-index: 1; }
     header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-      background: rgba(11, 13, 18, 0.85);
-      backdrop-filter: blur(14px);
+      position: sticky; top: 0; z-index: 5;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      padding: 1rem 1.25rem; border-bottom: 1px solid var(--border);
+      background: rgba(11,15,22,.82); backdrop-filter: blur(12px);
     }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .brand { display: flex; align-items: center; gap: 12px; }
     .brand-mark {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #081018;
-      font-size: 20px;
-      box-shadow: 0 10px 30px rgba(37,183,255,0.28);
+      width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #091019; font-size: 20px; font-weight: 800;
     }
-    .brand-copy h1 {
-      font-size: 1rem;
-      margin-bottom: 2px;
-    }
-    .brand-copy p {
-      color: var(--text3);
-      font-size: 0.72rem;
-      font-family: var(--mono);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .statusbar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
+    .brand-copy strong { display: block; font-size: 1rem; }
+    .brand-copy span { display: block; color: var(--text3); font: 700 .68rem var(--mono); letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; }
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 11px;
-      border-radius: 999px;
-      border: 1px solid var(--border2);
-      background: rgba(255,255,255,0.03);
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--text2);
+      display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px;
+      border: 1px solid var(--border2); background: rgba(255,255,255,.03); color: var(--text2); font: 700 .7rem var(--mono);
     }
-    .pill-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: currentColor;
-    }
+    .pill-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
     .pill.good { color: var(--good); }
     .pill.warn { color: var(--warn); }
     .pill.bad { color: var(--bad); }
-
-    .shell {
-      max-width: 1500px;
-      margin: 0 auto;
-      padding: 1.5rem;
-      display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr);
-      gap: 1.25rem;
-    }
-    .column {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-      min-width: 0;
-    }
-    .panel {
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
-    }
-    .panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 1rem 1.2rem;
-      border-bottom: 1px solid var(--border);
-      background: rgba(255,255,255,0.015);
-    }
-    .panel-title {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .panel-title strong {
-      font-size: 0.95rem;
-    }
-    .panel-title span {
-      color: var(--text3);
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .panel-body {
-      padding: 1.2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .subgrid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1rem;
-    }
-    .full { grid-column: 1 / -1; }
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .field label {
-      color: var(--text3);
-      font-family: var(--mono);
-      font-size: 0.67rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .input, .select, .textarea {
-      width: 100%;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border2);
-      background: var(--surface2);
-      color: var(--text);
-      padding: 11px 12px;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .textarea {
-      min-height: 110px;
-      resize: vertical;
-      line-height: 1.55;
-    }
-    .input:focus, .select:focus, .textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(37,183,255,0.1);
-    }
-    .input.invalid, .textarea.invalid { border-color: var(--bad); }
-    .hint {
-      color: var(--text3);
-      font-size: 0.76rem;
-      line-height: 1.5;
-    }
-    .error-text {
-      color: var(--bad);
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      display: none;
-    }
-    .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .toolbar.spread { justify-content: space-between; }
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 10px 14px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border2);
-      background: var(--surface2);
-      color: var(--text2);
-      text-decoration: none;
-      transition: all 0.18s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 10px 14px; border-radius: var(--rs); border: 1px solid var(--border2);
+      background: var(--surface2); color: var(--text2); text-decoration: none; cursor: pointer; transition: .18s;
     }
     .btn:hover { border-color: var(--accent); color: var(--accent); }
-    .btn.primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border-color: transparent;
-      color: #081018;
-      font-weight: 700;
-    }
-    .btn.primary:hover { color: #081018; transform: translateY(-1px); box-shadow: 0 10px 25px rgba(37,183,255,0.25); }
-    .btn.warn { color: var(--warn); }
+    .btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #091019; border-color: transparent; font-weight: 700; }
+    .btn.primary:hover { color: #091019; box-shadow: 0 10px 30px rgba(37,183,255,.22); }
     .btn.bad { color: var(--bad); }
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
+    .btn.warn { color: var(--warn); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
 
-    .version-tools {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
+    .shell {
+      max-width: 1500px; margin: 0 auto; padding: 1.25rem;
+      display: grid; grid-template-columns: 330px 1fr; gap: 1.25rem;
     }
-    .version-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-height: calc(100vh - 290px);
-      overflow-y: auto;
-      padding-right: 4px;
+    .stack { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
+    .panel {
+      border: 1px solid var(--border); border-radius: var(--r); overflow: hidden;
+      background: rgba(255,255,255,.03);
     }
-    .version-card {
-      width: 100%;
-      padding: 12px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.03);
-      text-align: left;
-      color: var(--text);
-      transition: all 0.18s;
+    .panel-header {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      padding: 1rem 1.1rem; border-bottom: 1px solid var(--border);
     }
-    .version-card:hover { border-color: var(--border2); transform: translateY(-1px); }
-    .version-card.active {
-      border-color: rgba(37,183,255,0.4);
-      background: rgba(37,183,255,0.08);
-      box-shadow: inset 0 0 0 1px rgba(37,183,255,0.08);
+    .panel-title strong { display: block; font-size: .92rem; }
+    .panel-title span { display: block; margin-top: 4px; color: var(--text3); font: 700 .64rem var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+    .panel-body { padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: 1rem; }
+    .list { display: flex; flex-direction: column; gap: 10px; }
+    .item-btn {
+      width: 100%; text-align: left; padding: 11px 12px; border-radius: var(--rs);
+      border: 1px solid var(--border); background: var(--surface); color: var(--text2); cursor: pointer; transition: .18s;
     }
-    .version-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 8px;
+    .item-btn:hover { border-color: var(--border2); color: var(--text); }
+    .item-btn.active { border-color: rgba(37,183,255,.34); background: rgba(37,183,255,.08); color: var(--accent); }
+    .item-btn strong { display: block; color: inherit; font-size: .84rem; }
+    .item-btn span { display: block; margin-top: 4px; color: var(--text3); font-size: .72rem; }
+    .search, .input, .textarea, .select {
+      width: 100%; padding: 11px 12px; border-radius: var(--rs); border: 1px solid var(--border2);
+      background: var(--surface2); color: var(--text); outline: none;
     }
-    .version-name {
-      font-family: var(--mono);
-      font-size: 0.8rem;
-      font-weight: 700;
-    }
-    .version-meta {
-      color: var(--text3);
-      font-size: 0.72rem;
-      line-height: 1.5;
-    }
-    .mini-tags {
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
-      margin-top: 8px;
-    }
-    .mini-tag {
-      padding: 2px 7px;
-      border-radius: 999px;
-      border: 1px solid var(--border2);
-      font-family: var(--mono);
-      font-size: 0.62rem;
-      color: var(--text2);
-    }
-    .mini-tag.latest { color: var(--warn); border-color: rgba(245,158,11,0.28); background: rgba(245,158,11,0.12); }
-
+    .search:focus, .input:focus, .textarea:focus, .select:focus { border-color: var(--accent); }
+    .textarea { min-height: 100px; resize: vertical; line-height: 1.55; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1rem; }
+    .full { grid-column: 1 / -1; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { color: var(--text3); font: 700 .66rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+    .hint { color: var(--text3); font-size: .76rem; line-height: 1.5; }
+    .error { display: none; color: var(--bad); font: 700 .72rem var(--mono); }
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; }
+    .toolbar.spread { justify-content: space-between; align-items: center; }
+    .empty { color: var(--text3); font: 700 .76rem var(--mono); padding: 1rem 0; text-align: center; }
     .toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 10px 12px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border2);
-      background: var(--surface2);
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      padding: 10px 12px; border-radius: var(--rs); border: 1px solid var(--border2); background: var(--surface2);
     }
-    .toggle-copy strong {
-      display: block;
-      font-size: 0.85rem;
-      margin-bottom: 2px;
-    }
-    .toggle-copy span {
-      color: var(--text3);
-      font-size: 0.75rem;
-    }
-    .toggle {
-      position: relative;
-      width: 44px;
-      height: 24px;
-      flex-shrink: 0;
-    }
+    .toggle-copy strong { display: block; font-size: .84rem; margin-bottom: 2px; }
+    .toggle-copy span { color: var(--text3); font-size: .75rem; }
+    .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
     .toggle span {
-      position: absolute;
-      inset: 0;
-      border-radius: 999px;
-      background: var(--border2);
-      transition: background 0.2s;
+      position: absolute; inset: 0; border-radius: 999px; background: var(--border2); transition: .18s;
     }
     .toggle span::after {
-      content: "";
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #b7c4df;
-      transition: transform 0.2s;
+      content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #c7d2e7; transition: .18s;
     }
-    .toggle input:checked + span {
-      background: rgba(37,183,255,0.35);
-    }
-    .toggle input:checked + span::after {
-      transform: translateX(20px);
-      background: #fff;
-    }
-
-    details.preview {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
+    .toggle input:checked + span { background: rgba(37,183,255,.35); }
+    .toggle input:checked + span::after { transform: translateX(20px); background: #fff; }
+    details.preview { border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
     details.preview summary {
+      cursor: pointer; padding: 1rem 1.1rem; background: rgba(255,255,255,.02); font: 700 .74rem var(--mono); color: var(--text2);
       list-style: none;
-      cursor: pointer;
-      padding: 1rem 1.2rem;
-      background: rgba(255,255,255,0.02);
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--text2);
     }
     details.preview summary::-webkit-details-marker { display: none; }
-    pre.preview-body {
-      padding: 1.2rem;
-      overflow: auto;
-      max-height: 320px;
-      background: rgba(0,0,0,0.2);
-      color: #cfe9ff;
-      font-family: var(--mono);
-      font-size: 0.74rem;
-      line-height: 1.55;
+    pre {
+      max-height: 320px; overflow: auto; padding: 1rem 1.1rem; background: rgba(0,0,0,.18);
+      color: #d6ecff; font: .74rem/1.55 var(--mono);
     }
-
     #toast {
-      position: fixed;
-      right: 1rem;
-      bottom: 1rem;
-      z-index: 60;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      position: fixed; right: 1rem; bottom: 1rem; z-index: 25;
+      display: flex; flex-direction: column; gap: 10px;
     }
     .toast {
-      min-width: 240px;
-      padding: 11px 14px;
-      border-radius: 12px;
-      border: 1px solid;
-      font-family: var(--mono);
-      font-size: 0.74rem;
-      animation: slideIn 0.2s ease;
-      backdrop-filter: blur(10px);
+      min-width: 240px; padding: 11px 14px; border-radius: 12px; border: 1px solid; font: .74rem var(--mono); animation: slideIn .2s ease;
     }
-    .toast.info { background: rgba(37,183,255,0.12); border-color: rgba(37,183,255,0.26); color: var(--accent); }
-    .toast.good { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.26); color: var(--good); }
-    .toast.bad { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.26); color: var(--bad); }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 1100px) {
-      .shell { grid-template-columns: 1fr; }
-      .version-list { max-height: none; }
-    }
+    .toast.info { background: rgba(37,183,255,.12); border-color: rgba(37,183,255,.26); color: var(--accent); }
+    .toast.good { background: rgba(34,197,94,.12); border-color: rgba(34,197,94,.26); color: var(--good); }
+    .toast.bad { background: rgba(239,68,68,.12); border-color: rgba(239,68,68,.26); color: var(--bad); }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 1120px) { .shell { grid-template-columns: 1fr; } }
     @media (max-width: 720px) {
-      header, .shell { padding: 1rem; }
-      .subgrid { grid-template-columns: 1fr; }
-      .version-tools { grid-template-columns: 1fr; }
-      .auth-actions, .toolbar.spread { flex-direction: column; align-items: stretch; }
-      .statusbar { justify-content: flex-start; }
+      .grid { grid-template-columns: 1fr; }
+      .auth-actions, .toolbar.spread, header { flex-direction: column; align-items: stretch; }
+      .header-actions { justify-content: flex-start; }
     }
   </style>
 </head>
 <body>
   <div id="authGate">
     <div class="auth-box">
-      <div class="auth-kicker">🔐 Verified Admin Access</div>
-      <h1>Unlock the release workspace</h1>
-      <p>The panel now checks your token with the server before opening, so wrong tokens fail early instead of after you edit data.</p>
-      <input id="authInput" class="auth-input" type="password" autocomplete="current-password" placeholder="Enter admin token" />
+      <strong>🔐 Verified Admin Access</strong>
+      <h1>Unlock the catalog editor</h1>
+      <p>This version lets you create categories, then plugins inside those categories, then releases inside each plugin.</p>
+      <input id="authInput" class="auth-input" type="password" placeholder="Enter admin token" autocomplete="current-password" />
       <div class="auth-actions">
         <button id="authBtn" class="btn primary" type="button">Unlock Panel</button>
         <a href="index.html" class="btn">Open Public Page</a>
@@ -531,193 +231,216 @@
       <div class="brand">
         <div class="brand-mark">⚡</div>
         <div class="brand-copy">
-          <h1>Plugin Control Center</h1>
-          <p>Metadata, versions, changelogs, categories, and publishing</p>
+          <strong>Plugin Catalog Admin</strong>
+          <span>Create category -> plugin -> releases</span>
         </div>
       </div>
-      <div class="statusbar">
+      <div class="header-actions">
         <div id="saveState" class="pill"><span class="pill-dot"></span><span>Ready</span></div>
-        <div class="pill"><span id="versionCount">0 versions</span></div>
         <a href="index.html" class="btn">↗ Public View</a>
+        <button id="saveAllBtn" class="btn primary" type="button">🚀 Save All</button>
       </div>
     </header>
 
     <main class="shell">
-      <section class="column">
-        <article class="panel">
+      <aside class="stack">
+        <div class="panel">
           <div class="panel-header">
             <div class="panel-title">
-              <strong>Plugin Settings</strong>
-              <span>Edit all top-level plugin metadata</span>
+              <strong>Categories</strong>
+              <span>Top-level groups like Core or Addon</span>
             </div>
           </div>
           <div class="panel-body">
-            <div class="subgrid">
+            <input id="categorySearch" class="search" type="text" placeholder="Search categories..." />
+            <div id="categoryList" class="list"></div>
+            <div class="toolbar">
+              <button id="newCategoryBtn" class="btn" type="button">＋ Category</button>
+              <button id="deleteCategoryBtn" class="btn bad" type="button">✕ Delete</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <strong>Plugins</strong>
+              <span>Sub-category items inside the selected category</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <input id="pluginSearch" class="search" type="text" placeholder="Search plugins..." />
+            <div id="pluginList" class="list"></div>
+            <div class="toolbar">
+              <button id="newPluginBtn" class="btn" type="button">＋ Plugin</button>
+              <button id="deletePluginBtn" class="btn bad" type="button">✕ Delete</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="stack">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <strong>Catalog Settings</strong>
+              <span>Public title and intro copy</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="grid">
+              <div class="field">
+                <label for="catalogTitle">Catalog Title</label>
+                <input id="catalogTitle" class="input" type="text" />
+              </div>
+              <div class="field">
+                <label for="categoryName">Selected Category Name</label>
+                <input id="categoryName" class="input" type="text" />
+                <div id="categoryNameError" class="error">Category name is required.</div>
+              </div>
+              <div class="field full">
+                <label for="catalogDescription">Catalog Description</label>
+                <textarea id="catalogDescription" class="textarea" placeholder="Describe the whole plugin catalog."></textarea>
+              </div>
+            </div>
+            <div class="toolbar">
+              <button id="applyCategoryBtn" class="btn" type="button">Apply Category Rename</button>
+              <button id="reloadBtn" class="btn" type="button">↻ Reload From Repo</button>
+              <button id="discardBtn" class="btn warn" type="button">↩ Discard Draft</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <strong>Plugin Editor</strong>
+              <span>Create a plugin inside the selected category, then upload builds</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="grid">
               <div class="field">
                 <label for="pluginName">Plugin Name</label>
-                <input id="pluginName" class="input plugin-field" type="text" />
+                <input id="pluginName" class="input" type="text" />
+                <div id="pluginNameError" class="error">Plugin name is required.</div>
               </div>
               <div class="field">
                 <label for="pluginAuthor">Author</label>
-                <input id="pluginAuthor" class="input plugin-field" type="text" />
+                <input id="pluginAuthor" class="input" type="text" />
               </div>
               <div class="field">
                 <label for="pluginWebsite">Website URL</label>
-                <input id="pluginWebsite" class="input plugin-field" type="url" placeholder="https://example.com" />
+                <input id="pluginWebsite" class="input" type="url" placeholder="https://example.com" />
               </div>
               <div class="field">
                 <label for="pluginSource">Source URL</label>
-                <input id="pluginSource" class="input plugin-field" type="url" placeholder="https://github.com/owner/repo" />
+                <input id="pluginSource" class="input" type="url" placeholder="https://github.com/owner/repo" />
               </div>
               <div class="field full">
-                <label for="pluginDescription">Description</label>
-                <textarea id="pluginDescription" class="textarea plugin-field" placeholder="Describe what this plugin does."></textarea>
-              </div>
-              <div class="field full">
-                <label for="pluginCategories">Categories</label>
-                <input id="pluginCategories" class="input plugin-field" type="text" placeholder="Core, Addon, Utility" />
-                <div class="hint">Comma-separated categories used on the public dashboard and in the version editor.</div>
+                <label for="pluginDescription">Plugin Description</label>
+                <textarea id="pluginDescription" class="textarea" placeholder="Describe this plugin."></textarea>
               </div>
             </div>
+            <div class="toolbar">
+              <button id="applyPluginBtn" class="btn" type="button">Apply Plugin Changes</button>
+            </div>
           </div>
-        </article>
+        </div>
 
-        <article class="panel">
+        <div class="panel">
           <div class="panel-header">
             <div class="panel-title">
               <strong>Release Editor</strong>
-              <span id="editorLabel">Create a new release draft</span>
+              <span>Builds for the selected plugin</span>
             </div>
             <div class="toolbar">
-              <button id="newVersionBtn" class="btn" type="button">＋ New</button>
-              <button id="duplicateVersionBtn" class="btn" type="button">⧉ Duplicate</button>
+              <button id="newReleaseBtn" class="btn" type="button">＋ Release</button>
+              <button id="deleteReleaseBtn" class="btn bad" type="button">✕ Delete Release</button>
             </div>
           </div>
           <div class="panel-body">
-            <div class="subgrid">
+            <div id="releaseList" class="list"></div>
+            <div class="grid">
               <div class="field">
-                <label for="vName">Release Name</label>
-                <input id="vName" class="input version-field" type="text" placeholder="Stable Release" />
-                <div id="err-vName" class="error-text">Release name is required.</div>
+                <label for="releaseName">Release Name</label>
+                <input id="releaseName" class="input" type="text" />
+                <div id="releaseNameError" class="error">Release name is required.</div>
               </div>
               <div class="field">
-                <label for="vVersion">Version Number</label>
-                <input id="vVersion" class="input version-field" type="text" placeholder="1.0.0" />
-                <div id="err-vVersion" class="error-text">Version number is required.</div>
+                <label for="releaseVersion">Version Number</label>
+                <input id="releaseVersion" class="input" type="text" />
+                <div id="releaseVersionError" class="error">Version number is required and must be unique.</div>
               </div>
               <div class="field">
-                <label for="vType">Release Type</label>
-                <select id="vType" class="select version-field">
+                <label for="releaseType">Release Type</label>
+                <select id="releaseType" class="select">
                   <option value="stable">Stable</option>
                   <option value="pre-release">Pre-Release</option>
                 </select>
               </div>
               <div class="field">
-                <label for="vLoader">Loader</label>
-                <select id="vLoader" class="select version-field">
+                <label for="releaseLoader">Loader</label>
+                <select id="releaseLoader" class="select">
                   <option value="PaperMC">PaperMC</option>
                   <option value="Bukkit">Bukkit</option>
                   <option value="Purpur">Purpur</option>
                 </select>
               </div>
               <div class="field">
-                <label for="vStatus">Status</label>
-                <select id="vStatus" class="select version-field">
+                <label for="releaseStatus">Status</label>
+                <select id="releaseStatus" class="select">
                   <option value="success">Success</option>
                   <option value="maintenance">Maintenance</option>
                   <option value="fail">Fail</option>
                 </select>
               </div>
               <div class="field">
-                <label for="vCategory">Category</label>
-                <input id="vCategory" list="categoryOptions" class="input version-field" type="text" placeholder="Core" />
-              </div>
-              <div class="field">
-                <label for="vMinecraft">Minecraft Version</label>
-                <input id="vMinecraft" class="input version-field" type="text" placeholder="1.21.x" />
-              </div>
-              <div class="field">
-                <label for="vDownload">Download URL</label>
-                <input id="vDownload" class="input version-field" type="url" placeholder="https://..." />
-                <div id="err-vDownload" class="error-text">Download URL must be https.</div>
+                <label for="releaseMinecraft">Minecraft Version</label>
+                <input id="releaseMinecraft" class="input" type="text" placeholder="1.21.x" />
               </div>
               <div class="field full">
-                <label for="vDescription">Release Description</label>
-                <textarea id="vDescription" class="textarea version-field" placeholder="Summarize this release."></textarea>
+                <label for="releaseDownload">Download URL</label>
+                <input id="releaseDownload" class="input" type="url" placeholder="https://..." />
+                <div id="releaseDownloadError" class="error">Download URL must be valid https.</div>
               </div>
               <div class="field full">
-                <label for="vChangelog">Changelog</label>
-                <textarea id="vChangelog" class="textarea version-field" placeholder="One item per line"></textarea>
-                <div class="hint">Each line becomes one changelog bullet on the public page.</div>
+                <label for="releaseDescription">Release Description</label>
+                <textarea id="releaseDescription" class="textarea" placeholder="Describe what changed in this build."></textarea>
+              </div>
+              <div class="field full">
+                <label for="releaseChangelog">Changelog</label>
+                <textarea id="releaseChangelog" class="textarea" placeholder="One changelog line per row"></textarea>
+                <div class="hint">Each line is saved as one changelog item.</div>
               </div>
               <div class="field full">
                 <div class="toggle-row">
                   <div class="toggle-copy">
-                    <strong>Mark as latest release</strong>
-                    <span>When enabled, this release becomes the only latest entry.</span>
+                    <strong>Mark as latest build</strong>
+                    <span>Only one release per plugin can be latest.</span>
                   </div>
                   <label class="toggle">
-                    <input id="vLatest" class="version-field" type="checkbox" />
+                    <input id="releaseLatest" type="checkbox" />
                     <span></span>
                   </label>
                 </div>
               </div>
             </div>
-            <div class="toolbar spread">
-              <div class="toolbar">
-                <button id="applyVersionBtn" class="btn primary" type="button">⬆ Apply To Draft</button>
-                <button id="resetVersionBtn" class="btn" type="button">↺ Reset Form</button>
-              </div>
-              <button id="deleteVersionBtn" class="btn bad" type="button">✕ Delete Selected</button>
+            <div class="toolbar">
+              <button id="applyReleaseBtn" class="btn primary" type="button">Apply Release Changes</button>
+              <button id="resetReleaseBtn" class="btn" type="button">↺ Reset Release Form</button>
             </div>
           </div>
-        </article>
-
-        <article class="panel">
-          <div class="panel-header">
-            <div class="panel-title">
-              <strong>Publishing</strong>
-              <span>Draft changes stay local until you push them</span>
-            </div>
-          </div>
-          <div class="panel-body">
-            <div class="toolbar spread">
-              <div class="toolbar">
-                <button id="saveAllBtn" class="btn primary" type="button">🚀 Save All To GitHub</button>
-                <button id="discardBtn" class="btn warn" type="button">↩ Discard Draft</button>
-              </div>
-              <div class="hint">Safe save flow: if the server rejects a write, your last synced data remains intact.</div>
-            </div>
-          </div>
-        </article>
+        </div>
 
         <details class="preview">
           <summary>Raw JSON Preview</summary>
-          <pre id="jsonPreview" class="preview-body">{}</pre>
+          <pre id="jsonPreview">{}</pre>
         </details>
       </section>
-
-      <aside class="column">
-        <article class="panel">
-          <div class="panel-header">
-            <div class="panel-title">
-              <strong>Release Library</strong>
-              <span>Search, select, duplicate, and clean up entries</span>
-            </div>
-          </div>
-          <div class="panel-body">
-            <div class="version-tools">
-              <input id="versionSearch" class="input" type="text" placeholder="Search versions, loaders, categories..." />
-              <button id="reloadBtn" class="btn" type="button">↻ Reload</button>
-            </div>
-            <div id="versionList" class="version-list"></div>
-          </div>
-        </article>
-      </aside>
     </main>
   </div>
 
-  <datalist id="categoryOptions"></datalist>
   <div id="toast"></div>
 
   <script>
@@ -726,50 +449,55 @@
     const API_ENDPOINT = "/.netlify/functions/api";
 
     let adminToken = "";
-    let currentData = createEmptyData();
-    let draftData = createEmptyData();
-    let selectedIndex = null;
-    let isDirty = false;
+    let currentData = createEmptyCatalog();
+    let draftData = createEmptyCatalog();
+    let selectedCategoryIndex = 0;
+    let selectedPluginIndex = 0;
+    let selectedReleaseIndex = 0;
+    let dirty = false;
 
     const authGate = document.getElementById("authGate");
     const authInput = document.getElementById("authInput");
     const authBtn = document.getElementById("authBtn");
     const authError = document.getElementById("authError");
-    const saveAllBtn = document.getElementById("saveAllBtn");
     const saveState = document.getElementById("saveState");
-    const versionSearch = document.getElementById("versionSearch");
 
     authBtn.addEventListener("click", authenticate);
     authInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") authenticate();
     });
 
-    document.getElementById("reloadBtn").addEventListener("click", loadData);
-    document.getElementById("newVersionBtn").addEventListener("click", () => selectVersion(null));
-    document.getElementById("duplicateVersionBtn").addEventListener("click", duplicateSelectedVersion);
-    document.getElementById("applyVersionBtn").addEventListener("click", applyVersionDraft);
-    document.getElementById("resetVersionBtn").addEventListener("click", renderVersionForm);
-    document.getElementById("deleteVersionBtn").addEventListener("click", deleteSelectedVersion);
     document.getElementById("saveAllBtn").addEventListener("click", saveAll);
+    document.getElementById("reloadBtn").addEventListener("click", loadData);
     document.getElementById("discardBtn").addEventListener("click", discardDraft);
-    versionSearch.addEventListener("input", renderVersionList);
 
-    document.querySelectorAll(".plugin-field").forEach((field) => {
-      field.addEventListener("input", syncPluginFieldsFromForm);
-    });
+    document.getElementById("categorySearch").addEventListener("input", renderCategoryList);
+    document.getElementById("pluginSearch").addEventListener("input", renderPluginList);
+
+    document.getElementById("newCategoryBtn").addEventListener("click", createCategory);
+    document.getElementById("deleteCategoryBtn").addEventListener("click", deleteCategory);
+    document.getElementById("applyCategoryBtn").addEventListener("click", applyCategoryRename);
+
+    document.getElementById("newPluginBtn").addEventListener("click", createPlugin);
+    document.getElementById("deletePluginBtn").addEventListener("click", deletePlugin);
+    document.getElementById("applyPluginBtn").addEventListener("click", applyPluginChanges);
+
+    document.getElementById("newReleaseBtn").addEventListener("click", createRelease);
+    document.getElementById("deleteReleaseBtn").addEventListener("click", deleteRelease);
+    document.getElementById("applyReleaseBtn").addEventListener("click", applyReleaseChanges);
+    document.getElementById("resetReleaseBtn").addEventListener("click", renderReleaseForm);
+
+    document.getElementById("catalogTitle").addEventListener("input", syncCatalogFields);
+    document.getElementById("catalogDescription").addEventListener("input", syncCatalogFields);
 
     restoreSession();
 
-    function createEmptyData() {
+    function createEmptyCatalog() {
       return {
-        plugin: {
-          name: "",
+        catalog: {
+          title: "Plugin Catalog",
           description: "",
-          author: "",
-          website: "",
-          source: "",
           categories: [],
-          versions: [],
         },
       };
     }
@@ -778,35 +506,40 @@
       return JSON.parse(JSON.stringify(value));
     }
 
-    function normalizeData(input) {
-      const plugin = input?.plugin || {};
+    function stringValue(value) {
+      return typeof value === "string" ? value.trim() : "";
+    }
+
+    function normalizeCatalog(input) {
+      const catalog = input?.catalog || {};
       return {
-        plugin: {
-          name: stringValue(plugin.name),
-          description: stringValue(plugin.description),
-          author: stringValue(plugin.author),
-          website: stringValue(plugin.website),
-          source: stringValue(plugin.source),
-          categories: Array.isArray(plugin.categories) ? plugin.categories.map(stringValue).filter(Boolean) : [],
-          versions: Array.isArray(plugin.versions) ? plugin.versions.map((version) => ({
-            name: stringValue(version.name),
-            version: stringValue(version.version),
-            type: version.type || "stable",
-            latest: Boolean(version.latest),
-            status: version.status || "success",
-            loader: version.loader || "PaperMC",
-            category: stringValue(version.category),
-            minecraft: stringValue(version.minecraft),
-            description: stringValue(version.description),
-            changelog: Array.isArray(version.changelog) ? version.changelog.map(stringValue).filter(Boolean) : [],
-            download: stringValue(version.download),
+        catalog: {
+          title: stringValue(catalog.title) || "Plugin Catalog",
+          description: stringValue(catalog.description),
+          categories: Array.isArray(catalog.categories) ? catalog.categories.map((category) => ({
+            name: stringValue(category.name),
+            plugins: Array.isArray(category.plugins) ? category.plugins.map((plugin) => ({
+              name: stringValue(plugin.name),
+              description: stringValue(plugin.description),
+              author: stringValue(plugin.author),
+              website: stringValue(plugin.website),
+              source: stringValue(plugin.source),
+              releases: Array.isArray(plugin.releases) ? plugin.releases.map((release) => ({
+                name: stringValue(release.name),
+                version: stringValue(release.version),
+                type: stringValue(release.type) || "stable",
+                latest: Boolean(release.latest),
+                status: stringValue(release.status) || "success",
+                loader: stringValue(release.loader) || "PaperMC",
+                minecraft: stringValue(release.minecraft),
+                description: stringValue(release.description),
+                changelog: Array.isArray(release.changelog) ? release.changelog.map(stringValue).filter(Boolean) : [],
+                download: stringValue(release.download),
+              })) : [],
+            })) : [],
           })) : [],
         },
       };
-    }
-
-    function stringValue(value) {
-      return typeof value === "string" ? value.trim() : "";
     }
 
     function setSaveState(kind, text) {
@@ -815,26 +548,38 @@
     }
 
     function markDirty(value = true) {
-      isDirty = value;
-      setSaveState(value ? "warn" : "", value ? "Draft has unpublished changes" : "Ready");
-      updateJsonPreview();
+      dirty = value;
+      setSaveState(value ? "warn" : "", value ? "Draft changed" : "Ready");
+      renderPreview();
     }
 
     function toast(message, kind = "info") {
-      const host = document.getElementById("toast");
-      const item = document.createElement("div");
-      item.className = `toast ${kind}`;
-      item.textContent = message;
-      host.appendChild(item);
-      setTimeout(() => item.remove(), 3200);
+      const node = document.createElement("div");
+      node.className = `toast ${kind}`;
+      node.textContent = message;
+      document.getElementById("toast").appendChild(node);
+      setTimeout(() => node.remove(), 3200);
+    }
+
+    async function validateToken(token) {
+      const response = await fetch(UPDATE_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Admin-Token": token,
+        },
+        body: JSON.stringify({ action: "validate" }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || `HTTP ${response.status}`);
+      return result;
     }
 
     async function authenticate() {
-      const candidate = authInput.value.trim();
+      const token = authInput.value.trim();
       authError.style.display = "none";
       authError.textContent = "";
-
-      if (!candidate) {
+      if (!token) {
         authError.textContent = "Enter your admin token first.";
         authError.style.display = "block";
         return;
@@ -842,14 +587,11 @@
 
       authBtn.disabled = true;
       authBtn.textContent = "Checking...";
-
       try {
-        await validateToken(candidate);
-
-        adminToken = candidate;
-        sessionStorage.setItem(ADMIN_TOKEN_KEY, candidate);
+        await validateToken(token);
+        adminToken = token;
+        sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
         authGate.style.display = "none";
-        setSaveState("", "Ready");
         await loadData();
       } catch (error) {
         authError.textContent = error.message || "Token validation failed.";
@@ -873,32 +615,15 @@
       }
     }
 
-    async function validateToken(token) {
-      const response = await fetch(UPDATE_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Admin-Token": token,
-        },
-        body: JSON.stringify({ action: "validate" }),
-      });
-
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        throw new Error(result.error || `HTTP ${response.status}`);
-      }
-      return result;
-    }
-
     async function loadData() {
-      setSaveState("", "Loading latest data...");
+      setSaveState("", "Loading catalog...");
       try {
         const response = await fetch(API_ENDPOINT);
         if (!response.ok) throw new Error(`API error ${response.status}`);
-        const data = normalizeData(await response.json());
+        const data = normalizeCatalog(await response.json());
         currentData = clone(data);
         draftData = clone(data);
-        selectedIndex = data.plugin.versions.length ? 0 : null;
+        clampSelection();
         renderAll();
         markDirty(false);
       } catch (error) {
@@ -907,219 +632,466 @@
       }
     }
 
+    function clampSelection() {
+      const categories = draftData.catalog.categories;
+      if (selectedCategoryIndex >= categories.length) selectedCategoryIndex = Math.max(0, categories.length - 1);
+      const plugins = currentCategory()?.plugins || [];
+      if (selectedPluginIndex >= plugins.length) selectedPluginIndex = Math.max(0, plugins.length - 1);
+      const releases = currentPlugin()?.releases || [];
+      if (selectedReleaseIndex >= releases.length) selectedReleaseIndex = Math.max(0, releases.length - 1);
+    }
+
+    function currentCategory() {
+      return draftData.catalog.categories[selectedCategoryIndex] || null;
+    }
+
+    function currentPlugin() {
+      return currentCategory()?.plugins?.[selectedPluginIndex] || null;
+    }
+
+    function currentRelease() {
+      return currentPlugin()?.releases?.[selectedReleaseIndex] || null;
+    }
+
     function renderAll() {
-      renderPluginFields();
-      refreshCategoryOptions();
-      renderVersionList();
-      renderVersionForm();
-      updateJsonPreview();
-      document.getElementById("versionCount").textContent = `${draftData.plugin.versions.length} versions`;
+      document.getElementById("catalogTitle").value = draftData.catalog.title || "";
+      document.getElementById("catalogDescription").value = draftData.catalog.description || "";
+      renderCategoryList();
+      renderPluginList();
+      renderCategoryForm();
+      renderPluginForm();
+      renderReleaseList();
+      renderReleaseForm();
+      renderPreview();
     }
 
-    function renderPluginFields() {
-      const plugin = draftData.plugin;
-      document.getElementById("pluginName").value = plugin.name || "";
-      document.getElementById("pluginAuthor").value = plugin.author || "";
-      document.getElementById("pluginWebsite").value = plugin.website || "";
-      document.getElementById("pluginSource").value = plugin.source || "";
-      document.getElementById("pluginDescription").value = plugin.description || "";
-      document.getElementById("pluginCategories").value = (plugin.categories || []).join(", ");
-    }
+    function renderCategoryList() {
+      const query = document.getElementById("categorySearch").value.trim().toLowerCase();
+      const categories = draftData.catalog.categories.filter((category) => !query || category.name.toLowerCase().includes(query));
+      const list = document.getElementById("categoryList");
 
-    function syncPluginFieldsFromForm() {
-      draftData.plugin.name = stringValue(document.getElementById("pluginName").value);
-      draftData.plugin.author = stringValue(document.getElementById("pluginAuthor").value);
-      draftData.plugin.website = stringValue(document.getElementById("pluginWebsite").value);
-      draftData.plugin.source = stringValue(document.getElementById("pluginSource").value);
-      draftData.plugin.description = stringValue(document.getElementById("pluginDescription").value);
-      draftData.plugin.categories = document.getElementById("pluginCategories").value
-        .split(",")
-        .map((item) => item.trim())
-        .filter(Boolean)
-        .filter((item, index, array) => array.indexOf(item) === index);
-      refreshCategoryOptions();
-      markDirty(true);
-    }
-
-    function refreshCategoryOptions() {
-      const categories = draftData.plugin.categories || [];
-      document.getElementById("categoryOptions").innerHTML = categories
-        .map((category) => `<option value="${escapeAttr(category)}"></option>`)
-        .join("");
-    }
-
-    function renderVersionList() {
-      const query = versionSearch.value.trim().toLowerCase();
-      const versions = draftData.plugin.versions || [];
-      const filtered = versions.filter((version) => {
-        if (!query) return true;
-        const haystack = [
-          version.name,
-          version.version,
-          version.loader,
-          version.status,
-          version.type,
-          version.category,
-          version.minecraft,
-          version.description,
-          Array.isArray(version.changelog) ? version.changelog.join(" ") : "",
-        ].filter(Boolean).join(" ").toLowerCase();
-        return haystack.includes(query);
-      });
-
-      const list = document.getElementById("versionList");
-      if (!filtered.length) {
-        list.innerHTML = '<div class="hint">No release matches your current search.</div>';
+      if (!categories.length) {
+        list.innerHTML = '<div class="empty">No categories found.</div>';
         return;
       }
 
-      list.innerHTML = filtered.map((version) => {
-        const actualIndex = versions.indexOf(version);
-        const active = actualIndex === selectedIndex ? "active" : "";
+      list.innerHTML = categories.map((category) => {
+        const actualIndex = draftData.catalog.categories.indexOf(category);
         return `
-          <button type="button" class="version-card ${active}" data-index="${actualIndex}">
-            <div class="version-top">
-              <div>
-                <div class="version-name">v${escapeHtml(version.version || "draft")} - ${escapeHtml(version.name || "Untitled release")}</div>
-                <div class="version-meta">${escapeHtml(version.type)} · ${escapeHtml(version.loader)} · ${escapeHtml(version.status)}</div>
-              </div>
-              <div>${version.latest ? '<span class="mini-tag latest">LATEST</span>' : ""}</div>
-            </div>
-            <div class="version-meta">${escapeHtml(version.category || "No category")} · ${escapeHtml(version.minecraft || "No MC version")}</div>
-            <div class="mini-tags">
-              ${version.download ? '<span class="mini-tag">link</span>' : ""}
-              ${version.description ? '<span class="mini-tag">description</span>' : ""}
-              ${version.changelog?.length ? `<span class="mini-tag">${version.changelog.length} notes</span>` : ""}
-            </div>
+          <button type="button" class="item-btn ${actualIndex === selectedCategoryIndex ? "active" : ""}" data-index="${actualIndex}">
+            <strong>${escapeHtml(category.name || "Untitled category")}</strong>
+            <span>${category.plugins.length} plugin${category.plugins.length === 1 ? "" : "s"}</span>
           </button>
         `;
       }).join("");
 
       list.querySelectorAll("[data-index]").forEach((button) => {
-        button.addEventListener("click", () => selectVersion(Number(button.dataset.index)));
+        button.addEventListener("click", () => {
+          selectedCategoryIndex = Number(button.dataset.index);
+          selectedPluginIndex = 0;
+          selectedReleaseIndex = 0;
+          renderAll();
+        });
       });
     }
 
-    function selectVersion(index) {
-      selectedIndex = Number.isInteger(index) ? index : null;
-      renderVersionList();
-      renderVersionForm();
+    function renderPluginList() {
+      const category = currentCategory();
+      const query = document.getElementById("pluginSearch").value.trim().toLowerCase();
+      const list = document.getElementById("pluginList");
+
+      if (!category) {
+        list.innerHTML = '<div class="empty">Create a category first.</div>';
+        return;
+      }
+
+      const plugins = category.plugins.filter((plugin) => !query || plugin.name.toLowerCase().includes(query));
+      if (!plugins.length) {
+        list.innerHTML = '<div class="empty">No plugins in this category.</div>';
+        return;
+      }
+
+      list.innerHTML = plugins.map((plugin) => {
+        const actualIndex = category.plugins.indexOf(plugin);
+        return `
+          <button type="button" class="item-btn ${actualIndex === selectedPluginIndex ? "active" : ""}" data-index="${actualIndex}">
+            <strong>${escapeHtml(plugin.name || "Untitled plugin")}</strong>
+            <span>${plugin.releases.length} release${plugin.releases.length === 1 ? "" : "s"}</span>
+          </button>
+        `;
+      }).join("");
+
+      list.querySelectorAll("[data-index]").forEach((button) => {
+        button.addEventListener("click", () => {
+          selectedPluginIndex = Number(button.dataset.index);
+          selectedReleaseIndex = 0;
+          renderAll();
+        });
+      });
     }
 
-    function renderVersionForm() {
-      clearVersionErrors();
-      const version = selectedIndex == null ? createEmptyVersion() : draftData.plugin.versions[selectedIndex];
-      document.getElementById("editorLabel").textContent =
-        selectedIndex == null ? "Create a new release draft" : `Editing v${version.version || "draft"}`;
-      document.getElementById("vName").value = version.name || "";
-      document.getElementById("vVersion").value = version.version || "";
-      document.getElementById("vType").value = version.type || "stable";
-      document.getElementById("vLoader").value = version.loader || "PaperMC";
-      document.getElementById("vStatus").value = version.status || "success";
-      document.getElementById("vCategory").value = version.category || "";
-      document.getElementById("vMinecraft").value = version.minecraft || "";
-      document.getElementById("vDownload").value = version.download || "";
-      document.getElementById("vDescription").value = version.description || "";
-      document.getElementById("vChangelog").value = Array.isArray(version.changelog) ? version.changelog.join("\n") : "";
-      document.getElementById("vLatest").checked = Boolean(version.latest);
-      document.getElementById("deleteVersionBtn").disabled = selectedIndex == null;
-      document.getElementById("duplicateVersionBtn").disabled = selectedIndex == null;
+    function renderCategoryForm() {
+      const category = currentCategory();
+      document.getElementById("categoryName").value = category?.name || "";
+      document.getElementById("deleteCategoryBtn").disabled = !category;
+      document.getElementById("newPluginBtn").disabled = !category;
+      document.getElementById("deletePluginBtn").disabled = !currentPlugin();
     }
 
-    function createEmptyVersion() {
-      return {
-        name: "",
+    function renderPluginForm() {
+      const plugin = currentPlugin();
+      document.getElementById("pluginName").value = plugin?.name || "";
+      document.getElementById("pluginAuthor").value = plugin?.author || "";
+      document.getElementById("pluginWebsite").value = plugin?.website || "";
+      document.getElementById("pluginSource").value = plugin?.source || "";
+      document.getElementById("pluginDescription").value = plugin?.description || "";
+      document.getElementById("applyPluginBtn").disabled = !plugin;
+    }
+
+    function renderReleaseList() {
+      const plugin = currentPlugin();
+      const list = document.getElementById("releaseList");
+      if (!plugin) {
+        list.innerHTML = '<div class="empty">Create a plugin first, then add releases.</div>';
+        return;
+      }
+      if (!plugin.releases.length) {
+        list.innerHTML = '<div class="empty">No releases yet for this plugin.</div>';
+        return;
+      }
+      list.innerHTML = plugin.releases.map((release, index) => `
+        <button type="button" class="item-btn ${index === selectedReleaseIndex ? "active" : ""}" data-index="${index}">
+          <strong>${escapeHtml(release.version || "Untitled release")} - ${escapeHtml(release.name || "No name")}</strong>
+          <span>${escapeHtml(release.type || "stable")} · ${escapeHtml(release.status || "success")} ${release.latest ? "· latest" : ""}</span>
+        </button>
+      `).join("");
+
+      list.querySelectorAll("[data-index]").forEach((button) => {
+        button.addEventListener("click", () => {
+          selectedReleaseIndex = Number(button.dataset.index);
+          renderReleaseList();
+          renderReleaseForm();
+        });
+      });
+    }
+
+    function renderReleaseForm() {
+      clearReleaseErrors();
+      const release = currentRelease();
+      document.getElementById("releaseName").value = release?.name || "";
+      document.getElementById("releaseVersion").value = release?.version || "";
+      document.getElementById("releaseType").value = release?.type || "stable";
+      document.getElementById("releaseLoader").value = release?.loader || "PaperMC";
+      document.getElementById("releaseStatus").value = release?.status || "success";
+      document.getElementById("releaseMinecraft").value = release?.minecraft || "";
+      document.getElementById("releaseDownload").value = release?.download || "";
+      document.getElementById("releaseDescription").value = release?.description || "";
+      document.getElementById("releaseChangelog").value = release?.changelog?.join("\n") || "";
+      document.getElementById("releaseLatest").checked = Boolean(release?.latest);
+      document.getElementById("deleteReleaseBtn").disabled = !release;
+      document.getElementById("applyReleaseBtn").disabled = !currentPlugin();
+    }
+
+    function syncCatalogFields() {
+      draftData.catalog.title = stringValue(document.getElementById("catalogTitle").value) || "Plugin Catalog";
+      draftData.catalog.description = stringValue(document.getElementById("catalogDescription").value);
+      markDirty(true);
+    }
+
+    function createCategory() {
+      syncCatalogFields();
+      draftData.catalog.categories.push({ name: `New Category ${draftData.catalog.categories.length + 1}`, plugins: [] });
+      selectedCategoryIndex = draftData.catalog.categories.length - 1;
+      selectedPluginIndex = 0;
+      selectedReleaseIndex = 0;
+      renderAll();
+      markDirty(true);
+    }
+
+    function deleteCategory() {
+      const category = currentCategory();
+      if (!category) return;
+      if (!confirm(`Delete category "${category.name}" and everything inside it?`)) return;
+      draftData.catalog.categories.splice(selectedCategoryIndex, 1);
+      clampSelection();
+      renderAll();
+      markDirty(true);
+    }
+
+    function applyCategoryRename() {
+      const category = currentCategory();
+      if (!category) return;
+      const nextName = stringValue(document.getElementById("categoryName").value);
+      const error = document.getElementById("categoryNameError");
+      error.style.display = "none";
+      if (!nextName) {
+        error.style.display = "block";
+        return;
+      }
+      const duplicate = draftData.catalog.categories.findIndex((item, index) => index !== selectedCategoryIndex && item.name.toLowerCase() === nextName.toLowerCase());
+      if (duplicate !== -1) {
+        error.textContent = "Category name must be unique.";
+        error.style.display = "block";
+        return;
+      }
+      error.textContent = "Category name is required.";
+      category.name = nextName;
+      renderCategoryList();
+      markDirty(true);
+    }
+
+    function createPlugin() {
+      const category = currentCategory();
+      if (!category) return;
+      category.plugins.push({
+        name: `New Plugin ${category.plugins.length + 1}`,
+        description: "",
+        author: "",
+        website: "",
+        source: "",
+        releases: [],
+      });
+      selectedPluginIndex = category.plugins.length - 1;
+      selectedReleaseIndex = 0;
+      renderAll();
+      markDirty(true);
+    }
+
+    function deletePlugin() {
+      const category = currentCategory();
+      const plugin = currentPlugin();
+      if (!category || !plugin) return;
+      if (!confirm(`Delete plugin "${plugin.name}" and all of its releases?`)) return;
+      category.plugins.splice(selectedPluginIndex, 1);
+      clampSelection();
+      renderAll();
+      markDirty(true);
+    }
+
+    function applyPluginChanges() {
+      const plugin = currentPlugin();
+      const category = currentCategory();
+      if (!plugin || !category) return;
+      const nextName = stringValue(document.getElementById("pluginName").value);
+      const website = stringValue(document.getElementById("pluginWebsite").value);
+      const source = stringValue(document.getElementById("pluginSource").value);
+      const error = document.getElementById("pluginNameError");
+      error.style.display = "none";
+
+      if (!nextName) {
+        error.textContent = "Plugin name is required.";
+        error.style.display = "block";
+        return;
+      }
+      const duplicate = category.plugins.findIndex((item, index) => index !== selectedPluginIndex && item.name.toLowerCase() === nextName.toLowerCase());
+      if (duplicate !== -1) {
+        error.textContent = "Plugin name must be unique inside the category.";
+        error.style.display = "block";
+        return;
+      }
+      if (website && !isHttpsUrl(website)) {
+        toast("Plugin website must use https.", "bad");
+        return;
+      }
+      if (source && !isHttpsUrl(source)) {
+        toast("Plugin source must use https.", "bad");
+        return;
+      }
+
+      plugin.name = nextName;
+      plugin.author = stringValue(document.getElementById("pluginAuthor").value);
+      plugin.website = website;
+      plugin.source = source;
+      plugin.description = stringValue(document.getElementById("pluginDescription").value);
+      renderPluginList();
+      markDirty(true);
+    }
+
+    function createRelease() {
+      const plugin = currentPlugin();
+      if (!plugin) return;
+      plugin.releases.push({
+        name: "New Release",
         version: "",
         type: "stable",
-        latest: false,
+        latest: plugin.releases.length === 0,
         status: "success",
         loader: "PaperMC",
-        category: "",
         minecraft: "",
         description: "",
         changelog: [],
         download: "",
-      };
+      });
+      selectedReleaseIndex = plugin.releases.length - 1;
+      renderReleaseList();
+      renderReleaseForm();
+      markDirty(true);
     }
 
-    function readVersionForm() {
-      return {
-        name: stringValue(document.getElementById("vName").value),
-        version: stringValue(document.getElementById("vVersion").value),
-        type: document.getElementById("vType").value,
-        latest: document.getElementById("vLatest").checked,
-        status: document.getElementById("vStatus").value,
-        loader: document.getElementById("vLoader").value,
-        category: stringValue(document.getElementById("vCategory").value),
-        minecraft: stringValue(document.getElementById("vMinecraft").value),
-        description: stringValue(document.getElementById("vDescription").value),
-        changelog: document.getElementById("vChangelog").value
-          .split(/\r?\n/)
-          .map((item) => item.trim())
-          .filter(Boolean),
-        download: stringValue(document.getElementById("vDownload").value),
-      };
+    function deleteRelease() {
+      const plugin = currentPlugin();
+      const release = currentRelease();
+      if (!plugin || !release) return;
+      if (!confirm(`Delete release "${release.version || release.name}"?`)) return;
+      plugin.releases.splice(selectedReleaseIndex, 1);
+      clampSelection();
+      renderReleaseList();
+      renderReleaseForm();
+      markDirty(true);
     }
 
-    function validateVersion(version) {
-      clearVersionErrors();
+    function applyReleaseChanges() {
+      const plugin = currentPlugin();
+      const release = currentRelease();
+      if (!plugin || !release) return;
+      const candidate = {
+        name: stringValue(document.getElementById("releaseName").value),
+        version: stringValue(document.getElementById("releaseVersion").value),
+        type: document.getElementById("releaseType").value,
+        latest: document.getElementById("releaseLatest").checked,
+        status: document.getElementById("releaseStatus").value,
+        loader: document.getElementById("releaseLoader").value,
+        minecraft: stringValue(document.getElementById("releaseMinecraft").value),
+        description: stringValue(document.getElementById("releaseDescription").value),
+        changelog: document.getElementById("releaseChangelog").value.split(/\r?\n/).map((item) => item.trim()).filter(Boolean),
+        download: stringValue(document.getElementById("releaseDownload").value),
+      };
+
+      if (!validateReleaseCandidate(candidate, plugin.releases, selectedReleaseIndex)) return;
+      Object.assign(release, candidate);
+
+      if (candidate.latest) {
+        plugin.releases = plugin.releases.map((item, index) => ({ ...item, latest: index === selectedReleaseIndex }));
+      }
+
+      renderReleaseList();
+      renderReleaseForm();
+      markDirty(true);
+    }
+
+    function validateReleaseCandidate(candidate, releases, editingIndex) {
+      clearReleaseErrors();
       let valid = true;
-
-      if (!version.name) {
-        setFieldError("vName", "err-vName");
+      if (!candidate.name) {
+        document.getElementById("releaseNameError").style.display = "block";
         valid = false;
       }
-      if (!version.version) {
-        setFieldError("vVersion", "err-vVersion");
+      if (!candidate.version) {
+        document.getElementById("releaseVersionError").textContent = "Version number is required and must be unique.";
+        document.getElementById("releaseVersionError").style.display = "block";
         valid = false;
       }
-      if (!isHttpsUrl(version.download)) {
-        setFieldError("vDownload", "err-vDownload");
+      const duplicate = releases.findIndex((item, index) => index !== editingIndex && item.version.toLowerCase() === candidate.version.toLowerCase());
+      if (candidate.version && duplicate !== -1) {
+        document.getElementById("releaseVersionError").textContent = "Version number must be unique inside the plugin.";
+        document.getElementById("releaseVersionError").style.display = "block";
         valid = false;
       }
-
-      const duplicateIndex = draftData.plugin.versions.findIndex((item, index) =>
-        item.version.toLowerCase() === version.version.toLowerCase() && index !== selectedIndex
-      );
-      if (duplicateIndex !== -1) {
-        document.getElementById("err-vVersion").textContent = "Version number must be unique.";
-        setFieldError("vVersion", "err-vVersion");
+      if (!isHttpsUrl(candidate.download)) {
+        document.getElementById("releaseDownloadError").style.display = "block";
         valid = false;
       }
-
       return valid;
     }
 
-    function validatePluginDraft() {
-      const errors = [];
-      const plugin = draftData.plugin;
-      if (!plugin.name) errors.push("Plugin name is required.");
-      if (plugin.website && !isHttpsUrl(plugin.website)) errors.push("Website URL must use https.");
-      if (plugin.source && !isHttpsUrl(plugin.source)) errors.push("Source URL must use https.");
-      if ((plugin.versions || []).filter((version) => version.latest).length > 1) {
-        errors.push("Only one release can be marked as latest.");
+    function clearReleaseErrors() {
+      document.getElementById("releaseNameError").style.display = "none";
+      document.getElementById("releaseVersionError").style.display = "none";
+      document.getElementById("releaseVersionError").textContent = "Version number is required and must be unique.";
+      document.getElementById("releaseDownloadError").style.display = "none";
+    }
+
+    async function saveAll() {
+      syncCatalogFields();
+      const validationError = validateDraftBeforeSave();
+      if (validationError) {
+        setSaveState("bad", "Validation failed");
+        toast(validationError, "bad");
+        return;
       }
-      (plugin.versions || []).forEach((version, index) => {
-        if (!version.name || !version.version || !isHttpsUrl(version.download)) {
-          errors.push(`Release ${index + 1} is incomplete. Apply a valid version draft before saving.`);
+
+      document.getElementById("saveAllBtn").disabled = true;
+      setSaveState("warn", "Saving to GitHub...");
+
+      try {
+        const response = await fetch(UPDATE_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Admin-Token": adminToken,
+          },
+          body: JSON.stringify(draftData),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          const details = Array.isArray(result.details) && result.details.length ? ` ${result.details[0]}` : "";
+          throw new Error((result.error || `HTTP ${response.status}`) + details);
         }
-      });
-      return errors;
+
+        currentData = clone(normalizeCatalog(result.data || draftData));
+        draftData = clone(currentData);
+        clampSelection();
+        renderAll();
+        markDirty(false);
+        setSaveState("good", "Saved");
+        toast("Catalog saved successfully.", "good");
+      } catch (error) {
+        setSaveState("bad", "Save failed");
+        toast(`Save failed: ${error.message}`, "bad");
+      } finally {
+        document.getElementById("saveAllBtn").disabled = false;
+      }
     }
 
-    function setFieldError(fieldId, errorId) {
-      document.getElementById(fieldId).classList.add("invalid");
-      document.getElementById(errorId).style.display = "block";
+    function validateDraftBeforeSave() {
+      if (!stringValue(draftData.catalog.title)) return "Catalog title is required.";
+      const categoryNames = new Set();
+
+      for (const category of draftData.catalog.categories) {
+        if (!stringValue(category.name)) return "Every category must have a name.";
+        const categoryKey = category.name.toLowerCase();
+        if (categoryNames.has(categoryKey)) return `Duplicate category name: ${category.name}`;
+        categoryNames.add(categoryKey);
+
+        const pluginNames = new Set();
+        for (const plugin of category.plugins) {
+          if (!stringValue(plugin.name)) return `Every plugin in ${category.name} must have a name.`;
+          const pluginKey = plugin.name.toLowerCase();
+          if (pluginNames.has(pluginKey)) return `Duplicate plugin name in ${category.name}: ${plugin.name}`;
+          pluginNames.add(pluginKey);
+          if (plugin.website && !isHttpsUrl(plugin.website)) return `Plugin website must use https: ${plugin.name}`;
+          if (plugin.source && !isHttpsUrl(plugin.source)) return `Plugin source must use https: ${plugin.name}`;
+
+          const releaseVersions = new Set();
+          let latestCount = 0;
+          for (const release of plugin.releases) {
+            if (!stringValue(release.name)) return `Every release in ${plugin.name} needs a name.`;
+            if (!stringValue(release.version)) return `Every release in ${plugin.name} needs a version.`;
+            if (!isHttpsUrl(release.download)) return `Release download must use https in ${plugin.name}.`;
+            const releaseKey = release.version.toLowerCase();
+            if (releaseVersions.has(releaseKey)) return `Duplicate release version in ${plugin.name}: ${release.version}`;
+            releaseVersions.add(releaseKey);
+            if (release.latest) latestCount += 1;
+          }
+          if (latestCount > 1) return `Only one latest release is allowed in ${plugin.name}.`;
+        }
+      }
+
+      return "";
     }
 
-    function clearVersionErrors() {
-      ["vName", "vVersion", "vDownload"].forEach((id) => {
-        document.getElementById(id).classList.remove("invalid");
-      });
-      ["err-vName", "err-vVersion", "err-vDownload"].forEach((id) => {
-        document.getElementById(id).style.display = "none";
-      });
-      document.getElementById("err-vVersion").textContent = "Version number is required.";
+    function discardDraft() {
+      if (!dirty) return;
+      if (!confirm("Discard all draft changes?")) return;
+      draftData = clone(currentData);
+      clampSelection();
+      renderAll();
+      markDirty(false);
+      toast("Draft reset to last saved state.", "info");
+    }
+
+    function renderPreview() {
+      document.getElementById("jsonPreview").textContent = JSON.stringify(draftData, null, 2);
     }
 
     function isHttpsUrl(value) {
@@ -1131,133 +1103,12 @@
       }
     }
 
-    function applyVersionDraft() {
-      const version = readVersionForm();
-      if (!validateVersion(version)) return;
-
-      const versions = draftData.plugin.versions;
-      if (selectedIndex == null) {
-        versions.push(version);
-        selectedIndex = versions.length - 1;
-      } else {
-        versions[selectedIndex] = version;
-      }
-
-      if (version.latest) {
-        draftData.plugin.versions = versions.map((item, index) => ({
-          ...item,
-          latest: index === selectedIndex,
-        }));
-      }
-
-      if (version.category && !draftData.plugin.categories.includes(version.category)) {
-        draftData.plugin.categories.push(version.category);
-        draftData.plugin.categories.sort((a, b) => a.localeCompare(b));
-        renderPluginFields();
-      }
-
-      refreshCategoryOptions();
-      renderVersionList();
-      renderVersionForm();
-      markDirty(true);
-      document.getElementById("versionCount").textContent = `${draftData.plugin.versions.length} versions`;
-      toast(`Draft updated for v${version.version}.`, "good");
-    }
-
-    function duplicateSelectedVersion() {
-      if (selectedIndex == null) return;
-      const source = clone(draftData.plugin.versions[selectedIndex]);
-      source.latest = false;
-      source.version = source.version ? `${source.version}-copy` : "";
-      draftData.plugin.versions.push(source);
-      selectedIndex = draftData.plugin.versions.length - 1;
-      renderVersionList();
-      renderVersionForm();
-      markDirty(true);
-      toast("Release duplicated into a new draft entry.", "info");
-    }
-
-    function deleteSelectedVersion() {
-      if (selectedIndex == null) return;
-      const version = draftData.plugin.versions[selectedIndex];
-      if (!confirm(`Delete v${version.version || "draft"} from the draft?`)) return;
-      draftData.plugin.versions.splice(selectedIndex, 1);
-      selectedIndex = draftData.plugin.versions.length ? Math.min(selectedIndex, draftData.plugin.versions.length - 1) : null;
-      renderVersionList();
-      renderVersionForm();
-      markDirty(true);
-      document.getElementById("versionCount").textContent = `${draftData.plugin.versions.length} versions`;
-      toast("Release removed from draft.", "info");
-    }
-
-    function discardDraft() {
-      if (!isDirty) return;
-      if (!confirm("Discard all unpublished draft changes?")) return;
-      draftData = clone(currentData);
-      selectedIndex = draftData.plugin.versions.length ? 0 : null;
-      renderAll();
-      markDirty(false);
-      toast("Draft reset to last synced state.", "info");
-    }
-
-    async function saveAll() {
-      syncPluginFieldsFromForm();
-      const pluginErrors = validatePluginDraft();
-      if (pluginErrors.length) {
-        toast(pluginErrors[0], "bad");
-        setSaveState("bad", "Validation failed");
-        return;
-      }
-
-      saveAllBtn.disabled = true;
-      setSaveState("warn", "Saving to GitHub...");
-
-      try {
-        const response = await fetch(UPDATE_ENDPOINT, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Admin-Token": adminToken,
-          },
-          body: JSON.stringify({ plugin: draftData.plugin }),
-        });
-
-        const result = await response.json().catch(() => ({}));
-        if (!response.ok) {
-          const details = Array.isArray(result.details) && result.details.length ? ` ${result.details[0]}` : "";
-          throw new Error((result.error || `HTTP ${response.status}`) + details);
-        }
-
-        const synced = normalizeData(result.data || draftData);
-        currentData = clone(synced);
-        draftData = clone(synced);
-        selectedIndex = draftData.plugin.versions.length ? Math.min(selectedIndex ?? 0, draftData.plugin.versions.length - 1) : null;
-        renderAll();
-        markDirty(false);
-        setSaveState("good", "Saved to GitHub");
-        toast("All plugin data saved successfully.", "good");
-      } catch (error) {
-        setSaveState("bad", "Save failed");
-        toast(`Save failed: ${error.message}`, "bad");
-      } finally {
-        saveAllBtn.disabled = false;
-      }
-    }
-
-    function updateJsonPreview() {
-      document.getElementById("jsonPreview").textContent = JSON.stringify(draftData, null, 2);
-    }
-
     function escapeHtml(value) {
       return String(value || "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
-    }
-
-    function escapeAttr(value) {
-      return escapeHtml(value).replace(/'/g, "&#39;");
     }
   </script>
 </body>

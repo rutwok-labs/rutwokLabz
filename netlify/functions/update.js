@@ -1,23 +1,24 @@
 // netlify/functions/update.js
 // POST /.netlify/functions/update
-// Receives new/updated plugin data and commits it to GitHub
+// Validates and saves the plugin catalog to GitHub
 
 const crypto = require("crypto");
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const REPO = process.env.REPO; // format: "user/repo"
+const REPO = process.env.REPO;
 const FILE_PATH = process.env.FILE_PATH || "data.json";
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN; // secret token for admin auth
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
 
 const ALLOWED_TYPES = ["stable", "pre-release"];
 const ALLOWED_STATUSES = ["success", "fail", "maintenance"];
 const ALLOWED_LOADERS = ["PaperMC", "Bukkit", "Purpur"];
 
-function asTrimmedString(value) {
+function str(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
 function isHttpsUrl(value) {
+  if (!value) return false;
   try {
     const url = new URL(value);
     return url.protocol === "https:";
@@ -28,176 +29,159 @@ function isHttpsUrl(value) {
 
 function readHeader(headers, name) {
   if (!headers) return "";
-  const matchedKey = Object.keys(headers).find((key) => key.toLowerCase() === name.toLowerCase());
-  return matchedKey ? headers[matchedKey] : "";
+  const key = Object.keys(headers).find((entry) => entry.toLowerCase() === name.toLowerCase());
+  return key ? headers[key] : "";
 }
 
-function isAuthorizedToken(candidate) {
-  if (!ADMIN_TOKEN || typeof candidate !== "string") return false;
-  const expected = Buffer.from(ADMIN_TOKEN);
-  const received = Buffer.from(candidate);
-  if (expected.length !== received.length) return false;
-  return crypto.timingSafeEqual(expected, received);
+function safeEqualToken(input) {
+  if (!ADMIN_TOKEN || typeof input !== "string") return false;
+  const a = Buffer.from(ADMIN_TOKEN);
+  const b = Buffer.from(input);
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
 }
 
-function validateVersion(version, path = "plugin.versions[]") {
+function normalizeRelease(release) {
+  return {
+    name: str(release.name),
+    version: str(release.version),
+    type: release.type,
+    latest: release.latest === true,
+    status: release.status,
+    loader: release.loader,
+    minecraft: str(release.minecraft),
+    description: str(release.description),
+    changelog: Array.isArray(release.changelog) ? release.changelog.map(str).filter(Boolean) : [],
+    download: str(release.download),
+  };
+}
+
+function normalizePlugin(plugin) {
+  return {
+    name: str(plugin.name),
+    description: str(plugin.description),
+    author: str(plugin.author),
+    website: str(plugin.website),
+    source: str(plugin.source),
+    releases: Array.isArray(plugin.releases) ? plugin.releases.map(normalizeRelease) : [],
+  };
+}
+
+function normalizeCategory(category) {
+  return {
+    name: str(category.name),
+    plugins: Array.isArray(category.plugins) ? category.plugins.map(normalizePlugin) : [],
+  };
+}
+
+function normalizeCatalog(input) {
+  const catalog = input?.catalog || {};
+  return {
+    catalog: {
+      title: str(catalog.title),
+      description: str(catalog.description),
+      categories: Array.isArray(catalog.categories) ? catalog.categories.map(normalizeCategory) : [],
+    },
+  };
+}
+
+function validateRelease(release, path) {
   const errors = [];
-  const name = asTrimmedString(version?.name);
-  const versionNumber = asTrimmedString(version?.version);
-  const download = asTrimmedString(version?.download);
-  const category = asTrimmedString(version?.category);
-  const minecraft = asTrimmedString(version?.minecraft);
-  const description = asTrimmedString(version?.description);
 
-  if (!name) errors.push(`${path}.name is required`);
-  if (!versionNumber) errors.push(`${path}.version is required`);
-  if (!ALLOWED_TYPES.includes(version?.type)) {
-    errors.push(`${path}.type must be one of: ${ALLOWED_TYPES.join(", ")}`);
-  }
-  if (typeof version?.latest !== "boolean") {
-    errors.push(`${path}.latest must be a boolean`);
-  }
-  if (!ALLOWED_STATUSES.includes(version?.status)) {
-    errors.push(`${path}.status must be one of: ${ALLOWED_STATUSES.join(", ")}`);
-  }
-  if (!ALLOWED_LOADERS.includes(version?.loader)) {
-    errors.push(`${path}.loader must be one of: ${ALLOWED_LOADERS.join(", ")}`);
-  }
-  if (!download || !isHttpsUrl(download)) {
-    errors.push(`${path}.download must be a valid https URL`);
-  }
-  if (version?.category != null && !category) {
-    errors.push(`${path}.category must be a non-empty string when provided`);
-  }
-  if (version?.minecraft != null && !minecraft) {
-    errors.push(`${path}.minecraft must be a non-empty string when provided`);
-  }
-  if (version?.description != null && !description) {
-    errors.push(`${path}.description must be a non-empty string when provided`);
-  }
-  if (version?.changelog != null && !Array.isArray(version.changelog)) {
-    errors.push(`${path}.changelog must be an array of strings`);
-  }
-  if (Array.isArray(version?.changelog)) {
-    version.changelog.forEach((entry, index) => {
-      if (!asTrimmedString(entry)) {
-        errors.push(`${path}.changelog[${index}] must be a non-empty string`);
-      }
+  if (!str(release.name)) errors.push(`${path}.name is required`);
+  if (!str(release.version)) errors.push(`${path}.version is required`);
+  if (!ALLOWED_TYPES.includes(release.type)) errors.push(`${path}.type must be one of: ${ALLOWED_TYPES.join(", ")}`);
+  if (typeof release.latest !== "boolean") errors.push(`${path}.latest must be a boolean`);
+  if (!ALLOWED_STATUSES.includes(release.status)) errors.push(`${path}.status must be one of: ${ALLOWED_STATUSES.join(", ")}`);
+  if (!ALLOWED_LOADERS.includes(release.loader)) errors.push(`${path}.loader must be one of: ${ALLOWED_LOADERS.join(", ")}`);
+  if (!isHttpsUrl(release.download)) errors.push(`${path}.download must be a valid https URL`);
+  if (release.minecraft != null && !str(release.minecraft)) errors.push(`${path}.minecraft must be a non-empty string when provided`);
+  if (release.description != null && !str(release.description)) errors.push(`${path}.description must be a non-empty string when provided`);
+  if (release.changelog != null && !Array.isArray(release.changelog)) errors.push(`${path}.changelog must be an array of strings`);
+  if (Array.isArray(release.changelog)) {
+    release.changelog.forEach((item, index) => {
+      if (!str(item)) errors.push(`${path}.changelog[${index}] must be a non-empty string`);
     });
   }
 
   return errors;
 }
 
-function validatePlugin(plugin) {
+function validatePlugin(plugin, path) {
   const errors = [];
-  const name = asTrimmedString(plugin?.name);
-  const description = asTrimmedString(plugin?.description);
-  const author = asTrimmedString(plugin?.author);
-  const website = asTrimmedString(plugin?.website);
-  const source = asTrimmedString(plugin?.source);
-  const categories = Array.isArray(plugin?.categories) ? plugin.categories : [];
-  const versions = Array.isArray(plugin?.versions) ? plugin.versions : [];
 
-  if (!name) errors.push("plugin.name is required");
-  if (plugin?.description != null && !description) {
-    errors.push("plugin.description must be a non-empty string when provided");
-  }
-  if (plugin?.author != null && !author) {
-    errors.push("plugin.author must be a non-empty string when provided");
-  }
-  if (plugin?.website != null && !website) {
-    errors.push("plugin.website must be a non-empty string when provided");
-  }
-  if (website && !isHttpsUrl(website)) {
-    errors.push("plugin.website must be a valid https URL");
-  }
-  if (plugin?.source != null && !source) {
-    errors.push("plugin.source must be a non-empty string when provided");
-  }
-  if (source && !isHttpsUrl(source)) {
-    errors.push("plugin.source must be a valid https URL");
-  }
-  if (plugin?.categories != null && !Array.isArray(plugin.categories)) {
-    errors.push("plugin.categories must be an array of strings");
-  }
-  categories.forEach((category, index) => {
-    if (!asTrimmedString(category)) {
-      errors.push(`plugin.categories[${index}] must be a non-empty string`);
+  if (!str(plugin.name)) errors.push(`${path}.name is required`);
+  if (plugin.description != null && !str(plugin.description)) errors.push(`${path}.description must be a non-empty string when provided`);
+  if (plugin.author != null && !str(plugin.author)) errors.push(`${path}.author must be a non-empty string when provided`);
+  if (plugin.website && !isHttpsUrl(plugin.website)) errors.push(`${path}.website must be a valid https URL`);
+  if (plugin.source && !isHttpsUrl(plugin.source)) errors.push(`${path}.source must be a valid https URL`);
+  if (!Array.isArray(plugin.releases)) errors.push(`${path}.releases must be an array`);
+
+  const releases = Array.isArray(plugin.releases) ? plugin.releases : [];
+  const releaseVersions = new Set();
+  let latestCount = 0;
+
+  releases.forEach((release, index) => {
+    errors.push(...validateRelease(release, `${path}.releases[${index}]`));
+    const versionKey = str(release.version).toLowerCase();
+    if (versionKey) {
+      if (releaseVersions.has(versionKey)) errors.push(`${path}.releases[${index}].version must be unique inside the plugin`);
+      releaseVersions.add(versionKey);
     }
-  });
-  if (!Array.isArray(plugin?.versions)) {
-    errors.push("plugin.versions must be an array");
-  }
-  versions.forEach((version, index) => {
-    errors.push(...validateVersion(version, `plugin.versions[${index}]`));
+    if (release.latest === true) latestCount += 1;
   });
 
-  const versionKeys = new Set();
-  versions.forEach((version, index) => {
-    const key = asTrimmedString(version?.version).toLowerCase();
-    if (!key) return;
-    if (versionKeys.has(key)) {
-      errors.push(`plugin.versions[${index}].version must be unique`);
-    }
-    versionKeys.add(key);
-  });
-
-  const latestCount = versions.filter((version) => version?.latest === true).length;
-  if (latestCount > 1) {
-    errors.push("plugin.versions can only contain one latest release");
-  }
+  if (latestCount > 1) errors.push(`${path}.releases can only contain one latest release`);
 
   return errors;
 }
 
-function normalizeVersion(version) {
-  const normalized = {
-    name: asTrimmedString(version.name),
-    version: asTrimmedString(version.version),
-    type: version.type,
-    latest: version.latest === true,
-    status: version.status,
-    loader: version.loader,
-    download: asTrimmedString(version.download),
-  };
+function validateCategory(category, path) {
+  const errors = [];
 
-  const category = asTrimmedString(version.category);
-  const minecraft = asTrimmedString(version.minecraft);
-  const description = asTrimmedString(version.description);
-  const changelog = Array.isArray(version.changelog)
-    ? version.changelog.map((entry) => asTrimmedString(entry)).filter(Boolean)
-    : [];
+  if (!str(category.name)) errors.push(`${path}.name is required`);
+  if (!Array.isArray(category.plugins)) errors.push(`${path}.plugins must be an array`);
 
-  if (category) normalized.category = category;
-  if (minecraft) normalized.minecraft = minecraft;
-  if (description) normalized.description = description;
-  if (changelog.length) normalized.changelog = changelog;
+  const plugins = Array.isArray(category.plugins) ? category.plugins : [];
+  const pluginNames = new Set();
 
-  return normalized;
+  plugins.forEach((plugin, index) => {
+    errors.push(...validatePlugin(plugin, `${path}.plugins[${index}]`));
+    const pluginKey = str(plugin.name).toLowerCase();
+    if (pluginKey) {
+      if (pluginNames.has(pluginKey)) errors.push(`${path}.plugins[${index}].name must be unique inside the category`);
+      pluginNames.add(pluginKey);
+    }
+  });
+
+  return errors;
 }
 
-function normalizePlugin(plugin) {
-  const normalized = {
-    name: asTrimmedString(plugin.name),
-    versions: Array.isArray(plugin.versions) ? plugin.versions.map(normalizeVersion) : [],
-  };
+function validateCatalog(input) {
+  const errors = [];
+  const catalog = input?.catalog;
 
-  const description = asTrimmedString(plugin.description);
-  const author = asTrimmedString(plugin.author);
-  const website = asTrimmedString(plugin.website);
-  const source = asTrimmedString(plugin.source);
-  const categories = Array.isArray(plugin.categories)
-    ? [...new Set(plugin.categories.map((category) => asTrimmedString(category)).filter(Boolean))]
-    : [];
+  if (!catalog || typeof catalog !== "object") {
+    return ["catalog is required"];
+  }
 
-  if (description) normalized.description = description;
-  if (author) normalized.author = author;
-  if (website) normalized.website = website;
-  if (source) normalized.source = source;
-  if (categories.length) normalized.categories = categories;
+  if (!str(catalog.title)) errors.push("catalog.title is required");
+  if (catalog.description != null && !str(catalog.description)) errors.push("catalog.description must be a non-empty string when provided");
+  if (!Array.isArray(catalog.categories)) errors.push("catalog.categories must be an array");
 
-  return normalized;
+  const categories = Array.isArray(catalog.categories) ? catalog.categories : [];
+  const categoryNames = new Set();
+
+  categories.forEach((category, index) => {
+    errors.push(...validateCategory(category, `catalog.categories[${index}]`));
+    const categoryKey = str(category.name).toLowerCase();
+    if (categoryKey) {
+      if (categoryNames.has(categoryKey)) errors.push(`catalog.categories[${index}].name must be unique`);
+      categoryNames.add(categoryKey);
+    }
+  });
+
+  return errors;
 }
 
 exports.handler = async (event) => {
@@ -221,8 +205,7 @@ exports.handler = async (event) => {
   }
 
   const adminToken = readHeader(event.headers, "x-admin-token");
-  if (!isAuthorizedToken(adminToken)) {
-    console.warn("[UPDATE] Unauthorized access attempt");
+  if (!safeEqualToken(adminToken)) {
     return {
       statusCode: 401,
       headers,
@@ -249,10 +232,7 @@ exports.handler = async (event) => {
     };
   }
 
-  const { plugin, newVersion, pluginName } = body;
-
   if (!GITHUB_TOKEN || !REPO) {
-    console.error("[UPDATE] Missing environment variables");
     return {
       statusCode: 500,
       headers,
@@ -260,10 +240,18 @@ exports.handler = async (event) => {
     };
   }
 
+  const normalized = normalizeCatalog(body);
+  const validationErrors = validateCatalog(normalized);
+  if (validationErrors.length > 0) {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: "Validation failed", details: validationErrors }),
+    };
+  }
+
   try {
     const apiUrl = `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`;
-    console.log(`[UPDATE] Fetching current data from GitHub: ${apiUrl}`);
-
     const getResponse = await fetch(apiUrl, {
       headers: {
         Authorization: `Bearer ${GITHUB_TOKEN}`,
@@ -273,19 +261,10 @@ exports.handler = async (event) => {
     });
 
     let currentSha = null;
-    let currentData = { plugin: { name: pluginName || "Plugin", versions: [] } };
-
     if (getResponse.ok) {
-      const fileData = await getResponse.json();
-      currentSha = fileData.sha;
-      const rawContent = Buffer.from(fileData.content, "base64").toString("utf-8");
-      currentData = JSON.parse(rawContent);
-      console.log(
-        `[UPDATE] Current SHA: ${currentSha}, versions: ${currentData.plugin?.versions?.length || 0}`
-      );
-    } else if (getResponse.status === 404) {
-      console.log("[UPDATE] data.json not found, creating a new file");
-    } else {
+      const currentFile = await getResponse.json();
+      currentSha = currentFile.sha;
+    } else if (getResponse.status !== 404) {
       const errText = await getResponse.text();
       console.error(`[UPDATE] GitHub fetch error ${getResponse.status}: ${errText}`);
       return {
@@ -295,80 +274,13 @@ exports.handler = async (event) => {
       };
     }
 
-    let updatedData;
-
-    if (plugin) {
-      const errors = validatePlugin(plugin);
-      if (errors.length > 0) {
-        return {
-          statusCode: 400,
-          headers,
-          body: JSON.stringify({ error: "Validation failed", details: errors }),
-        };
-      }
-      updatedData = { plugin: normalizePlugin(plugin) };
-    } else if (newVersion) {
-      const errors = validateVersion(newVersion, "newVersion");
-      if (errors.length > 0) {
-        return {
-          statusCode: 400,
-          headers,
-          body: JSON.stringify({ error: "Validation failed", details: errors }),
-        };
-      }
-
-      const normalizedVersion = normalizeVersion(newVersion);
-      let versions = Array.isArray(currentData.plugin?.versions)
-        ? currentData.plugin.versions.map(normalizeVersion)
-        : [];
-
-      const existingIndex = versions.findIndex((version) => version.version === normalizedVersion.version);
-      if (existingIndex >= 0) {
-        versions[existingIndex] = normalizedVersion;
-      } else {
-        versions.push(normalizedVersion);
-      }
-
-      if (normalizedVersion.latest) {
-        versions = versions.map((version) => ({
-          ...version,
-          latest: version.version === normalizedVersion.version,
-        }));
-      }
-
-      updatedData = {
-        plugin: {
-          ...normalizePlugin(currentData.plugin || {}),
-          name: asTrimmedString(pluginName) || asTrimmedString(currentData.plugin?.name) || "Plugin",
-          versions,
-        },
-      };
-
-      const pluginErrors = validatePlugin(updatedData.plugin);
-      if (pluginErrors.length > 0) {
-        return {
-          statusCode: 400,
-          headers,
-          body: JSON.stringify({ error: "Validation failed", details: pluginErrors }),
-        };
-      }
-    } else {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: "Body must contain either 'plugin', 'newVersion', or action='validate'" }),
-      };
-    }
-
-    const newContent = Buffer.from(JSON.stringify(updatedData, null, 2)).toString("base64");
-
+    const content = Buffer.from(JSON.stringify(normalized, null, 2)).toString("base64");
     const commitBody = {
-      message: `chore: update plugin data - ${new Date().toISOString()}`,
-      content: newContent,
+      message: `chore: update plugin catalog - ${new Date().toISOString()}`,
+      content,
       ...(currentSha ? { sha: currentSha } : {}),
     };
 
-    console.log("[UPDATE] Committing updated data.json to GitHub...");
     const putResponse = await fetch(apiUrl, {
       method: "PUT",
       headers: {
@@ -396,9 +308,9 @@ exports.handler = async (event) => {
       headers,
       body: JSON.stringify({
         success: true,
-        message: "data.json updated successfully",
+        message: "Catalog updated successfully",
         sha: putData.content?.sha,
-        data: updatedData,
+        data: normalized,
       }),
     };
   } catch (err) {

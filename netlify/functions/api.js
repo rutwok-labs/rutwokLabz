@@ -1,12 +1,12 @@
 // netlify/functions/api.js
 // GET /.netlify/functions/api
-// Returns the latest plugin data from GitHub
+// Returns plugin catalog data from GitHub
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const REPO = process.env.REPO; // format: "user/repo"
 const FILE_PATH = process.env.FILE_PATH || "data.json";
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
   const headers = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
@@ -14,7 +14,6 @@ exports.handler = async (event, context) => {
     "Cache-Control": "no-cache, no-store, must-revalidate",
   };
 
-  // Handle CORS preflight
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers, body: "" };
   }
@@ -38,8 +37,6 @@ exports.handler = async (event, context) => {
     }
 
     const apiUrl = `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`;
-    console.log(`[API] Fetching data from: ${apiUrl}`);
-
     const response = await fetch(apiUrl, {
       headers: {
         Authorization: `Bearer ${GITHUB_TOKEN}`,
@@ -62,7 +59,12 @@ exports.handler = async (event, context) => {
     const content = Buffer.from(fileData.content, "base64").toString("utf-8");
     const parsed = JSON.parse(content);
 
-    console.log(`[API] Successfully fetched data.json — versions: ${parsed.plugin?.versions?.length ?? 0}`);
+    const categoryCount = Array.isArray(parsed.catalog?.categories) ? parsed.catalog.categories.length : 0;
+    const pluginCount = Array.isArray(parsed.catalog?.categories)
+      ? parsed.catalog.categories.reduce((sum, category) => sum + (Array.isArray(category.plugins) ? category.plugins.length : 0), 0)
+      : 0;
+
+    console.log(`[API] Loaded catalog with ${categoryCount} categories and ${pluginCount} plugins`);
 
     return {
       statusCode: 200,
