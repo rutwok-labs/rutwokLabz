@@ -23,22 +23,13 @@
         "category": "Core",
         "minecraft": "1.21.x",
         "description": "Latest stable build with bug fixes and performance improvements.",
-        "changelog": ["Fixed dupe exploit in backpacks", "Improved machine tick performance", "Added 12 new items"],
+        "changelog": [
+          "Fixed dupe exploit in backpacks",
+          "Improved machine tick performance",
+          "Added 12 new items"
+        ],
         "download": "https://cdn.modrinth.com/data/Fz9hstnG/versions/1fCkq2KW/SlimefunCore4-2614.jar"
-      },
-      {
-        "name": "Build 2610",
-        "version": "1.21.10",
-        "type": "stable",
-        "latest": false,
-        "status": "success",
-        "loader": "PaperMC",
-        "category": "Core",
-        "minecraft": "1.21.x",
-        "description": "Previous stable release.",
-        "changelog": ["New ore generation system", "Reworked crafting GUI"],
-        "download": "https://cdn.modrinth.com/data/Fz9hstnG/versions/1fCkq2KW/SlimefunCore4-2614.jar"
-       }
+      }
     ]
   }
 }
