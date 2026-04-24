@@ -1,16 +1,44 @@
 {
   "plugin": {
     "name": "SlimeFunCore",
+    "description": "The ultimate Slimefun experience — enhanced mechanics, new items, and deep progression systems for your Paper server.",
+    "author": "rutwok-labs",
+    "website": "https://rutwoklabz.netlify.app",
+    "source": "https://github.com/rutwok-labs/SlimeFun.Blob",
+    "categories": [
+      "Core",
+      "Addon",
+      "Utility",
+      "Magic",
+      "Tech"
+    ],
     "versions": [
       {
-        "name": "2614",
+        "name": "Build 2614",
         "version": "1.21.11",
+        "type": "stable",
+        "latest": true,
+        "status": "success",
+        "loader": "PaperMC",
+        "category": "Core",
+        "minecraft": "1.21.x",
+        "description": "Latest stable build with bug fixes and performance improvements.",
+        "changelog": ["Fixed dupe exploit in backpacks", "Improved machine tick performance", "Added 12 new items"],
+        "download": "https://cdn.modrinth.com/data/Fz9hstnG/versions/1fCkq2KW/SlimefunCore4-2614.jar"
+      },
+      {
+        "name": "Build 2610",
+        "version": "1.21.10",
         "type": "stable",
         "latest": false,
         "status": "success",
         "loader": "PaperMC",
+        "category": "Core",
+        "minecraft": "1.21.x",
+        "description": "Previous stable release.",
+        "changelog": ["New ore generation system", "Reworked crafting GUI"],
         "download": "https://cdn.modrinth.com/data/Fz9hstnG/versions/1fCkq2KW/SlimefunCore4-2614.jar"
-      }
+       }
     ]
   }
 }
