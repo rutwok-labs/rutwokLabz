@@ -3,15 +3,6 @@
     "name": "ExamplePlugin",
     "versions": [
       {
-        "name": "Stable Release",
-        "version": "2.1.0",
-        "type": "stable",
-        "latest": true,
-        "status": "success",
-        "loader": "PaperMC",
-        "download": "https://github.com/your-user/your-repo/releases/download/v2.1.0/ExamplePlugin-2.1.0.jar"
-      },
-      {
         "name": "Beta Build",
         "version": "2.2.0-beta",
         "type": "pre-release",
