@@ -5,281 +5,287 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Plugin Catalog</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #f4f7fb;
-      --bg-soft: #edf3fb;
+      --bg: #f8fafc;
       --panel: #ffffff;
       --panel-soft: #f8fbff;
-      --line: #d9e4f1;
-      --line-strong: #bfd1e6;
-      --text: #16324f;
-      --muted: #5c7694;
-      --muted-2: #7f94ad;
-      --brand: #1492ff;
-      --brand-2: #5cc4ff;
-      --good: #1ea971;
-      --warn: #d68a15;
-      --bad: #d94d5f;
-      --shadow: 0 18px 45px rgba(22, 50, 79, 0.08);
-      --r: 18px;
-      --rs: 12px;
+      --line: #e5e7eb;
+      --line-strong: #d1d5db;
+      --text: #111827;
+      --muted: #6b7280;
+      --muted-2: #94a3b8;
+      --brand: #2563eb;
+      --brand-soft: #eff6ff;
+      --good: #16a34a;
+      --warn: #d97706;
+      --bad: #dc2626;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+      --r: 16px;
+      --rs: 10px;
       --mono: "JetBrains Mono", monospace;
-      --sans: "Manrope", sans-serif;
+      --sans: "Inter", sans-serif;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--sans);
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(20,146,255,0.08), transparent 28%),
-        linear-gradient(180deg, #f8fbff 0%, #f2f6fb 100%);
       min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
     }
-    .shell { max-width: 1480px; margin: 0 auto; padding: 24px; }
+    button, input { font: inherit; }
+
+    .page {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 24px;
+    }
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      padding: 12px 0 28px;
       flex-wrap: wrap;
+      margin-bottom: 20px;
     }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
+    .brand h1 {
+      font-size: 2.1rem;
+      line-height: 1;
+      margin-bottom: 6px;
     }
-    .brand-mark {
-      width: 52px;
-      height: 52px;
-      border-radius: 16px;
-      display: grid;
-      place-items: center;
-      color: white;
-      font-size: 24px;
-      background: linear-gradient(135deg, var(--brand), var(--brand-2));
-      box-shadow: 0 16px 30px rgba(20,146,255,0.22);
+    .brand p {
+      color: var(--muted);
+      font-size: 1rem;
     }
-    .brand h1 { font-size: 2.2rem; line-height: 1; }
-    .brand p { color: var(--muted); margin-top: 6px; }
-    .top-actions {
+    .topbar {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
+      align-items: center;
     }
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 11px 16px;
+      padding: 10px 16px;
       border-radius: 999px;
       border: 1px solid var(--line-strong);
-      background: rgba(255,255,255,0.72);
+      background: var(--panel);
       color: var(--text);
       text-decoration: none;
-      font-weight: 700;
-      transition: .18s ease;
       cursor: pointer;
+      font-weight: 600;
+      transition: 0.16s ease;
     }
-    .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+    .btn:hover {
+      border-color: var(--brand);
+      color: var(--brand);
+    }
+
     .hero {
-      display: grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 16px;
       margin-bottom: 20px;
-    }
-    .card {
-      background: rgba(255,255,255,0.88);
-      border: 1px solid rgba(191,209,230,0.75);
-      box-shadow: var(--shadow);
-      border-radius: var(--r);
-      overflow: hidden;
-    }
-    .card-body { padding: 20px; }
-    .hero-copy h2 { font-size: 2rem; line-height: 1.08; margin-bottom: 10px; }
-    .hero-copy p { color: var(--muted); line-height: 1.65; max-width: 720px; }
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-    .stat {
-      background: var(--panel-soft);
+      padding: 22px 24px;
+      background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 18px;
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
     }
-    .stat strong { display: block; font-size: 1.5rem; }
-    .stat span {
-      display: block;
-      margin-top: 6px;
-      color: var(--muted-2);
-      font: 700 0.68rem var(--mono);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+    .hero h2 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
     }
-    .layout {
+    .hero p {
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 760px;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel-soft);
+      color: var(--muted);
+      font: 700 0.72rem var(--mono);
+    }
+
+    .app {
       display: grid;
-      grid-template-columns: 280px 280px 320px 1fr;
-      gap: 16px;
+      grid-template-columns: 320px 1fr;
+      gap: 18px;
       align-items: start;
     }
-    .section-head {
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .panel-head {
       padding: 16px 18px;
       border-bottom: 1px solid var(--line);
-      background: linear-gradient(180deg, #ffffff, #f7fbff);
     }
-    .section-head strong { display: block; font-size: 1rem; }
-    .section-head span {
+    .panel-head strong {
+      display: block;
+      font-size: 0.95rem;
+    }
+    .panel-head span {
       display: block;
       margin-top: 4px;
       color: var(--muted-2);
       font: 700 0.64rem var(--mono);
-      text-transform: uppercase;
       letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
-    .stack { display: flex; flex-direction: column; gap: 12px; }
-    .pane { padding: 16px; }
+    .panel-body {
+      padding: 18px;
+    }
+    .sidebar-panel + .sidebar-panel {
+      margin-top: 14px;
+    }
+
     .search {
       width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 12px 14px;
-      background: white;
+      padding: 11px 13px;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      background: #fff;
       color: var(--text);
       outline: none;
-      margin-bottom: 12px;
     }
     .search:focus { border-color: var(--brand); }
-    .picker {
+    .list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      max-height: 560px;
+      gap: 8px;
+      margin-top: 12px;
+      max-height: 240px;
       overflow: auto;
       padding-right: 4px;
     }
-    .pick {
+    .item {
       width: 100%;
       text-align: left;
+      padding: 12px 13px;
       border: 1px solid var(--line);
-      background: white;
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 12px;
+      background: #fff;
       cursor: pointer;
-      transition: .18s ease;
+      transition: 0.16s ease;
     }
-    .pick:hover { border-color: var(--line-strong); transform: translateY(-1px); }
-    .pick.active {
-      border-color: rgba(20,146,255,0.4);
-      background: #f1f8ff;
-      box-shadow: inset 0 0 0 1px rgba(20,146,255,0.08);
+    .item:hover {
+      border-color: var(--line-strong);
+      background: #fbfdff;
     }
-    .pick strong { display: block; font-size: 0.95rem; }
-    .pick span { display: block; margin-top: 5px; color: var(--muted); font-size: 0.78rem; }
-    .plugin-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 12px;
+    .item.active {
+      border-color: rgba(37, 99, 235, 0.28);
+      background: var(--brand-soft);
     }
-    .plugin-card {
-      border: 1px solid var(--line);
-      background: white;
-      border-radius: 16px;
-      padding: 16px;
-      cursor: pointer;
-      transition: .18s ease;
+    .item strong {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
     }
-    .plugin-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-    .plugin-card.active {
-      border-color: rgba(20,146,255,0.42);
-      background: #f3f9ff;
-    }
-    .plugin-card p {
+    .item span {
       color: var(--muted);
-      line-height: 1.55;
-      font-size: 0.86rem;
-      margin-top: 8px;
+      font-size: 0.78rem;
     }
-    .tags, .release-tags, .plugin-links, .release-actions {
+
+    .content-panel .panel-body {
       display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .crumbs {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .crumbs strong { color: var(--text); }
+    .plugin-summary {
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .plugin-summary h3 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+    .plugin-summary p {
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 760px;
+      margin-bottom: 14px;
+    }
+    .plugin-links {
+      display: flex;
+      gap: 10px;
       flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .tag-row {
+      display: flex;
       gap: 8px;
-      margin-top: 12px;
+      flex-wrap: wrap;
     }
     .tag {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 5px 9px;
-      border-radius: 999px;
-      background: #eef5fc;
+      padding: 6px 10px;
       border: 1px solid var(--line);
-      color: var(--muted);
-      font: 700 0.64rem var(--mono);
-    }
-    .detail-empty, .empty {
-      text-align: center;
-      color: var(--muted-2);
-      padding: 28px 16px;
-      font: 700 0.78rem var(--mono);
-    }
-    .plugin-detail {
-      margin-bottom: 18px;
-      padding-bottom: 18px;
-      border-bottom: 1px solid var(--line);
-    }
-    .plugin-detail h3 { font-size: 1.7rem; }
-    .plugin-detail p {
-      color: var(--muted);
-      line-height: 1.65;
-      margin-top: 10px;
-      max-width: 760px;
-    }
-    .link-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
       border-radius: 999px;
-      border: 1px solid var(--line-strong);
-      background: white;
-      color: var(--text);
-      text-decoration: none;
-      font-weight: 700;
+      background: var(--panel-soft);
+      color: var(--muted);
+      font: 700 0.68rem var(--mono);
     }
+
     .release-list {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
     }
-    .release-card {
+    .release {
+      padding: 16px;
       border: 1px solid var(--line);
-      border-radius: 18px;
-      background: white;
-      padding: 18px;
+      border-radius: 14px;
+      background: #fff;
     }
-    .release-card.latest {
-      background: linear-gradient(180deg, #f7fbff, #ffffff);
-      border-color: rgba(20,146,255,0.35);
+    .release.latest {
+      border-color: rgba(37, 99, 235, 0.28);
+      background: var(--brand-soft);
     }
     .release-top {
       display: flex;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
-      align-items: flex-start;
       flex-wrap: wrap;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
-    .release-name strong { display: block; font-size: 1.02rem; }
-    .release-name span {
+    .release-top strong {
       display: block;
-      margin-top: 5px;
-      color: var(--muted-2);
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+    .release-top span {
+      color: var(--muted);
       font: 700 0.72rem var(--mono);
+    }
+    .badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
     .badge {
       display: inline-flex;
@@ -290,31 +296,31 @@
       border: 1px solid;
       font: 700 0.64rem var(--mono);
     }
-    .latest { color: var(--brand); border-color: rgba(20,146,255,0.25); background: rgba(20,146,255,0.08); }
-    .stable { color: var(--good); border-color: rgba(30,169,113,0.22); background: rgba(30,169,113,0.08); }
-    .pre { color: var(--warn); border-color: rgba(214,138,21,0.24); background: rgba(214,138,21,0.08); }
-    .success { color: var(--good); border-color: rgba(30,169,113,0.22); background: rgba(30,169,113,0.08); }
-    .maintenance { color: var(--warn); border-color: rgba(214,138,21,0.24); background: rgba(214,138,21,0.08); }
-    .fail { color: var(--bad); border-color: rgba(217,77,95,0.24); background: rgba(217,77,95,0.08); }
-    .release-card p {
+    .latest { color: var(--brand); border-color: rgba(37, 99, 235, 0.2); background: rgba(37, 99, 235, 0.08); }
+    .stable { color: var(--good); border-color: rgba(22, 163, 74, 0.2); background: rgba(22, 163, 74, 0.08); }
+    .pre { color: var(--warn); border-color: rgba(217, 119, 6, 0.2); background: rgba(217, 119, 6, 0.08); }
+    .success { color: var(--good); border-color: rgba(22, 163, 74, 0.2); background: rgba(22, 163, 74, 0.08); }
+    .maintenance { color: var(--warn); border-color: rgba(217, 119, 6, 0.2); background: rgba(217, 119, 6, 0.08); }
+    .fail { color: var(--bad); border-color: rgba(220, 38, 38, 0.2); background: rgba(220, 38, 38, 0.08); }
+    .release p {
       color: var(--muted);
       line-height: 1.6;
       margin-bottom: 12px;
     }
     .notes {
-      margin-bottom: 12px;
-      border: 1px solid var(--line);
-      background: var(--panel-soft);
-      border-radius: 14px;
       padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel-soft);
+      margin-bottom: 12px;
     }
     .notes strong {
       display: block;
       margin-bottom: 8px;
       color: var(--muted-2);
       font: 700 0.66rem var(--mono);
-      text-transform: uppercase;
       letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
     .notes ul {
       list-style: none;
@@ -328,99 +334,105 @@
       line-height: 1.5;
     }
     .notes li::before {
-      content: "→ ";
+      content: "-> ";
       color: var(--brand);
       font-family: var(--mono);
     }
-    @media (max-width: 1320px) {
-      .layout { grid-template-columns: 1fr 1fr; }
-      .hero { grid-template-columns: 1fr; }
+    .empty {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+      padding: 8px 0;
     }
-    @media (max-width: 860px) {
-      .layout { grid-template-columns: 1fr; }
-      .plugin-grid { grid-template-columns: 1fr; }
-      .hero-copy h2 { font-size: 1.6rem; }
-      .brand h1 { font-size: 1.7rem; }
+
+    @media (max-width: 1180px) {
+      .app { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 760px) {
+      .page { padding: 16px; }
+      .topbar { flex-direction: column; align-items: stretch; }
     }
   </style>
 </head>
 <body>
-  <div class="shell">
+  <div class="page">
     <header>
       <div class="brand">
-        <div class="brand-mark">✦</div>
-        <div>
-          <h1 id="brandTitle">Plugin Catalog</h1>
-          <p id="brandDesc">Browse category, subcategory, plugin, and release builds.</p>
-        </div>
+        <h1 id="brandTitle">Plugin Catalog</h1>
+        <p id="brandDesc">Browse category, plugin section, plugin, and release builds.</p>
       </div>
-      <div class="top-actions">
-        <a href="admin.html" class="btn">⚙ Admin</a>
-        <button class="btn" type="button" onclick="loadCatalog()">↻ Refresh</button>
+      <div class="topbar">
+        <a href="admin.html" class="btn">Admin</a>
+        <button class="btn" type="button" onclick="loadCatalog()">Refresh</button>
       </div>
     </header>
 
     <section class="hero">
-      <div class="card">
-        <div class="card-body hero-copy">
-          <h2 id="heroTitle">Loading catalog...</h2>
-          <p id="heroDescription">Fetching your categories, plugin sections, and uploaded builds.</p>
-        </div>
-      </div>
-      <div class="stats">
-        <div class="stat"><strong id="statCategories">0</strong><span>Categories</span></div>
-        <div class="stat"><strong id="statSubcategories">0</strong><span>Subcategories</span></div>
-        <div class="stat"><strong id="statPlugins">0</strong><span>Plugins</span></div>
-        <div class="stat"><strong id="statReleases">0</strong><span>Releases</span></div>
+      <h2 id="heroTitle">Loading catalog...</h2>
+      <p id="heroDescription">Fetching plugin categories, sections, and builds.</p>
+      <div class="hero-meta">
+        <div class="meta-pill">Categories <span id="statCategories">0</span></div>
+        <div class="meta-pill">Sections <span id="statSections">0</span></div>
+        <div class="meta-pill">Plugins <span id="statPlugins">0</span></div>
+        <div class="meta-pill">Releases <span id="statReleases">0</span></div>
       </div>
     </section>
 
-    <section class="layout">
-      <div class="card">
-        <div class="section-head">
-          <strong>Categories</strong>
-          <span>Top level</span>
+    <div class="app">
+      <aside>
+        <div class="panel sidebar-panel">
+          <div class="panel-head">
+            <strong>Categories</strong>
+            <span>Level 1</span>
+          </div>
+          <div class="panel-body">
+            <input id="categorySearch" class="search" type="text" placeholder="Search categories..." />
+            <div id="categoryList" class="list"></div>
+          </div>
         </div>
-        <div class="pane">
-          <input id="categorySearch" class="search" type="text" placeholder="Search categories..." />
-          <div id="categoryList" class="picker"></div>
-        </div>
-      </div>
 
-      <div class="card">
-        <div class="section-head">
-          <strong>Plugin Sections</strong>
-          <span>Subcategory inside selected category</span>
+        <div class="panel sidebar-panel">
+          <div class="panel-head">
+            <strong>Plugin Sections</strong>
+            <span>Level 2</span>
+          </div>
+          <div class="panel-body">
+            <input id="subcategorySearch" class="search" type="text" placeholder="Search sections..." />
+            <div id="subcategoryList" class="list"></div>
+          </div>
         </div>
-        <div class="pane">
-          <input id="subcategorySearch" class="search" type="text" placeholder="Search sections..." />
-          <div id="subcategoryList" class="picker"></div>
-        </div>
-      </div>
 
-      <div class="card">
-        <div class="section-head">
-          <strong>Plugins</strong>
-          <span>Selected subcategory</span>
+        <div class="panel sidebar-panel">
+          <div class="panel-head">
+            <strong>Plugins</strong>
+            <span>Level 3</span>
+          </div>
+          <div class="panel-body">
+            <input id="pluginSearch" class="search" type="text" placeholder="Search plugins..." />
+            <div id="pluginList" class="list"></div>
+          </div>
         </div>
-        <div class="pane">
-          <input id="pluginSearch" class="search" type="text" placeholder="Search plugins..." />
-          <div id="pluginList" class="picker"></div>
-        </div>
-      </div>
+      </aside>
 
-      <div class="card">
-        <div class="section-head">
+      <main class="panel content-panel">
+        <div class="panel-head">
           <strong id="detailHead">Plugin Details</strong>
-          <span id="detailSub">Pick a plugin to see releases</span>
+          <span id="detailSub">Select a plugin to view releases</span>
         </div>
-        <div class="pane">
-          <div id="pluginGrid" class="plugin-grid"></div>
-          <div id="pluginDetail" style="margin-top:18px;"></div>
+        <div class="panel-body">
+          <div class="crumbs">
+            Category: <strong id="crumbCategory">-</strong>
+            &nbsp;/&nbsp;
+            Section: <strong id="crumbSection">-</strong>
+            &nbsp;/&nbsp;
+            Plugin: <strong id="crumbPlugin">-</strong>
+          </div>
+
+          <div id="pluginDetail" class="plugin-summary"></div>
           <div id="releaseList" class="release-list"></div>
         </div>
-      </div>
-    </section>
+      </main>
+    </div>
   </div>
 
   <script>
@@ -441,7 +453,7 @@
         clampSelection();
         renderAll();
       } catch (error) {
-        document.getElementById("pluginDetail").innerHTML = `<div class="detail-empty">Failed to load catalog: ${escapeHtml(error.message)}</div>`;
+        document.getElementById("pluginDetail").innerHTML = `<div class="empty">Failed to load catalog: ${escapeHtml(error.message)}</div>`;
         document.getElementById("releaseList").innerHTML = "";
       }
     }
@@ -465,10 +477,10 @@
                 releases: Array.isArray(plugin.releases) ? plugin.releases.map((release) => ({
                   name: stringValue(release.name),
                   version: stringValue(release.version),
-                  type: stringValue(release.type),
+                  type: stringValue(release.type) || "stable",
                   latest: Boolean(release.latest),
-                  status: stringValue(release.status),
-                  loader: stringValue(release.loader),
+                  status: stringValue(release.status) || "success",
+                  loader: stringValue(release.loader) || "PaperMC",
                   minecraft: stringValue(release.minecraft),
                   description: stringValue(release.description),
                   changelog: Array.isArray(release.changelog) ? release.changelog.map(stringValue).filter(Boolean) : [],
@@ -508,24 +520,26 @@
 
     function renderAll() {
       const categories = catalogData.catalog.categories;
-      const subcategoryCount = categories.reduce((sum, category) => sum + (category.subcategories?.length || 0), 0);
+      const sectionCount = categories.reduce((sum, category) => sum + category.subcategories.length, 0);
       const pluginCount = categories.reduce((sum, category) => sum + category.subcategories.reduce((inner, sub) => inner + sub.plugins.length, 0), 0);
       const releaseCount = categories.reduce((sum, category) => sum + category.subcategories.reduce((inner, sub) => inner + sub.plugins.reduce((deep, plugin) => deep + plugin.releases.length, 0), 0), 0);
 
       document.title = `${catalogData.catalog.title} - Plugin Catalog`;
       document.getElementById("brandTitle").textContent = catalogData.catalog.title;
-      document.getElementById("brandDesc").textContent = catalogData.catalog.description || "Browse category, subcategory, plugin, and release builds.";
+      document.getElementById("brandDesc").textContent = catalogData.catalog.description || "Browse category, plugin section, plugin, and release builds.";
       document.getElementById("heroTitle").textContent = catalogData.catalog.title;
-      document.getElementById("heroDescription").textContent = catalogData.catalog.description || "Browse category, subcategory, plugin, and release builds.";
+      document.getElementById("heroDescription").textContent = catalogData.catalog.description || "Browse category, plugin section, plugin, and release builds.";
       document.getElementById("statCategories").textContent = categories.length;
-      document.getElementById("statSubcategories").textContent = subcategoryCount;
+      document.getElementById("statSections").textContent = sectionCount;
       document.getElementById("statPlugins").textContent = pluginCount;
       document.getElementById("statReleases").textContent = releaseCount;
+      document.getElementById("crumbCategory").textContent = currentCategory()?.name || "-";
+      document.getElementById("crumbSection").textContent = currentSubcategory()?.name || "-";
+      document.getElementById("crumbPlugin").textContent = currentPlugin()?.name || "-";
 
       renderCategories();
       renderSubcategories();
       renderPlugins();
-      renderPluginGrid();
       renderPluginDetail();
     }
 
@@ -539,7 +553,7 @@
       }
       list.innerHTML = items.map((category) => {
         const idx = catalogData.catalog.categories.indexOf(category);
-        return `<button class="pick ${idx === selectedCategoryIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(category.name)}</strong><span>${category.subcategories.length} sections</span></button>`;
+        return `<button class="item ${idx === selectedCategoryIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(category.name)}</strong><span>${category.subcategories.length} sections</span></button>`;
       }).join("");
       list.querySelectorAll("[data-index]").forEach((button) => {
         button.addEventListener("click", () => {
@@ -552,8 +566,8 @@
     }
 
     function renderSubcategories() {
-      const query = document.getElementById("subcategorySearch").value.trim().toLowerCase();
       const category = currentCategory();
+      const query = document.getElementById("subcategorySearch").value.trim().toLowerCase();
       const list = document.getElementById("subcategoryList");
       if (!category) {
         list.innerHTML = '<div class="empty">No category selected.</div>';
@@ -566,7 +580,7 @@
       }
       list.innerHTML = items.map((subcategory) => {
         const idx = category.subcategories.indexOf(subcategory);
-        return `<button class="pick ${idx === selectedSubcategoryIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(subcategory.name)}</strong><span>${subcategory.plugins.length} plugins</span></button>`;
+        return `<button class="item ${idx === selectedSubcategoryIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(subcategory.name)}</strong><span>${subcategory.plugins.length} plugins</span></button>`;
       }).join("");
       list.querySelectorAll("[data-index]").forEach((button) => {
         button.addEventListener("click", () => {
@@ -578,11 +592,11 @@
     }
 
     function renderPlugins() {
-      const query = document.getElementById("pluginSearch").value.trim().toLowerCase();
       const subcategory = currentSubcategory();
+      const query = document.getElementById("pluginSearch").value.trim().toLowerCase();
       const list = document.getElementById("pluginList");
       if (!subcategory) {
-        list.innerHTML = '<div class="empty">No plugin section selected.</div>';
+        list.innerHTML = '<div class="empty">No section selected.</div>';
         return;
       }
       const items = subcategory.plugins.filter((plugin) => !query || plugin.name.toLowerCase().includes(query));
@@ -593,37 +607,9 @@
       list.innerHTML = items.map((plugin) => {
         const idx = subcategory.plugins.indexOf(plugin);
         const latest = plugin.releases.find((release) => release.latest) || plugin.releases[0];
-        return `<button class="pick ${idx === selectedPluginIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(plugin.name)}</strong><span>${plugin.releases.length} releases${latest ? ` · latest ${escapeHtml(latest.version)}` : ""}</span></button>`;
+        return `<button class="item ${idx === selectedPluginIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(plugin.name)}</strong><span>${plugin.releases.length} releases${latest ? ` · latest ${escapeHtml(latest.version)}` : ""}</span></button>`;
       }).join("");
       list.querySelectorAll("[data-index]").forEach((button) => {
-        button.addEventListener("click", () => {
-          selectedPluginIndex = Number(button.dataset.index);
-          renderAll();
-        });
-      });
-    }
-
-    function renderPluginGrid() {
-      const subcategory = currentSubcategory();
-      const query = document.getElementById("pluginSearch").value.trim().toLowerCase();
-      const grid = document.getElementById("pluginGrid");
-      if (!subcategory) {
-        grid.innerHTML = "";
-        return;
-      }
-      const items = subcategory.plugins.filter((plugin) => !query || plugin.name.toLowerCase().includes(query));
-      grid.innerHTML = items.map((plugin) => {
-        const idx = subcategory.plugins.indexOf(plugin);
-        return `<button class="plugin-card ${idx === selectedPluginIndex ? "active" : ""}" type="button" data-index="${idx}">
-          <strong>${escapeHtml(plugin.name)}</strong>
-          <p>${escapeHtml(plugin.description || "No plugin description yet.")}</p>
-          <div class="tags">
-            <span class="tag">section ${escapeHtml(subcategory.name)}</span>
-            <span class="tag">${plugin.releases.length} releases</span>
-          </div>
-        </button>`;
-      }).join("");
-      grid.querySelectorAll("[data-index]").forEach((button) => {
         button.addEventListener("click", () => {
           selectedPluginIndex = Number(button.dataset.index);
           renderAll();
@@ -636,55 +622,54 @@
       const subcategory = currentSubcategory();
       const plugin = currentPlugin();
       const detail = document.getElementById("pluginDetail");
-      const list = document.getElementById("releaseList");
+      const releases = document.getElementById("releaseList");
 
       if (!category || !subcategory || !plugin) {
         document.getElementById("detailHead").textContent = "Plugin Details";
-        document.getElementById("detailSub").textContent = "Pick a plugin to see releases";
-        detail.innerHTML = '<div class="detail-empty">Choose a category, then a plugin section, then a plugin.</div>';
-        list.innerHTML = "";
+        document.getElementById("detailSub").textContent = "Select a plugin to view releases";
+        detail.innerHTML = '<div class="empty">Choose a category, then a section, then a plugin.</div>';
+        releases.innerHTML = "";
         return;
       }
 
       document.getElementById("detailHead").textContent = plugin.name;
-      document.getElementById("detailSub").textContent = `${category.name} -> ${subcategory.name}`;
+      document.getElementById("detailSub").textContent = `${category.name} / ${subcategory.name}`;
 
       detail.innerHTML = `
-        <div class="plugin-detail">
-          <h3>${escapeHtml(plugin.name)}</h3>
-          <p>${escapeHtml(plugin.description || "No plugin description yet.")}</p>
-          <div class="tags">
-            <span class="tag">category ${escapeHtml(category.name)}</span>
-            <span class="tag">section ${escapeHtml(subcategory.name)}</span>
-            ${plugin.author ? `<span class="tag">author ${escapeHtml(plugin.author)}</span>` : ""}
-          </div>
-          <div class="plugin-links">
-            ${renderLink(plugin.website, "↗ Website")}
-            ${renderLink(plugin.source, "⌥ Source")}
-          </div>
+        <h3>${escapeHtml(plugin.name)}</h3>
+        <p>${escapeHtml(plugin.description || "No plugin description yet.")}</p>
+        <div class="plugin-links">
+          ${renderLink(plugin.website, "Website")}
+          ${renderLink(plugin.source, "Source")}
+        </div>
+        <div class="tag-row">
+          <span class="tag">category ${escapeHtml(category.name)}</span>
+          <span class="tag">section ${escapeHtml(subcategory.name)}</span>
+          ${plugin.author ? `<span class="tag">author ${escapeHtml(plugin.author)}</span>` : ""}
+          <span class="tag">${plugin.releases.length} releases</span>
         </div>
       `;
 
       if (!plugin.releases.length) {
-        list.innerHTML = '<div class="detail-empty">No releases for this plugin yet.</div>';
+        releases.innerHTML = '<div class="empty">No releases uploaded for this plugin yet.</div>';
         return;
       }
 
-      list.innerHTML = [...plugin.releases]
+      releases.innerHTML = [...plugin.releases]
         .sort((a, b) => Number(b.latest) - Number(a.latest))
         .map((release) => `
-          <div class="release-card ${release.latest ? "latest" : ""}">
+          <div class="release ${release.latest ? "latest" : ""}">
             <div class="release-top">
-              <div class="release-name">
+              <div>
                 <strong>${escapeHtml(release.name || release.version)}</strong>
                 <span>v${escapeHtml(release.version)}</span>
               </div>
-              <div class="release-tags">
+              <div class="badges">
                 ${release.latest ? '<span class="badge latest">latest</span>' : ""}
                 <span class="badge ${release.type === "stable" ? "stable" : "pre"}">${escapeHtml(release.type || "unknown")}</span>
                 <span class="badge ${release.status || "maintenance"}">${escapeHtml(release.status || "unknown")}</span>
-                ${release.loader ? `<span class="badge latest" style="color:var(--muted);border-color:var(--line);background:#f3f7fb;">${escapeHtml(release.loader)}</span>` : ""}
-                ${release.minecraft ? `<span class="badge latest" style="color:var(--muted);border-color:var(--line);background:#f3f7fb;">MC ${escapeHtml(release.minecraft)}</span>` : ""}
+                ${release.loader ? `<span class="badge latest" style="color:var(--muted);border-color:var(--line);background:#f8fbff;">${escapeHtml(release.loader)}</span>` : ""}
+                ${release.minecraft ? `<span class="badge latest" style="color:var(--muted);border-color:var(--line);background:#f8fbff;">MC ${escapeHtml(release.minecraft)}</span>` : ""}
               </div>
             </div>
             <p>${escapeHtml(release.description || "No release description yet.")}</p>
@@ -694,8 +679,8 @@
                 <ul>${release.changelog.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
               </div>
             ` : ""}
-            <div class="release-actions">
-              ${renderLink(release.download, "⬇ Download Build")}
+            <div class="plugin-links">
+              ${renderLink(release.download, "Download Build")}
             </div>
           </div>
         `).join("");
@@ -703,7 +688,7 @@
 
     function renderLink(url, label) {
       const safe = toSafeExternalUrl(url);
-      return safe ? `<a href="${escapeAttr(safe)}" target="_blank" rel="noopener" class="link-btn">${label}</a>` : "";
+      return safe ? `<a href="${escapeAttr(safe)}" target="_blank" rel="noopener" class="btn">${label}</a>` : "";
     }
 
     function toSafeExternalUrl(value) {
@@ -716,7 +701,11 @@
     }
 
     function escapeHtml(value) {
-      return String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
 
     function escapeAttr(value) {

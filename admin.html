@@ -5,146 +5,305 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin - Plugin Catalog</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #f4f7fb;
-      --panel: rgba(255,255,255,0.94);
+      --bg: #f8fafc;
+      --panel: #ffffff;
       --panel-soft: #f8fbff;
-      --line: #d9e4f1;
-      --line-strong: #bfd1e6;
-      --text: #183452;
-      --muted: #617c9a;
-      --muted-2: #8398b0;
-      --brand: #1492ff;
-      --brand-2: #63c8ff;
-      --good: #1ea971;
-      --warn: #d6921c;
-      --bad: #d95566;
-      --shadow: 0 18px 45px rgba(22, 50, 79, 0.08);
-      --r: 18px;
-      --rs: 12px;
+      --line: #e5e7eb;
+      --line-strong: #d1d5db;
+      --text: #111827;
+      --muted: #6b7280;
+      --muted-2: #94a3b8;
+      --brand: #2563eb;
+      --brand-soft: #eff6ff;
+      --good: #16a34a;
+      --warn: #d97706;
+      --bad: #dc2626;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+      --r: 16px;
+      --rs: 10px;
       --mono: "JetBrains Mono", monospace;
-      --sans: "Manrope", sans-serif;
+      --sans: "Inter", sans-serif;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--sans);
-      color: var(--text);
       min-height: 100vh;
-      background:
-        radial-gradient(circle at top left, rgba(20,146,255,0.08), transparent 28%),
-        linear-gradient(180deg, #f8fbff 0%, #f2f6fb 100%);
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
     }
-    .wrap { max-width: 1500px; margin: 0 auto; padding: 24px; }
+    button, input, textarea, select { font: inherit; }
+
+    .auth-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(248, 250, 252, 0.9);
+      backdrop-filter: blur(8px);
+    }
+    .auth-card {
+      width: min(420px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+    .auth-card strong {
+      display: inline-block;
+      margin-bottom: 12px;
+      color: var(--brand);
+      font: 700 0.72rem var(--mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .auth-card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+    }
+    .auth-card p {
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 16px;
+    }
+    .auth-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      outline: none;
+      font-family: var(--mono);
+      margin-bottom: 12px;
+    }
+    .auth-input:focus { border-color: var(--brand); }
+    .auth-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .auth-error {
+      margin-top: 12px;
+      color: var(--bad);
+      display: none;
+      font: 700 0.74rem var(--mono);
+    }
+
+    .page {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 24px;
+    }
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
-    .brand { display: flex; align-items: center; gap: 14px; }
-    .mark {
-      width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center;
-      color: white; font-size: 24px; background: linear-gradient(135deg, var(--brand), var(--brand-2));
-      box-shadow: 0 16px 30px rgba(20,146,255,0.22);
+    .brand h1 {
+      font-size: 2.1rem;
+      line-height: 1;
+      margin-bottom: 6px;
     }
-    .brand h1 { font-size: 2rem; line-height: 1; }
-    .brand p { margin-top: 6px; color: var(--muted); }
-    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; }
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 11px 16px; border-radius: 999px; border: 1px solid var(--line-strong);
-      background: rgba(255,255,255,0.76); color: var(--text); text-decoration: none; cursor: pointer; font-weight: 700;
-      transition: .18s ease;
+    .brand p {
+      color: var(--muted);
+      font-size: 1rem;
     }
-    .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
-    .btn.primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: white; border-color: transparent; }
-    .btn.bad { color: var(--bad); }
-    .btn.warn { color: var(--warn); }
-    .btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; transform: none; }
+    .topbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
     .status {
-      display: inline-flex; align-items: center; gap: 8px; padding: 11px 16px;
-      border-radius: 999px; background: rgba(255,255,255,0.82); border: 1px solid var(--line-strong);
-      font: 700 0.72rem var(--mono); color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--muted);
+      font: 700 0.72rem var(--mono);
     }
     .status::before {
-      content: ""; width: 9px; height: 9px; border-radius: 50%; background: currentColor;
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
     }
     .status.good { color: var(--good); }
     .status.warn { color: var(--warn); }
     .status.bad { color: var(--bad); }
 
-    .auth-backdrop {
-      position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center;
-      background: rgba(240,246,252,0.88); backdrop-filter: blur(10px);
-      padding: 20px;
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: var(--panel);
+      color: var(--text);
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.16s ease;
     }
-    .auth-card {
-      width: min(440px, 100%); background: white; border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow);
-      padding: 28px;
+    .btn:hover {
+      border-color: var(--brand);
+      color: var(--brand);
     }
-    .auth-card strong {
-      display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px;
-      padding: 7px 11px; border-radius: 999px; background: #eef7ff; border: 1px solid var(--line);
-      color: var(--brand); font: 700 0.72rem var(--mono);
+    .btn.primary {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #fff;
     }
-    .auth-card h2 { font-size: 1.45rem; margin-bottom: 10px; }
-    .auth-card p { color: var(--muted); line-height: 1.65; margin-bottom: 14px; }
-    .auth-input {
-      width: 100%; padding: 13px 14px; border-radius: 14px; border: 1px solid var(--line); background: #fff;
-      color: var(--text); outline: none; font-family: var(--mono); text-align: center; letter-spacing: 0.08em; margin-bottom: 12px;
+    .btn.primary:hover {
+      color: #fff;
+      opacity: 0.92;
     }
-    .auth-input:focus { border-color: var(--brand); }
-    .auth-error { display: none; margin-top: 12px; color: var(--bad); font: 700 0.74rem var(--mono); }
+    .btn.warn { color: var(--warn); }
+    .btn.bad { color: var(--bad); }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
-    .layout {
+    .app {
       display: grid;
-      grid-template-columns: 280px 280px 1fr;
-      gap: 16px;
+      grid-template-columns: 320px 1fr;
+      gap: 18px;
       align-items: start;
     }
-    .stack { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
-    .card {
+    .panel {
       background: var(--panel);
-      border: 1px solid rgba(191,209,230,0.75);
+      border: 1px solid var(--line);
       border-radius: var(--r);
       box-shadow: var(--shadow);
       overflow: hidden;
     }
-    .head {
+    .panel-head {
       padding: 16px 18px;
       border-bottom: 1px solid var(--line);
-      background: linear-gradient(180deg, #ffffff, #f8fbff);
     }
-    .head strong { display: block; font-size: 1rem; }
-    .head span {
-      display: block; margin-top: 4px; color: var(--muted-2);
-      font: 700 0.64rem var(--mono); letter-spacing: 0.08em; text-transform: uppercase;
+    .panel-head strong {
+      display: block;
+      font-size: 0.95rem;
     }
-    .body { padding: 16px 18px; }
-    .search, .input, .select, .textarea {
-      width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line);
-      background: white; color: var(--text); outline: none;
-    }
-    .search:focus, .input:focus, .select:focus, .textarea:focus { border-color: var(--brand); }
-    .textarea { min-height: 110px; resize: vertical; line-height: 1.6; }
-    .picker { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; max-height: 280px; overflow: auto; }
-    .pick {
-      width: 100%; text-align: left; border: 1px solid var(--line); border-radius: 14px; background: white;
-      padding: 14px; cursor: pointer; transition: .18s ease;
-    }
-    .pick:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
-    .pick.active { background: #f1f8ff; border-color: rgba(20,146,255,0.42); }
-    .pick strong { display: block; font-size: 0.94rem; }
-    .pick span { display: block; margin-top: 5px; color: var(--muted); font-size: 0.78rem; }
-    .muted-empty {
-      padding: 24px 10px;
-      text-align: center;
+    .panel-head span {
+      display: block;
+      margin-top: 4px;
       color: var(--muted-2);
-      font: 700 0.76rem var(--mono);
+      font: 700 0.64rem var(--mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .panel-body {
+      padding: 18px;
+    }
+
+    .sidebar-panel + .sidebar-panel {
+      margin-top: 14px;
+    }
+    .search, .input, .select, .textarea {
+      width: 100%;
+      padding: 11px 13px;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+    }
+    .search:focus, .input:focus, .select:focus, .textarea:focus {
+      border-color: var(--brand);
+    }
+    .textarea {
+      min-height: 110px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+      max-height: 240px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .item {
+      width: 100%;
+      text-align: left;
+      padding: 12px 13px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      transition: 0.16s ease;
+    }
+    .item:hover {
+      border-color: var(--line-strong);
+      background: #fbfdff;
+    }
+    .item.active {
+      border-color: rgba(37, 99, 235, 0.28);
+      background: var(--brand-soft);
+    }
+    .item strong {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+    .item span {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+    .inline-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .content-panel .panel-body {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .crumbs {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .crumbs strong { color: var(--text); }
+    .section {
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+    }
+    .section:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    .section h3 {
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+    .section p {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 14px;
+      line-height: 1.6;
     }
     .grid {
       display: grid;
@@ -152,37 +311,83 @@
       gap: 14px;
     }
     .full { grid-column: 1 / -1; }
-    .field { display: flex; flex-direction: column; gap: 7px; }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
     .field label {
       color: var(--muted-2);
       font: 700 0.66rem var(--mono);
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
-    .hint { color: var(--muted); font-size: 0.78rem; line-height: 1.55; }
     .error {
       display: none;
       color: var(--bad);
       font: 700 0.72rem var(--mono);
     }
-    .row {
+    .hint {
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.55;
+    }
+
+    .release-shell {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .release-list {
       display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 14px;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 440px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .release-row {
+      width: 100%;
+      text-align: left;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .release-row.active {
+      border-color: rgba(37, 99, 235, 0.28);
+      background: var(--brand-soft);
+    }
+    .release-row strong {
+      display: block;
+      font-size: 0.88rem;
+      margin-bottom: 4px;
+    }
+    .release-row span {
+      color: var(--muted);
+      font-size: 0.76rem;
     }
     .toggle-box {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 14px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
       padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
       background: var(--panel-soft);
     }
-    .toggle-copy strong { display: block; font-size: 0.92rem; }
-    .toggle-copy span { display: block; margin-top: 4px; color: var(--muted); font-size: 0.8rem; }
+    .toggle-copy strong {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 3px;
+    }
+    .toggle-copy span {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
     .toggle {
       position: relative;
       width: 48px;
@@ -191,7 +396,11 @@
     }
     .toggle input { opacity: 0; width: 0; height: 0; }
     .toggle span {
-      position: absolute; inset: 0; border-radius: 999px; background: #c8d8ea; transition: .18s ease;
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: #cbd5e1;
+      transition: 0.16s ease;
     }
     .toggle span::after {
       content: "";
@@ -201,69 +410,73 @@
       width: 20px;
       height: 20px;
       border-radius: 50%;
-      background: white;
-      box-shadow: 0 4px 10px rgba(24,52,82,0.14);
-      transition: .18s ease;
+      background: #fff;
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.12);
+      transition: 0.16s ease;
     }
-    .toggle input:checked + span { background: linear-gradient(135deg, var(--brand), var(--brand-2)); }
+    .toggle input:checked + span { background: var(--brand); }
     .toggle input:checked + span::after { transform: translateX(22px); }
-    details.preview { margin-top: 16px; }
+
     details.preview summary {
-      cursor: pointer;
       list-style: none;
-      padding: 16px 18px;
-      border-bottom: 1px solid var(--line);
-      background: linear-gradient(180deg, #ffffff, #f8fbff);
-      font: 700 0.74rem var(--mono);
+      cursor: pointer;
       color: var(--muted);
+      font: 700 0.74rem var(--mono);
+      margin-bottom: 12px;
     }
     details.preview summary::-webkit-details-marker { display: none; }
     pre {
-      padding: 16px 18px;
-      max-height: 320px;
-      overflow: auto;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
       background: #fbfdff;
       color: var(--text);
       font: 0.74rem/1.6 var(--mono);
+      max-height: 320px;
+      overflow: auto;
     }
+
     #toast {
       position: fixed;
       right: 16px;
       bottom: 16px;
+      z-index: 30;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      z-index: 25;
     }
     .toast {
       min-width: 240px;
       padding: 12px 14px;
-      border-radius: 14px;
+      border-radius: 12px;
       border: 1px solid;
-      font: 700 0.74rem var(--mono);
+      background: #fff;
       box-shadow: var(--shadow);
-      background: white;
+      font: 700 0.74rem var(--mono);
     }
-    .toast.info { color: var(--brand); border-color: rgba(20,146,255,0.22); }
-    .toast.good { color: var(--good); border-color: rgba(30,169,113,0.22); }
-    .toast.bad { color: var(--bad); border-color: rgba(217,85,102,0.24); }
-    @media (max-width: 1220px) {
-      .layout { grid-template-columns: 1fr; }
+    .toast.info { color: var(--brand); border-color: rgba(37, 99, 235, 0.2); }
+    .toast.good { color: var(--good); border-color: rgba(22, 163, 74, 0.2); }
+    .toast.bad { color: var(--bad); border-color: rgba(220, 38, 38, 0.2); }
+
+    @media (max-width: 1180px) {
+      .app { grid-template-columns: 1fr; }
+      .release-shell { grid-template-columns: 1fr; }
     }
     @media (max-width: 760px) {
+      .page { padding: 16px; }
       .grid { grid-template-columns: 1fr; }
-      .toolbar, header { flex-direction: column; align-items: stretch; }
+      .auth-actions, .topbar { flex-direction: column; align-items: stretch; }
     }
   </style>
 </head>
 <body>
   <div id="authGate" class="auth-backdrop">
     <div class="auth-card">
-      <strong>🔐 Verified Admin Access</strong>
+      <strong>Verified Admin Access</strong>
       <h2>Unlock the editor</h2>
-      <p>You can now create category -> subcategory -> plugin -> releases from this panel.</p>
+      <p>Create category -> plugin section -> plugin -> releases from one clean workspace.</p>
       <input id="authInput" class="auth-input" type="password" placeholder="Enter admin token" autocomplete="current-password" />
-      <div class="toolbar">
+      <div class="auth-actions">
         <button id="authBtn" class="btn primary" type="button">Unlock Panel</button>
         <a href="index.html" class="btn">Open Public Page</a>
       </div>
@@ -271,78 +484,85 @@
     </div>
   </div>
 
-  <div class="wrap">
+  <div class="page">
     <header>
       <div class="brand">
-        <div class="mark">✦</div>
-        <div>
-          <h1>Plugin Catalog Admin</h1>
-          <p>Clean manager for categories, plugin sections, plugins, and builds.</p>
-        </div>
+        <h1>Plugin Catalog Admin</h1>
+        <p>Clean hierarchy editor inspired by lightweight build dashboards.</p>
       </div>
-      <div class="toolbar">
+      <div class="topbar">
         <div id="saveState" class="status">Ready</div>
-        <button id="saveAllBtn" class="btn primary" type="button">🚀 Save All</button>
-        <button id="discardBtn" class="btn warn" type="button">↩ Discard Draft</button>
-        <button id="reloadBtn" class="btn" type="button">↻ Reload</button>
+        <button id="saveAllBtn" class="btn primary" type="button">Save All</button>
+        <button id="discardBtn" class="btn warn" type="button">Discard Draft</button>
+        <button id="reloadBtn" class="btn" type="button">Reload</button>
       </div>
     </header>
 
-    <section class="layout">
-      <div class="stack">
-        <div class="card">
-          <div class="head">
+    <div class="app">
+      <aside>
+        <div class="panel sidebar-panel">
+          <div class="panel-head">
             <strong>Categories</strong>
-            <span>Top level groups</span>
+            <span>Step 1</span>
           </div>
-          <div class="body">
+          <div class="panel-body">
             <input id="categorySearch" class="search" type="text" placeholder="Search categories..." />
-            <div id="categoryList" class="picker"></div>
-            <div class="row">
-              <button id="newCategoryBtn" class="btn" type="button">＋ Category</button>
-              <button id="deleteCategoryBtn" class="btn bad" type="button">✕ Delete</button>
+            <div id="categoryList" class="list"></div>
+            <div class="inline-actions">
+              <button id="newCategoryBtn" class="btn" type="button">+ Category</button>
+              <button id="deleteCategoryBtn" class="btn bad" type="button">Delete</button>
             </div>
           </div>
         </div>
 
-        <div class="card">
-          <div class="head">
+        <div class="panel sidebar-panel">
+          <div class="panel-head">
             <strong>Plugin Sections</strong>
-            <span>Subcategory inside selected category</span>
+            <span>Step 2</span>
           </div>
-          <div class="body">
-            <input id="subcategorySearch" class="search" type="text" placeholder="Search subcategories..." />
-            <div id="subcategoryList" class="picker"></div>
-            <div class="row">
-              <button id="newSubcategoryBtn" class="btn" type="button">＋ Section</button>
-              <button id="deleteSubcategoryBtn" class="btn bad" type="button">✕ Delete</button>
+          <div class="panel-body">
+            <input id="subcategorySearch" class="search" type="text" placeholder="Search sections..." />
+            <div id="subcategoryList" class="list"></div>
+            <div class="inline-actions">
+              <button id="newSubcategoryBtn" class="btn" type="button">+ Section</button>
+              <button id="deleteSubcategoryBtn" class="btn bad" type="button">Delete</button>
             </div>
           </div>
         </div>
 
-        <div class="card">
-          <div class="head">
+        <div class="panel sidebar-panel">
+          <div class="panel-head">
             <strong>Plugins</strong>
-            <span>Inside selected plugin section</span>
+            <span>Step 3</span>
           </div>
-          <div class="body">
+          <div class="panel-body">
             <input id="pluginSearch" class="search" type="text" placeholder="Search plugins..." />
-            <div id="pluginList" class="picker"></div>
-            <div class="row">
-              <button id="newPluginBtn" class="btn" type="button">＋ Plugin</button>
-              <button id="deletePluginBtn" class="btn bad" type="button">✕ Delete</button>
+            <div id="pluginList" class="list"></div>
+            <div class="inline-actions">
+              <button id="newPluginBtn" class="btn" type="button">+ Plugin</button>
+              <button id="deletePluginBtn" class="btn bad" type="button">Delete</button>
             </div>
           </div>
         </div>
-      </div>
+      </aside>
 
-      <div class="stack">
-        <div class="card">
-          <div class="head">
-            <strong>Catalog Settings</strong>
-            <span>Global title and selected names</span>
+      <main class="panel content-panel">
+        <div class="panel-head">
+          <strong>Builder</strong>
+          <span>Step 4: Release details and publishing</span>
+        </div>
+        <div class="panel-body">
+          <div class="crumbs">
+            Category: <strong id="crumbCategory">-</strong>
+            &nbsp;/&nbsp;
+            Section: <strong id="crumbSection">-</strong>
+            &nbsp;/&nbsp;
+            Plugin: <strong id="crumbPlugin">-</strong>
           </div>
-          <div class="body">
+
+          <section class="section">
+            <h3>Catalog</h3>
+            <p>Keep the global title and intro small and simple.</p>
             <div class="grid">
               <div class="field">
                 <label for="catalogTitle">Catalog Title</label>
@@ -356,31 +576,27 @@
               <div class="field">
                 <label for="subcategoryName">Plugin Section Name</label>
                 <input id="subcategoryName" class="input" type="text" />
-                <div id="subcategoryNameError" class="error">Section name is required and must be unique in category.</div>
+                <div id="subcategoryNameError" class="error">Section name is required and must be unique in the category.</div>
               </div>
               <div class="field full">
                 <label for="catalogDescription">Catalog Description</label>
-                <textarea id="catalogDescription" class="textarea" placeholder="Describe the whole plugin catalog."></textarea>
+                <textarea id="catalogDescription" class="textarea" placeholder="Describe the whole build catalog."></textarea>
               </div>
             </div>
-            <div class="row">
+            <div class="inline-actions">
               <button id="applyCategoryBtn" class="btn" type="button">Apply Category</button>
               <button id="applySubcategoryBtn" class="btn" type="button">Apply Section</button>
             </div>
-          </div>
-        </div>
+          </section>
 
-        <div class="card">
-          <div class="head">
-            <strong>Plugin Editor</strong>
-            <span>Create plugin after choosing category and plugin section</span>
-          </div>
-          <div class="body">
+          <section class="section">
+            <h3>Plugin</h3>
+            <p>Create or edit the selected plugin inside the chosen section.</p>
             <div class="grid">
               <div class="field">
                 <label for="pluginName">Plugin Name</label>
                 <input id="pluginName" class="input" type="text" />
-                <div id="pluginNameError" class="error">Plugin name is required and must be unique in subcategory.</div>
+                <div id="pluginNameError" class="error">Plugin name is required and must be unique in the section.</div>
               </div>
               <div class="field">
                 <label for="pluginAuthor">Author</label>
@@ -399,103 +615,103 @@
                 <textarea id="pluginDescription" class="textarea" placeholder="Describe this plugin."></textarea>
               </div>
             </div>
-            <div class="row">
+            <div class="inline-actions">
               <button id="applyPluginBtn" class="btn" type="button">Apply Plugin</button>
             </div>
-          </div>
-        </div>
+          </section>
 
-        <div class="card">
-          <div class="head">
-            <strong>Release Editor</strong>
-            <span>Builds for the selected plugin</span>
-          </div>
-          <div class="body">
-            <div id="releaseList" class="picker"></div>
-            <div class="row" style="margin-bottom: 14px;">
-              <button id="newReleaseBtn" class="btn" type="button">＋ Release</button>
-              <button id="deleteReleaseBtn" class="btn bad" type="button">✕ Delete Release</button>
-            </div>
-            <div class="grid">
-              <div class="field">
-                <label for="releaseName">Release Name</label>
-                <input id="releaseName" class="input" type="text" />
-                <div id="releaseNameError" class="error">Release name is required.</div>
+          <section class="section">
+            <h3>Releases</h3>
+            <p>Pick a release on the left, edit its fields on the right, then save all when you are ready.</p>
+            <div class="release-shell">
+              <div>
+                <div id="releaseList" class="release-list"></div>
+                <div class="inline-actions">
+                  <button id="newReleaseBtn" class="btn" type="button">+ Release</button>
+                  <button id="deleteReleaseBtn" class="btn bad" type="button">Delete</button>
+                </div>
               </div>
-              <div class="field">
-                <label for="releaseVersion">Version Number</label>
-                <input id="releaseVersion" class="input" type="text" />
-                <div id="releaseVersionError" class="error">Version is required and must be unique.</div>
-              </div>
-              <div class="field">
-                <label for="releaseType">Release Type</label>
-                <select id="releaseType" class="select">
-                  <option value="stable">Stable</option>
-                  <option value="pre-release">Pre-Release</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="releaseLoader">Loader</label>
-                <select id="releaseLoader" class="select">
-                  <option value="PaperMC">PaperMC</option>
-                  <option value="Bukkit">Bukkit</option>
-                  <option value="Purpur">Purpur</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="releaseStatus">Status</label>
-                <select id="releaseStatus" class="select">
-                  <option value="success">Success</option>
-                  <option value="maintenance">Maintenance</option>
-                  <option value="fail">Fail</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="releaseMinecraft">Minecraft Version</label>
-                <input id="releaseMinecraft" class="input" type="text" placeholder="1.21.x" />
-              </div>
-              <div class="field full">
-                <label for="releaseDownload">Download URL</label>
-                <input id="releaseDownload" class="input" type="url" placeholder="https://..." />
-                <div id="releaseDownloadError" class="error">Download URL must be valid https.</div>
-              </div>
-              <div class="field full">
-                <label for="releaseDescription">Release Description</label>
-                <textarea id="releaseDescription" class="textarea" placeholder="Describe the build."></textarea>
-              </div>
-              <div class="field full">
-                <label for="releaseChangelog">Changelog</label>
-                <textarea id="releaseChangelog" class="textarea" placeholder="One line per item"></textarea>
-                <div class="hint">Each line becomes one changelog entry.</div>
-              </div>
-              <div class="field full">
-                <div class="toggle-box">
-                  <div class="toggle-copy">
-                    <strong>Mark as latest build</strong>
-                    <span>Only one release in the plugin can be latest.</span>
+              <div class="grid">
+                <div class="field">
+                  <label for="releaseName">Release Name</label>
+                  <input id="releaseName" class="input" type="text" />
+                  <div id="releaseNameError" class="error">Release name is required.</div>
+                </div>
+                <div class="field">
+                  <label for="releaseVersion">Version</label>
+                  <input id="releaseVersion" class="input" type="text" />
+                  <div id="releaseVersionError" class="error">Version is required and must be unique.</div>
+                </div>
+                <div class="field">
+                  <label for="releaseType">Release Type</label>
+                  <select id="releaseType" class="select">
+                    <option value="stable">Stable</option>
+                    <option value="pre-release">Pre-Release</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="releaseLoader">Loader</label>
+                  <select id="releaseLoader" class="select">
+                    <option value="PaperMC">PaperMC</option>
+                    <option value="Bukkit">Bukkit</option>
+                    <option value="Purpur">Purpur</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="releaseStatus">Status</label>
+                  <select id="releaseStatus" class="select">
+                    <option value="success">Success</option>
+                    <option value="maintenance">Maintenance</option>
+                    <option value="fail">Fail</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="releaseMinecraft">Minecraft Version</label>
+                  <input id="releaseMinecraft" class="input" type="text" placeholder="1.21.x" />
+                </div>
+                <div class="field full">
+                  <label for="releaseDownload">Download URL</label>
+                  <input id="releaseDownload" class="input" type="url" placeholder="https://..." />
+                  <div id="releaseDownloadError" class="error">Download URL must be valid https.</div>
+                </div>
+                <div class="field full">
+                  <label for="releaseDescription">Release Description</label>
+                  <textarea id="releaseDescription" class="textarea" placeholder="Describe what changed in this build."></textarea>
+                </div>
+                <div class="field full">
+                  <label for="releaseChangelog">Changelog</label>
+                  <textarea id="releaseChangelog" class="textarea" placeholder="One line per item"></textarea>
+                  <div class="hint">Each line becomes one changelog entry.</div>
+                </div>
+                <div class="field full">
+                  <div class="toggle-box">
+                    <div class="toggle-copy">
+                      <strong>Mark as latest build</strong>
+                      <span>Only one release in the plugin can be latest.</span>
+                    </div>
+                    <label class="toggle">
+                      <input id="releaseLatest" type="checkbox" />
+                      <span></span>
+                    </label>
                   </div>
-                  <label class="toggle">
-                    <input id="releaseLatest" type="checkbox" />
-                    <span></span>
-                  </label>
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div class="inline-actions">
               <button id="applyReleaseBtn" class="btn primary" type="button">Apply Release</button>
-              <button id="resetReleaseBtn" class="btn" type="button">↺ Reset Form</button>
+              <button id="resetReleaseBtn" class="btn" type="button">Reset Form</button>
             </div>
-          </div>
-        </div>
+          </section>
 
-        <div class="card">
-          <details class="preview" open>
-            <summary>Raw JSON Preview</summary>
-            <pre id="jsonPreview">{}</pre>
-          </details>
+          <section class="section">
+            <details class="preview">
+              <summary>Raw JSON Preview</summary>
+              <pre id="jsonPreview">{}</pre>
+            </details>
+          </section>
         </div>
-      </div>
-    </section>
+      </main>
+    </div>
   </div>
 
   <div id="toast"></div>
@@ -723,8 +939,13 @@
     }
 
     function renderAll() {
+      document.getElementById("crumbCategory").textContent = currentCategory()?.name || "-";
+      document.getElementById("crumbSection").textContent = currentSubcategory()?.name || "-";
+      document.getElementById("crumbPlugin").textContent = currentPlugin()?.name || "-";
+
       document.getElementById("catalogTitle").value = draftData.catalog.title;
       document.getElementById("catalogDescription").value = draftData.catalog.description;
+
       renderCategoryList();
       renderSubcategoryList();
       renderPluginList();
@@ -741,23 +962,23 @@
       const items = draftData.catalog.categories.filter((category) => !query || category.name.toLowerCase().includes(query));
       const list = document.getElementById("categoryList");
       if (!items.length) {
-        list.innerHTML = '<div class="muted-empty">No categories found.</div>';
-        return;
-      }
-      list.innerHTML = items.map((category) => {
-        const idx = draftData.catalog.categories.indexOf(category);
-        const subCount = category.subcategories.length;
-        return `<button class="pick ${idx === selectedCategoryIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(category.name)}</strong><span>${subCount} sections</span></button>`;
-      }).join("");
-      list.querySelectorAll("[data-index]").forEach((button) => {
-        button.addEventListener("click", () => {
-          selectedCategoryIndex = Number(button.dataset.index);
-          selectedSubcategoryIndex = 0;
-          selectedPluginIndex = 0;
-          selectedReleaseIndex = 0;
-          renderAll();
+        list.innerHTML = '<div class="hint">No categories found.</div>';
+      } else {
+        list.innerHTML = items.map((category) => {
+          const idx = draftData.catalog.categories.indexOf(category);
+          const subCount = category.subcategories.length;
+          return `<button class="item ${idx === selectedCategoryIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(category.name)}</strong><span>${subCount} sections</span></button>`;
+        }).join("");
+        list.querySelectorAll("[data-index]").forEach((button) => {
+          button.addEventListener("click", () => {
+            selectedCategoryIndex = Number(button.dataset.index);
+            selectedSubcategoryIndex = 0;
+            selectedPluginIndex = 0;
+            selectedReleaseIndex = 0;
+            renderAll();
+          });
         });
-      });
+      }
       document.getElementById("deleteCategoryBtn").disabled = !draftData.catalog.categories.length;
     }
 
@@ -766,7 +987,7 @@
       const query = document.getElementById("subcategorySearch").value.trim().toLowerCase();
       const list = document.getElementById("subcategoryList");
       if (!category) {
-        list.innerHTML = '<div class="muted-empty">Create a category first.</div>';
+        list.innerHTML = '<div class="hint">Create a category first.</div>';
         document.getElementById("newSubcategoryBtn").disabled = true;
         document.getElementById("deleteSubcategoryBtn").disabled = true;
         return;
@@ -774,22 +995,21 @@
       document.getElementById("newSubcategoryBtn").disabled = false;
       const items = category.subcategories.filter((subcategory) => !query || subcategory.name.toLowerCase().includes(query));
       if (!items.length) {
-        list.innerHTML = '<div class="muted-empty">No sections found.</div>';
-        document.getElementById("deleteSubcategoryBtn").disabled = !category.subcategories.length;
-        return;
-      }
-      list.innerHTML = items.map((subcategory) => {
-        const idx = category.subcategories.indexOf(subcategory);
-        return `<button class="pick ${idx === selectedSubcategoryIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(subcategory.name)}</strong><span>${subcategory.plugins.length} plugins</span></button>`;
-      }).join("");
-      list.querySelectorAll("[data-index]").forEach((button) => {
-        button.addEventListener("click", () => {
-          selectedSubcategoryIndex = Number(button.dataset.index);
-          selectedPluginIndex = 0;
-          selectedReleaseIndex = 0;
-          renderAll();
+        list.innerHTML = '<div class="hint">No sections found.</div>';
+      } else {
+        list.innerHTML = items.map((subcategory) => {
+          const idx = category.subcategories.indexOf(subcategory);
+          return `<button class="item ${idx === selectedSubcategoryIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(subcategory.name)}</strong><span>${subcategory.plugins.length} plugins</span></button>`;
+        }).join("");
+        list.querySelectorAll("[data-index]").forEach((button) => {
+          button.addEventListener("click", () => {
+            selectedSubcategoryIndex = Number(button.dataset.index);
+            selectedPluginIndex = 0;
+            selectedReleaseIndex = 0;
+            renderAll();
+          });
         });
-      });
+      }
       document.getElementById("deleteSubcategoryBtn").disabled = !category.subcategories.length;
     }
 
@@ -798,7 +1018,7 @@
       const query = document.getElementById("pluginSearch").value.trim().toLowerCase();
       const list = document.getElementById("pluginList");
       if (!subcategory) {
-        list.innerHTML = '<div class="muted-empty">Create a plugin section first.</div>';
+        list.innerHTML = '<div class="hint">Create a section first.</div>';
         document.getElementById("newPluginBtn").disabled = true;
         document.getElementById("deletePluginBtn").disabled = true;
         return;
@@ -806,22 +1026,21 @@
       document.getElementById("newPluginBtn").disabled = false;
       const items = subcategory.plugins.filter((plugin) => !query || plugin.name.toLowerCase().includes(query));
       if (!items.length) {
-        list.innerHTML = '<div class="muted-empty">No plugins found.</div>';
-        document.getElementById("deletePluginBtn").disabled = !subcategory.plugins.length;
-        return;
-      }
-      list.innerHTML = items.map((plugin) => {
-        const idx = subcategory.plugins.indexOf(plugin);
-        const latest = plugin.releases.find((release) => release.latest) || plugin.releases[0];
-        return `<button class="pick ${idx === selectedPluginIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(plugin.name)}</strong><span>${plugin.releases.length} releases${latest ? ` · latest ${escapeHtml(latest.version)}` : ""}</span></button>`;
-      }).join("");
-      list.querySelectorAll("[data-index]").forEach((button) => {
-        button.addEventListener("click", () => {
-          selectedPluginIndex = Number(button.dataset.index);
-          selectedReleaseIndex = 0;
-          renderAll();
+        list.innerHTML = '<div class="hint">No plugins found.</div>';
+      } else {
+        list.innerHTML = items.map((plugin) => {
+          const idx = subcategory.plugins.indexOf(plugin);
+          const latest = plugin.releases.find((release) => release.latest) || plugin.releases[0];
+          return `<button class="item ${idx === selectedPluginIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(plugin.name)}</strong><span>${plugin.releases.length} releases${latest ? ` · latest ${escapeHtml(latest.version)}` : ""}</span></button>`;
+        }).join("");
+        list.querySelectorAll("[data-index]").forEach((button) => {
+          button.addEventListener("click", () => {
+            selectedPluginIndex = Number(button.dataset.index);
+            selectedReleaseIndex = 0;
+            renderAll();
+          });
         });
-      });
+      }
       document.getElementById("deletePluginBtn").disabled = !subcategory.plugins.length;
     }
 
@@ -852,7 +1071,7 @@
       const plugin = currentPlugin();
       const list = document.getElementById("releaseList");
       if (!plugin) {
-        list.innerHTML = '<div class="muted-empty">Create a plugin first.</div>';
+        list.innerHTML = '<div class="hint">Create a plugin first.</div>';
         document.getElementById("newReleaseBtn").disabled = true;
         document.getElementById("deleteReleaseBtn").disabled = true;
         document.getElementById("applyReleaseBtn").disabled = true;
@@ -861,24 +1080,24 @@
       document.getElementById("newReleaseBtn").disabled = false;
       document.getElementById("applyReleaseBtn").disabled = false;
       if (!plugin.releases.length) {
-        list.innerHTML = '<div class="muted-empty">No releases for this plugin yet.</div>';
+        list.innerHTML = '<div class="hint">No releases yet.</div>';
         document.getElementById("deleteReleaseBtn").disabled = true;
-        return;
-      }
-      list.innerHTML = plugin.releases.map((release, index) => `
-        <button class="pick ${index === selectedReleaseIndex ? "active" : ""}" type="button" data-index="${index}">
-          <strong>${escapeHtml(release.version || "Untitled release")} - ${escapeHtml(release.name || "No name")}</strong>
-          <span>${escapeHtml(release.type || "stable")} · ${escapeHtml(release.status || "success")}${release.latest ? " · latest" : ""}</span>
-        </button>
-      `).join("");
-      list.querySelectorAll("[data-index]").forEach((button) => {
-        button.addEventListener("click", () => {
-          selectedReleaseIndex = Number(button.dataset.index);
-          renderReleaseList();
-          renderReleaseForm();
+      } else {
+        list.innerHTML = plugin.releases.map((release, index) => `
+          <button class="release-row ${index === selectedReleaseIndex ? "active" : ""}" type="button" data-index="${index}">
+            <strong>${escapeHtml(release.version || "Untitled release")} - ${escapeHtml(release.name || "No name")}</strong>
+            <span>${escapeHtml(release.type || "stable")} · ${escapeHtml(release.status || "success")}${release.latest ? " · latest" : ""}</span>
+          </button>
+        `).join("");
+        list.querySelectorAll("[data-index]").forEach((button) => {
+          button.addEventListener("click", () => {
+            selectedReleaseIndex = Number(button.dataset.index);
+            renderReleaseList();
+            renderReleaseForm();
+          });
         });
-      });
-      document.getElementById("deleteReleaseBtn").disabled = false;
+        document.getElementById("deleteReleaseBtn").disabled = false;
+      }
     }
 
     function renderReleaseForm() {
@@ -940,7 +1159,6 @@
       }
       const duplicate = draftData.catalog.categories.findIndex((item, index) => index !== selectedCategoryIndex && item.name.toLowerCase() === nextName.toLowerCase());
       if (duplicate !== -1) {
-        error.textContent = "Category name is required and must be unique.";
         error.style.display = "block";
         return;
       }
@@ -967,7 +1185,7 @@
       const category = currentCategory();
       const subcategory = currentSubcategory();
       if (!category || !subcategory) return;
-      if (!confirm(`Delete plugin section "${subcategory.name}" and everything inside it?`)) return;
+      if (!confirm(`Delete section "${subcategory.name}" and everything inside it?`)) return;
       category.subcategories.splice(selectedSubcategoryIndex, 1);
       clampSelection();
       renderAll();
