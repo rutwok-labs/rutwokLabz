@@ -10,15 +10,6 @@
         "status": "success",
         "loader": "PaperMC",
         "download": "https://github.com/your-user/your-repo/releases/download/v2.2.0-beta/ExamplePlugin-2.2.0-beta.jar"
-      },
-      {
-        "name": "Legacy Support",
-        "version": "1.9.5",
-        "type": "stable",
-        "latest": false,
-        "status": "maintenance",
-        "loader": "Bukkit",
-        "download": "https://github.com/your-user/your-repo/releases/download/v1.9.5/ExamplePlugin-1.9.5.jar"
       }
     ]
   }
