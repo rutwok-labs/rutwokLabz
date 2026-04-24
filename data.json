@@ -1,32 +1,37 @@
 {
   "catalog": {
     "title": "SlimeFun Blob",
-    "description": "Manage categories, plugins, and builds from one dashboard.",
+    "description": "Manage categories, subcategories, plugins, and builds from one dashboard.",
     "categories": [
       {
         "name": "Core",
-        "plugins": [
+        "subcategories": [
           {
-            "name": "SlimeFunCore",
-            "description": "The ultimate Slimefun experience with enhanced mechanics and progression systems.",
-            "author": "rutwok-labs",
-            "website": "https://rutwoklabz.netlify.app",
-            "source": "https://github.com/rutwok-labs/SlimeFun.Blob",
-            "releases": [
+            "name": "Main",
+            "plugins": [
               {
-                "name": "Build 2614",
-                "version": "1.21.11",
-                "type": "stable",
-                "latest": true,
-                "status": "success",
-                "loader": "PaperMC",
-                "minecraft": "1.21.x",
-                "description": "Latest stable build with bug fixes and performance improvements.",
-                "changelog": [
-                  "Updated to Modrinth API for plugin update checks",
-                  "Improved machine tick performance"
-                ],
-                "download": "https://cdn.modrinth.com/data/Fz9hstnG/versions/1fCkq2KW/SlimefunCore4-2614.jar"
+                "name": "SlimeFunCore",
+                "description": "The ultimate Slimefun experience with enhanced mechanics and progression systems.",
+                "author": "rutwok-labs",
+                "website": "https://rutwoklabz.netlify.app",
+                "source": "https://github.com/rutwok-labs/SlimeFun.Blob",
+                "releases": [
+                  {
+                    "name": "Build 2614",
+                    "version": "1.21.11",
+                    "type": "stable",
+                    "latest": true,
+                    "status": "success",
+                    "loader": "PaperMC",
+                    "minecraft": "1.21.x",
+                    "description": "Latest stable build with bug fixes and performance improvements.",
+                    "changelog": [
+                      "Updated to Modrinth API for plugin update checks",
+                      "Improved machine tick performance"
+                    ],
+                    "download": "https://cdn.modrinth.com/data/Fz9hstnG/versions/1fCkq2KW/SlimefunCore4-2614.jar"
+                  }
+                ]
               }
             ]
           }
@@ -34,7 +39,12 @@
       },
       {
         "name": "Addon",
-        "plugins": []
+        "subcategories": [
+          {
+            "name": "General",
+            "plugins": []
+          }
+        ]
       }
     ]
   }

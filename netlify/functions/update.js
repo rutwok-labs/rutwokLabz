@@ -45,10 +45,10 @@ function normalizeRelease(release) {
   return {
     name: str(release.name),
     version: str(release.version),
-    type: release.type,
+    type: str(release.type) || "stable",
     latest: release.latest === true,
-    status: release.status,
-    loader: release.loader,
+    status: str(release.status) || "success",
+    loader: str(release.loader) || "PaperMC",
     minecraft: str(release.minecraft),
     description: str(release.description),
     changelog: Array.isArray(release.changelog) ? release.changelog.map(str).filter(Boolean) : [],
@@ -67,10 +67,17 @@ function normalizePlugin(plugin) {
   };
 }
 
+function normalizeSubcategory(subcategory) {
+  return {
+    name: str(subcategory.name),
+    plugins: Array.isArray(subcategory.plugins) ? subcategory.plugins.map(normalizePlugin) : [],
+  };
+}
+
 function normalizeCategory(category) {
   return {
     name: str(category.name),
-    plugins: Array.isArray(category.plugins) ? category.plugins.map(normalizePlugin) : [],
+    subcategories: Array.isArray(category.subcategories) ? category.subcategories.map(normalizeSubcategory) : [],
   };
 }
 
@@ -78,7 +85,7 @@ function normalizeCatalog(input) {
   const catalog = input?.catalog || {};
   return {
     catalog: {
-      title: str(catalog.title),
+      title: str(catalog.title) || "Plugin Catalog",
       description: str(catalog.description),
       categories: Array.isArray(catalog.categories) ? catalog.categories.map(normalizeCategory) : [],
     },
@@ -87,7 +94,6 @@ function normalizeCatalog(input) {
 
 function validateRelease(release, path) {
   const errors = [];
-
   if (!str(release.name)) errors.push(`${path}.name is required`);
   if (!str(release.version)) errors.push(`${path}.version is required`);
   if (!ALLOWED_TYPES.includes(release.type)) errors.push(`${path}.type must be one of: ${ALLOWED_TYPES.join(", ")}`);
@@ -103,13 +109,11 @@ function validateRelease(release, path) {
       if (!str(item)) errors.push(`${path}.changelog[${index}] must be a non-empty string`);
     });
   }
-
   return errors;
 }
 
 function validatePlugin(plugin, path) {
   const errors = [];
-
   if (!str(plugin.name)) errors.push(`${path}.name is required`);
   if (plugin.description != null && !str(plugin.description)) errors.push(`${path}.description must be a non-empty string when provided`);
   if (plugin.author != null && !str(plugin.author)) errors.push(`${path}.author must be a non-empty string when provided`);
@@ -120,7 +124,6 @@ function validatePlugin(plugin, path) {
   const releases = Array.isArray(plugin.releases) ? plugin.releases : [];
   const releaseVersions = new Set();
   let latestCount = 0;
-
   releases.forEach((release, index) => {
     errors.push(...validateRelease(release, `${path}.releases[${index}]`));
     const versionKey = str(release.version).toLowerCase();
@@ -130,57 +133,64 @@ function validatePlugin(plugin, path) {
     }
     if (release.latest === true) latestCount += 1;
   });
-
   if (latestCount > 1) errors.push(`${path}.releases can only contain one latest release`);
+  return errors;
+}
 
+function validateSubcategory(subcategory, path) {
+  const errors = [];
+  if (!str(subcategory.name)) errors.push(`${path}.name is required`);
+  if (!Array.isArray(subcategory.plugins)) errors.push(`${path}.plugins must be an array`);
+
+  const plugins = Array.isArray(subcategory.plugins) ? subcategory.plugins : [];
+  const pluginNames = new Set();
+  plugins.forEach((plugin, index) => {
+    errors.push(...validatePlugin(plugin, `${path}.plugins[${index}]`));
+    const key = str(plugin.name).toLowerCase();
+    if (key) {
+      if (pluginNames.has(key)) errors.push(`${path}.plugins[${index}].name must be unique inside the subcategory`);
+      pluginNames.add(key);
+    }
+  });
   return errors;
 }
 
 function validateCategory(category, path) {
   const errors = [];
-
   if (!str(category.name)) errors.push(`${path}.name is required`);
-  if (!Array.isArray(category.plugins)) errors.push(`${path}.plugins must be an array`);
+  if (!Array.isArray(category.subcategories)) errors.push(`${path}.subcategories must be an array`);
 
-  const plugins = Array.isArray(category.plugins) ? category.plugins : [];
-  const pluginNames = new Set();
-
-  plugins.forEach((plugin, index) => {
-    errors.push(...validatePlugin(plugin, `${path}.plugins[${index}]`));
-    const pluginKey = str(plugin.name).toLowerCase();
-    if (pluginKey) {
-      if (pluginNames.has(pluginKey)) errors.push(`${path}.plugins[${index}].name must be unique inside the category`);
-      pluginNames.add(pluginKey);
+  const subcategories = Array.isArray(category.subcategories) ? category.subcategories : [];
+  const subcategoryNames = new Set();
+  subcategories.forEach((subcategory, index) => {
+    errors.push(...validateSubcategory(subcategory, `${path}.subcategories[${index}]`));
+    const key = str(subcategory.name).toLowerCase();
+    if (key) {
+      if (subcategoryNames.has(key)) errors.push(`${path}.subcategories[${index}].name must be unique inside the category`);
+      subcategoryNames.add(key);
     }
   });
-
   return errors;
 }
 
 function validateCatalog(input) {
   const errors = [];
   const catalog = input?.catalog;
-
-  if (!catalog || typeof catalog !== "object") {
-    return ["catalog is required"];
-  }
-
+  if (!catalog || typeof catalog !== "object") return ["catalog is required"];
   if (!str(catalog.title)) errors.push("catalog.title is required");
   if (catalog.description != null && !str(catalog.description)) errors.push("catalog.description must be a non-empty string when provided");
   if (!Array.isArray(catalog.categories)) errors.push("catalog.categories must be an array");
 
   const categories = Array.isArray(catalog.categories) ? catalog.categories : [];
   const categoryNames = new Set();
-
   categories.forEach((category, index) => {
     errors.push(...validateCategory(category, `catalog.categories[${index}]`));
-    const categoryKey = str(category.name).toLowerCase();
-    if (categoryKey) {
-      if (categoryNames.has(categoryKey)) errors.push(`catalog.categories[${index}].name must be unique`);
-      categoryNames.add(categoryKey);
+    const key = str(category.name).toLowerCase();
+    if (key) {
+      if (categoryNames.has(key)) errors.push(`catalog.categories[${index}].name must be unique`);
+      categoryNames.add(key);
     }
   });
-
   return errors;
 }
 

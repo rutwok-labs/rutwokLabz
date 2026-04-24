@@ -1,523 +1,729 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Plugin Catalog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<style>
-:root{
-  --bg:#081019;
-  --surface:#101827;
-  --surface2:#162033;
-  --surface3:#1b2942;
-  --border:#233149;
-  --border2:#30415f;
-  --accent:#27c1ff;
-  --accent2:#7a5cff;
-  --good:#22c55e;
-  --warn:#f59e0b;
-  --bad:#ef4444;
-  --text:#eef4ff;
-  --text2:#9aabc7;
-  --text3:#60728f;
-  --mono:"JetBrains Mono",monospace;
-  --sans:"Outfit",sans-serif;
-  --r:14px;
-  --rs:10px;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{
-  font-family:var(--sans);background:
-  radial-gradient(circle at top left,rgba(39,193,255,.08),transparent 30%),
-  radial-gradient(circle at bottom right,rgba(122,92,255,.1),transparent 35%),
-  var(--bg);
-  color:var(--text);min-height:100vh;overflow-x:hidden;
-}
-body::before{
-  content:"";position:fixed;inset:0;pointer-events:none;
-  background-image:linear-gradient(rgba(39,193,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(39,193,255,.03) 1px,transparent 1px);
-  background-size:42px 42px;
-}
-header{
-  position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:1rem;
-  padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(8,16,25,.82);backdrop-filter:blur(14px);
-}
-.brand{display:flex;align-items:center;gap:12px;}
-.brand-mark{
-  width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));color:#061018;font-size:20px;font-weight:800;
-  box-shadow:0 10px 28px rgba(39,193,255,.25);
-}
-.brand-copy strong{display:block;font-size:1rem;}
-.brand-copy span{display:block;color:var(--text3);font:700 .68rem var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-top:2px;}
-.header-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
-.header-btn{
-  display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:var(--rs);text-decoration:none;
-  border:1px solid var(--border2);background:var(--surface);color:var(--text2);font:600 .74rem var(--mono);transition:.18s;
-}
-.header-btn:hover{border-color:var(--accent);color:var(--accent);}
-.hero{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:2rem 1.5rem 1rem;}
-.hero-top{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:1rem;}
-.hero-copy h1{font-size:2.2rem;line-height:1.08;letter-spacing:-.04em;margin-bottom:.5rem;}
-.hero-copy p{max-width:720px;color:var(--text2);line-height:1.6;}
-.hero-stats{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:12px;width:min(520px,100%);}
-.stat{padding:1rem;border:1px solid var(--border);border-radius:var(--r);background:rgba(255,255,255,.03);}
-.stat strong{display:block;font-size:1.3rem;}
-.stat span{display:block;margin-top:4px;color:var(--text3);font:700 .64rem var(--mono);letter-spacing:.08em;text-transform:uppercase;}
-.layout{
-  position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 1.5rem 2rem;
-  display:grid;grid-template-columns:280px 1fr;gap:1.25rem;
-}
-.panel{
-  border:1px solid var(--border);border-radius:var(--r);background:rgba(255,255,255,.03);overflow:hidden;
-}
-.panel-header{
-  padding:1rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem;
-}
-.panel-title strong{display:block;font-size:.92rem;}
-.panel-title span{display:block;margin-top:4px;color:var(--text3);font:700 .64rem var(--mono);letter-spacing:.06em;text-transform:uppercase;}
-.panel-body{padding:1rem 1.1rem;}
-.sidebar{display:flex;flex-direction:column;gap:1rem;}
-.search{
-  width:100%;padding:11px 12px;border-radius:var(--rs);border:1px solid var(--border2);background:var(--surface2);color:var(--text);outline:none;
-}
-.search:focus{border-color:var(--accent);}
-.category-list,.plugin-list,.release-list{display:flex;flex-direction:column;gap:10px;}
-.category-btn,.plugin-btn{
-  width:100%;text-align:left;padding:10px 12px;border-radius:var(--rs);border:1px solid var(--border);background:var(--surface);color:var(--text2);transition:.18s;
-}
-.category-btn:hover,.plugin-btn:hover{border-color:var(--border2);color:var(--text);}
-.category-btn.active,.plugin-btn.active{border-color:rgba(39,193,255,.35);background:rgba(39,193,255,.08);color:var(--accent);}
-.category-btn strong,.plugin-btn strong{display:block;font-size:.85rem;color:inherit;}
-.category-btn span,.plugin-btn span{display:block;margin-top:4px;font-size:.72rem;color:var(--text3);}
-.content{display:flex;flex-direction:column;gap:1.25rem;min-width:0;}
-.plugin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
-.plugin-card{
-  border:1px solid var(--border);border-radius:var(--r);padding:1rem;background:var(--surface);cursor:pointer;transition:.18s;
-}
-.plugin-card:hover{border-color:var(--border2);transform:translateY(-1px);}
-.plugin-card.active{border-color:rgba(39,193,255,.35);background:rgba(39,193,255,.08);}
-.plugin-card strong{display:block;font-size:1rem;margin-bottom:4px;}
-.plugin-card p{font-size:.8rem;line-height:1.55;color:var(--text2);}
-.meta-row,.tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
-.tag{
-  display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;border:1px solid var(--border2);
-  font:700 .62rem var(--mono);color:var(--text2);background:rgba(255,255,255,.03);
-}
-.plugin-detail{display:flex;flex-direction:column;gap:1rem;}
-.plugin-top{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
-.plugin-copy h2{font-size:1.55rem;line-height:1.1;margin-bottom:.45rem;}
-.plugin-copy p{max-width:780px;color:var(--text2);line-height:1.65;}
-.plugin-links{display:flex;gap:10px;flex-wrap:wrap;}
-.link-btn{
-  display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:var(--rs);border:1px solid var(--border2);background:var(--surface2);
-  color:var(--text2);text-decoration:none;font:600 .74rem var(--mono);
-}
-.link-btn:hover{border-color:var(--accent);color:var(--accent);}
-.empty{
-  padding:2.5rem 1rem;text-align:center;color:var(--text3);font:700 .78rem var(--mono);
-}
-.release-card{
-  border:1px solid var(--border);border-radius:var(--r);padding:1.2rem;background:var(--surface);transition:.18s;
-}
-.release-card:hover{border-color:var(--border2);}
-.release-card.latest{border-color:rgba(39,193,255,.35);box-shadow:inset 0 0 0 1px rgba(39,193,255,.08);}
-.release-top{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:.85rem;}
-.release-name strong{display:block;font-size:1rem;}
-.release-name span{display:block;margin-top:3px;color:var(--text3);font:700 .72rem var(--mono);}
-.badges{display:flex;gap:6px;flex-wrap:wrap;}
-.badge{
-  display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border:1px solid;border-radius:999px;font:700 .62rem var(--mono);
-}
-.b-latest{color:var(--accent);border-color:rgba(39,193,255,.26);background:rgba(39,193,255,.1);}
-.b-stable{color:var(--good);border-color:rgba(34,197,94,.26);background:rgba(34,197,94,.1);}
-.b-pre{color:var(--warn);border-color:rgba(245,158,11,.28);background:rgba(245,158,11,.1);}
-.b-good{color:var(--good);border-color:rgba(34,197,94,.26);background:rgba(34,197,94,.08);}
-.b-bad{color:var(--bad);border-color:rgba(239,68,68,.26);background:rgba(239,68,68,.08);}
-.b-warn{color:var(--warn);border-color:rgba(245,158,11,.28);background:rgba(245,158,11,.08);}
-.release-card p{color:var(--text2);line-height:1.6;margin-bottom:.9rem;}
-.changelog{padding:.9rem 1rem;border-radius:var(--rs);border:1px solid var(--border);background:var(--surface2);margin-bottom:.9rem;}
-.changelog strong{display:block;margin-bottom:8px;font:700 .64rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--text3);}
-.changelog ul{list-style:none;display:flex;flex-direction:column;gap:5px;}
-.changelog li{display:flex;gap:8px;color:var(--text2);font-size:.8rem;}
-.changelog li::before{content:"→";color:var(--accent);font-family:var(--mono);}
-.release-actions{display:flex;gap:10px;flex-wrap:wrap;}
-.download-btn{
-  display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--rs);text-decoration:none;font:700 .74rem var(--mono);
-}
-.download-primary{background:linear-gradient(135deg,var(--accent),#0696ce);color:#061018;}
-.download-secondary{background:var(--surface2);border:1px solid var(--border2);color:var(--text2);}
-@media(max-width:980px){
-  .layout{grid-template-columns:1fr;}
-  .hero-stats{grid-template-columns:repeat(2,minmax(0,1fr));width:100%;}
-}
-@media(max-width:680px){
-  header,.hero,.layout{padding-left:1rem;padding-right:1rem;}
-  .hero-copy h1{font-size:1.8rem;}
-  .hero-stats{grid-template-columns:1fr 1fr;}
-  .release-top,.plugin-top{flex-direction:column;}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plugin Catalog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --bg-soft: #edf3fb;
+      --panel: #ffffff;
+      --panel-soft: #f8fbff;
+      --line: #d9e4f1;
+      --line-strong: #bfd1e6;
+      --text: #16324f;
+      --muted: #5c7694;
+      --muted-2: #7f94ad;
+      --brand: #1492ff;
+      --brand-2: #5cc4ff;
+      --good: #1ea971;
+      --warn: #d68a15;
+      --bad: #d94d5f;
+      --shadow: 0 18px 45px rgba(22, 50, 79, 0.08);
+      --r: 18px;
+      --rs: 12px;
+      --mono: "JetBrains Mono", monospace;
+      --sans: "Manrope", sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(20,146,255,0.08), transparent 28%),
+        linear-gradient(180deg, #f8fbff 0%, #f2f6fb 100%);
+      min-height: 100vh;
+    }
+    .shell { max-width: 1480px; margin: 0 auto; padding: 24px; }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 0 28px;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand-mark {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 24px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: 0 16px 30px rgba(20,146,255,0.22);
+    }
+    .brand h1 { font-size: 2.2rem; line-height: 1; }
+    .brand p { color: var(--muted); margin-top: 6px; }
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: rgba(255,255,255,0.72);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 700;
+      transition: .18s ease;
+      cursor: pointer;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(191,209,230,0.75);
+      box-shadow: var(--shadow);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+    .card-body { padding: 20px; }
+    .hero-copy h2 { font-size: 2rem; line-height: 1.08; margin-bottom: 10px; }
+    .hero-copy p { color: var(--muted); line-height: 1.65; max-width: 720px; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .stat {
+      background: var(--panel-soft);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .stat strong { display: block; font-size: 1.5rem; }
+    .stat span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted-2);
+      font: 700 0.68rem var(--mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 280px 320px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .section-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff, #f7fbff);
+    }
+    .section-head strong { display: block; font-size: 1rem; }
+    .section-head span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted-2);
+      font: 700 0.64rem var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .stack { display: flex; flex-direction: column; gap: 12px; }
+    .pane { padding: 16px; }
+    .search {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: white;
+      color: var(--text);
+      outline: none;
+      margin-bottom: 12px;
+    }
+    .search:focus { border-color: var(--brand); }
+    .picker {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 560px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .pick {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 14px;
+      padding: 14px;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+    .pick:hover { border-color: var(--line-strong); transform: translateY(-1px); }
+    .pick.active {
+      border-color: rgba(20,146,255,0.4);
+      background: #f1f8ff;
+      box-shadow: inset 0 0 0 1px rgba(20,146,255,0.08);
+    }
+    .pick strong { display: block; font-size: 0.95rem; }
+    .pick span { display: block; margin-top: 5px; color: var(--muted); font-size: 0.78rem; }
+    .plugin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .plugin-card {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+    .plugin-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .plugin-card.active {
+      border-color: rgba(20,146,255,0.42);
+      background: #f3f9ff;
+    }
+    .plugin-card p {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.86rem;
+      margin-top: 8px;
+    }
+    .tags, .release-tags, .plugin-links, .release-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #eef5fc;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font: 700 0.64rem var(--mono);
+    }
+    .detail-empty, .empty {
+      text-align: center;
+      color: var(--muted-2);
+      padding: 28px 16px;
+      font: 700 0.78rem var(--mono);
+    }
+    .plugin-detail {
+      margin-bottom: 18px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .plugin-detail h3 { font-size: 1.7rem; }
+    .plugin-detail p {
+      color: var(--muted);
+      line-height: 1.65;
+      margin-top: 10px;
+      max-width: 760px;
+    }
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: white;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .release-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .release-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: white;
+      padding: 18px;
+    }
+    .release-card.latest {
+      background: linear-gradient(180deg, #f7fbff, #ffffff);
+      border-color: rgba(20,146,255,0.35);
+    }
+    .release-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .release-name strong { display: block; font-size: 1.02rem; }
+    .release-name span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted-2);
+      font: 700 0.72rem var(--mono);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid;
+      font: 700 0.64rem var(--mono);
+    }
+    .latest { color: var(--brand); border-color: rgba(20,146,255,0.25); background: rgba(20,146,255,0.08); }
+    .stable { color: var(--good); border-color: rgba(30,169,113,0.22); background: rgba(30,169,113,0.08); }
+    .pre { color: var(--warn); border-color: rgba(214,138,21,0.24); background: rgba(214,138,21,0.08); }
+    .success { color: var(--good); border-color: rgba(30,169,113,0.22); background: rgba(30,169,113,0.08); }
+    .maintenance { color: var(--warn); border-color: rgba(214,138,21,0.24); background: rgba(214,138,21,0.08); }
+    .fail { color: var(--bad); border-color: rgba(217,77,95,0.24); background: rgba(217,77,95,0.08); }
+    .release-card p {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .notes {
+      margin-bottom: 12px;
+      border: 1px solid var(--line);
+      background: var(--panel-soft);
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .notes strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted-2);
+      font: 700 0.66rem var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .notes ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .notes li {
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+    .notes li::before {
+      content: "→ ";
+      color: var(--brand);
+      font-family: var(--mono);
+    }
+    @media (max-width: 1320px) {
+      .layout { grid-template-columns: 1fr 1fr; }
+      .hero { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+      .plugin-grid { grid-template-columns: 1fr; }
+      .hero-copy h2 { font-size: 1.6rem; }
+      .brand h1 { font-size: 1.7rem; }
+    }
+  </style>
 </head>
 <body>
-<header>
-  <div class="brand">
-    <div class="brand-mark">⚡</div>
-    <div class="brand-copy">
-      <strong id="brandTitle">Plugin Catalog</strong>
-      <span>Category -> Plugin -> Releases</span>
-    </div>
-  </div>
-  <div class="header-actions">
-    <a href="admin.html" class="header-btn">⚙ Admin</a>
-    <button class="header-btn" type="button" onclick="loadCatalog()">↻ Refresh</button>
-  </div>
-</header>
+  <div class="shell">
+    <header>
+      <div class="brand">
+        <div class="brand-mark">✦</div>
+        <div>
+          <h1 id="brandTitle">Plugin Catalog</h1>
+          <p id="brandDesc">Browse category, subcategory, plugin, and release builds.</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <a href="admin.html" class="btn">⚙ Admin</a>
+        <button class="btn" type="button" onclick="loadCatalog()">↻ Refresh</button>
+      </div>
+    </header>
 
-<section class="hero">
-  <div class="hero-top">
-    <div class="hero-copy">
-      <h1 id="heroTitle">Loading catalog...</h1>
-      <p id="heroDescription">Fetching plugin categories, plugin names, and release builds.</p>
-    </div>
-    <div class="hero-stats">
-      <div class="stat"><strong id="statCategories">0</strong><span>Categories</span></div>
-      <div class="stat"><strong id="statPlugins">0</strong><span>Plugins</span></div>
-      <div class="stat"><strong id="statReleases">0</strong><span>Releases</span></div>
-      <div class="stat"><strong id="statLatest">0</strong><span>Latest Builds</span></div>
-    </div>
-  </div>
-</section>
+    <section class="hero">
+      <div class="card">
+        <div class="card-body hero-copy">
+          <h2 id="heroTitle">Loading catalog...</h2>
+          <p id="heroDescription">Fetching your categories, plugin sections, and uploaded builds.</p>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><strong id="statCategories">0</strong><span>Categories</span></div>
+        <div class="stat"><strong id="statSubcategories">0</strong><span>Subcategories</span></div>
+        <div class="stat"><strong id="statPlugins">0</strong><span>Plugins</span></div>
+        <div class="stat"><strong id="statReleases">0</strong><span>Releases</span></div>
+      </div>
+    </section>
 
-<main class="layout">
-  <aside class="sidebar">
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">
+    <section class="layout">
+      <div class="card">
+        <div class="section-head">
           <strong>Categories</strong>
-          <span>Pick a top-level category</span>
+          <span>Top level</span>
+        </div>
+        <div class="pane">
+          <input id="categorySearch" class="search" type="text" placeholder="Search categories..." />
+          <div id="categoryList" class="picker"></div>
         </div>
       </div>
-      <div class="panel-body">
-        <div id="categoryList" class="category-list"></div>
+
+      <div class="card">
+        <div class="section-head">
+          <strong>Plugin Sections</strong>
+          <span>Subcategory inside selected category</span>
+        </div>
+        <div class="pane">
+          <input id="subcategorySearch" class="search" type="text" placeholder="Search sections..." />
+          <div id="subcategoryList" class="picker"></div>
+        </div>
       </div>
-    </div>
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">
+
+      <div class="card">
+        <div class="section-head">
           <strong>Plugins</strong>
-          <span>Search inside selected category</span>
+          <span>Selected subcategory</span>
+        </div>
+        <div class="pane">
+          <input id="pluginSearch" class="search" type="text" placeholder="Search plugins..." />
+          <div id="pluginList" class="picker"></div>
         </div>
       </div>
-      <div class="panel-body">
-        <input id="pluginSearch" class="search" type="text" placeholder="Search plugin name..." />
-        <div id="pluginList" class="plugin-list" style="margin-top:12px;"></div>
-      </div>
-    </div>
-  </aside>
 
-  <section class="content">
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">
-          <strong>Plugins In Category</strong>
-          <span id="pluginGridLabel">Select a category to browse plugins</span>
+      <div class="card">
+        <div class="section-head">
+          <strong id="detailHead">Plugin Details</strong>
+          <span id="detailSub">Pick a plugin to see releases</span>
+        </div>
+        <div class="pane">
+          <div id="pluginGrid" class="plugin-grid"></div>
+          <div id="pluginDetail" style="margin-top:18px;"></div>
+          <div id="releaseList" class="release-list"></div>
         </div>
       </div>
-      <div class="panel-body">
-        <div id="pluginGrid" class="plugin-grid"></div>
-      </div>
-    </div>
+    </section>
+  </div>
 
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">
-          <strong>Plugin Releases</strong>
-          <span id="releaseLabel">Choose a plugin to see its builds</span>
-        </div>
-      </div>
-      <div class="panel-body">
-        <div id="pluginDetail" class="plugin-detail"></div>
-        <div id="releaseList" class="release-list"></div>
-      </div>
-    </div>
-  </section>
-</main>
+  <script>
+    let catalogData = { catalog: { title: "", description: "", categories: [] } };
+    let selectedCategoryIndex = 0;
+    let selectedSubcategoryIndex = 0;
+    let selectedPluginIndex = 0;
 
-<script>
-const TYPE_BADGE = { stable: "b-stable", "pre-release": "b-pre" };
-const STATUS_BADGE = { success: "b-good", fail: "b-bad", maintenance: "b-warn" };
+    document.getElementById("categorySearch").addEventListener("input", renderCategories);
+    document.getElementById("subcategorySearch").addEventListener("input", renderSubcategories);
+    document.getElementById("pluginSearch").addEventListener("input", renderPlugins);
 
-let catalogData = { catalog: { title: "", description: "", categories: [] } };
-let selectedCategoryIndex = 0;
-let selectedPluginIndex = 0;
+    async function loadCatalog() {
+      try {
+        const response = await fetch("/.netlify/functions/api");
+        if (!response.ok) throw new Error(`API error: ${response.status}`);
+        catalogData = normalizeCatalog(await response.json());
+        clampSelection();
+        renderAll();
+      } catch (error) {
+        document.getElementById("pluginDetail").innerHTML = `<div class="detail-empty">Failed to load catalog: ${escapeHtml(error.message)}</div>`;
+        document.getElementById("releaseList").innerHTML = "";
+      }
+    }
 
-document.getElementById("pluginSearch").addEventListener("input", renderCategoryPlugins);
-
-async function loadCatalog() {
-  try {
-    const response = await fetch("/.netlify/functions/api");
-    if (!response.ok) throw new Error(`API error: ${response.status}`);
-    const data = await response.json();
-    catalogData = normalizeCatalog(data);
-    if (selectedCategoryIndex >= catalogData.catalog.categories.length) selectedCategoryIndex = 0;
-    if (selectedPluginIndex >= currentPlugins().length) selectedPluginIndex = 0;
-    renderAll();
-  } catch (error) {
-    document.getElementById("pluginDetail").innerHTML = `<div class="empty">Failed to load catalog: ${escapeHtml(error.message)}</div>`;
-    document.getElementById("releaseList").innerHTML = "";
-  }
-}
-
-function normalizeCatalog(input) {
-  const catalog = input?.catalog || { title: "Plugin Catalog", description: "", categories: [] };
-  return {
-    catalog: {
-      title: stringValue(catalog.title) || "Plugin Catalog",
-      description: stringValue(catalog.description),
-      categories: Array.isArray(catalog.categories) ? catalog.categories.map((category) => ({
-        name: stringValue(category.name),
-        plugins: Array.isArray(category.plugins) ? category.plugins.map((plugin) => ({
-          name: stringValue(plugin.name),
-          description: stringValue(plugin.description),
-          author: stringValue(plugin.author),
-          website: stringValue(plugin.website),
-          source: stringValue(plugin.source),
-          releases: Array.isArray(plugin.releases) ? plugin.releases.map((release) => ({
-            name: stringValue(release.name),
-            version: stringValue(release.version),
-            type: stringValue(release.type),
-            latest: Boolean(release.latest),
-            status: stringValue(release.status),
-            loader: stringValue(release.loader),
-            minecraft: stringValue(release.minecraft),
-            description: stringValue(release.description),
-            changelog: Array.isArray(release.changelog) ? release.changelog.map(stringValue).filter(Boolean) : [],
-            download: stringValue(release.download),
+    function normalizeCatalog(input) {
+      const catalog = input?.catalog || {};
+      return {
+        catalog: {
+          title: stringValue(catalog.title) || "Plugin Catalog",
+          description: stringValue(catalog.description),
+          categories: Array.isArray(catalog.categories) ? catalog.categories.map((category) => ({
+            name: stringValue(category.name),
+            subcategories: Array.isArray(category.subcategories) ? category.subcategories.map((subcategory) => ({
+              name: stringValue(subcategory.name),
+              plugins: Array.isArray(subcategory.plugins) ? subcategory.plugins.map((plugin) => ({
+                name: stringValue(plugin.name),
+                description: stringValue(plugin.description),
+                author: stringValue(plugin.author),
+                website: stringValue(plugin.website),
+                source: stringValue(plugin.source),
+                releases: Array.isArray(plugin.releases) ? plugin.releases.map((release) => ({
+                  name: stringValue(release.name),
+                  version: stringValue(release.version),
+                  type: stringValue(release.type),
+                  latest: Boolean(release.latest),
+                  status: stringValue(release.status),
+                  loader: stringValue(release.loader),
+                  minecraft: stringValue(release.minecraft),
+                  description: stringValue(release.description),
+                  changelog: Array.isArray(release.changelog) ? release.changelog.map(stringValue).filter(Boolean) : [],
+                  download: stringValue(release.download),
+                })) : [],
+              })) : [],
+            })) : [],
           })) : [],
-        })) : [],
-      })) : [],
-    },
-  };
-}
+        },
+      };
+    }
 
-function renderAll() {
-  const categories = catalogData.catalog.categories;
-  const pluginCount = categories.reduce((sum, category) => sum + category.plugins.length, 0);
-  const releaseCount = categories.reduce((sum, category) => sum + category.plugins.reduce((inner, plugin) => inner + plugin.releases.length, 0), 0);
-  const latestCount = categories.reduce((sum, category) => sum + category.plugins.reduce((inner, plugin) => inner + plugin.releases.filter((release) => release.latest).length, 0), 0);
+    function stringValue(value) {
+      return typeof value === "string" ? value.trim() : "";
+    }
 
-  document.title = `${catalogData.catalog.title} - Plugin Catalog`;
-  document.getElementById("brandTitle").textContent = catalogData.catalog.title;
-  document.getElementById("heroTitle").textContent = catalogData.catalog.title;
-  document.getElementById("heroDescription").textContent = catalogData.catalog.description || "Browse your categories, plugins, and uploaded builds.";
-  document.getElementById("statCategories").textContent = categories.length;
-  document.getElementById("statPlugins").textContent = pluginCount;
-  document.getElementById("statReleases").textContent = releaseCount;
-  document.getElementById("statLatest").textContent = latestCount;
+    function clampSelection() {
+      const categories = catalogData.catalog.categories;
+      if (selectedCategoryIndex >= categories.length) selectedCategoryIndex = 0;
+      const subcategories = currentCategory()?.subcategories || [];
+      if (selectedSubcategoryIndex >= subcategories.length) selectedSubcategoryIndex = 0;
+      const plugins = currentSubcategory()?.plugins || [];
+      if (selectedPluginIndex >= plugins.length) selectedPluginIndex = 0;
+    }
 
-  renderCategories();
-  renderCategoryPlugins();
-  renderSelectedPlugin();
-}
+    function currentCategory() {
+      return catalogData.catalog.categories[selectedCategoryIndex] || null;
+    }
 
-function renderCategories() {
-  const categories = catalogData.catalog.categories;
-  const list = document.getElementById("categoryList");
-  if (!categories.length) {
-    list.innerHTML = '<div class="empty">No categories yet.</div>';
-    return;
-  }
+    function currentSubcategory() {
+      return currentCategory()?.subcategories?.[selectedSubcategoryIndex] || null;
+    }
 
-  list.innerHTML = categories.map((category, index) => `
-    <button type="button" class="category-btn ${index === selectedCategoryIndex ? "active" : ""}" data-index="${index}">
-      <strong>${escapeHtml(category.name)}</strong>
-      <span>${category.plugins.length} plugin${category.plugins.length === 1 ? "" : "s"}</span>
-    </button>
-  `).join("");
+    function currentPlugin() {
+      return currentSubcategory()?.plugins?.[selectedPluginIndex] || null;
+    }
 
-  list.querySelectorAll("[data-index]").forEach((button) => {
-    button.addEventListener("click", () => {
-      selectedCategoryIndex = Number(button.dataset.index);
-      selectedPluginIndex = 0;
-      renderAll();
-    });
-  });
-}
+    function renderAll() {
+      const categories = catalogData.catalog.categories;
+      const subcategoryCount = categories.reduce((sum, category) => sum + (category.subcategories?.length || 0), 0);
+      const pluginCount = categories.reduce((sum, category) => sum + category.subcategories.reduce((inner, sub) => inner + sub.plugins.length, 0), 0);
+      const releaseCount = categories.reduce((sum, category) => sum + category.subcategories.reduce((inner, sub) => inner + sub.plugins.reduce((deep, plugin) => deep + plugin.releases.length, 0), 0), 0);
 
-function currentCategory() {
-  return catalogData.catalog.categories[selectedCategoryIndex] || null;
-}
+      document.title = `${catalogData.catalog.title} - Plugin Catalog`;
+      document.getElementById("brandTitle").textContent = catalogData.catalog.title;
+      document.getElementById("brandDesc").textContent = catalogData.catalog.description || "Browse category, subcategory, plugin, and release builds.";
+      document.getElementById("heroTitle").textContent = catalogData.catalog.title;
+      document.getElementById("heroDescription").textContent = catalogData.catalog.description || "Browse category, subcategory, plugin, and release builds.";
+      document.getElementById("statCategories").textContent = categories.length;
+      document.getElementById("statSubcategories").textContent = subcategoryCount;
+      document.getElementById("statPlugins").textContent = pluginCount;
+      document.getElementById("statReleases").textContent = releaseCount;
 
-function currentPlugins() {
-  return currentCategory()?.plugins || [];
-}
+      renderCategories();
+      renderSubcategories();
+      renderPlugins();
+      renderPluginGrid();
+      renderPluginDetail();
+    }
 
-function currentPlugin() {
-  return currentPlugins()[selectedPluginIndex] || null;
-}
+    function renderCategories() {
+      const query = document.getElementById("categorySearch").value.trim().toLowerCase();
+      const items = catalogData.catalog.categories.filter((category) => !query || category.name.toLowerCase().includes(query));
+      const list = document.getElementById("categoryList");
+      if (!items.length) {
+        list.innerHTML = '<div class="empty">No categories found.</div>';
+        return;
+      }
+      list.innerHTML = items.map((category) => {
+        const idx = catalogData.catalog.categories.indexOf(category);
+        return `<button class="pick ${idx === selectedCategoryIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(category.name)}</strong><span>${category.subcategories.length} sections</span></button>`;
+      }).join("");
+      list.querySelectorAll("[data-index]").forEach((button) => {
+        button.addEventListener("click", () => {
+          selectedCategoryIndex = Number(button.dataset.index);
+          selectedSubcategoryIndex = 0;
+          selectedPluginIndex = 0;
+          renderAll();
+        });
+      });
+    }
 
-function renderCategoryPlugins() {
-  const category = currentCategory();
-  const query = document.getElementById("pluginSearch").value.trim().toLowerCase();
-  const plugins = currentPlugins().filter((plugin) => !query || plugin.name.toLowerCase().includes(query));
+    function renderSubcategories() {
+      const query = document.getElementById("subcategorySearch").value.trim().toLowerCase();
+      const category = currentCategory();
+      const list = document.getElementById("subcategoryList");
+      if (!category) {
+        list.innerHTML = '<div class="empty">No category selected.</div>';
+        return;
+      }
+      const items = category.subcategories.filter((subcategory) => !query || subcategory.name.toLowerCase().includes(query));
+      if (!items.length) {
+        list.innerHTML = '<div class="empty">No sections found.</div>';
+        return;
+      }
+      list.innerHTML = items.map((subcategory) => {
+        const idx = category.subcategories.indexOf(subcategory);
+        return `<button class="pick ${idx === selectedSubcategoryIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(subcategory.name)}</strong><span>${subcategory.plugins.length} plugins</span></button>`;
+      }).join("");
+      list.querySelectorAll("[data-index]").forEach((button) => {
+        button.addEventListener("click", () => {
+          selectedSubcategoryIndex = Number(button.dataset.index);
+          selectedPluginIndex = 0;
+          renderAll();
+        });
+      });
+    }
 
-  document.getElementById("pluginGridLabel").textContent = category ? `${category.name} plugins` : "Select a category to browse plugins";
+    function renderPlugins() {
+      const query = document.getElementById("pluginSearch").value.trim().toLowerCase();
+      const subcategory = currentSubcategory();
+      const list = document.getElementById("pluginList");
+      if (!subcategory) {
+        list.innerHTML = '<div class="empty">No plugin section selected.</div>';
+        return;
+      }
+      const items = subcategory.plugins.filter((plugin) => !query || plugin.name.toLowerCase().includes(query));
+      if (!items.length) {
+        list.innerHTML = '<div class="empty">No plugins found.</div>';
+        return;
+      }
+      list.innerHTML = items.map((plugin) => {
+        const idx = subcategory.plugins.indexOf(plugin);
+        const latest = plugin.releases.find((release) => release.latest) || plugin.releases[0];
+        return `<button class="pick ${idx === selectedPluginIndex ? "active" : ""}" type="button" data-index="${idx}"><strong>${escapeHtml(plugin.name)}</strong><span>${plugin.releases.length} releases${latest ? ` · latest ${escapeHtml(latest.version)}` : ""}</span></button>`;
+      }).join("");
+      list.querySelectorAll("[data-index]").forEach((button) => {
+        button.addEventListener("click", () => {
+          selectedPluginIndex = Number(button.dataset.index);
+          renderAll();
+        });
+      });
+    }
 
-  const list = document.getElementById("pluginList");
-  const grid = document.getElementById("pluginGrid");
-
-  if (!category) {
-    list.innerHTML = '<div class="empty">No category selected.</div>';
-    grid.innerHTML = '<div class="empty">No category selected.</div>';
-    return;
-  }
-
-  if (!plugins.length) {
-    list.innerHTML = '<div class="empty">No plugins in this category.</div>';
-    grid.innerHTML = '<div class="empty">No plugins match this category search.</div>';
-    return;
-  }
-
-  list.innerHTML = plugins.map((plugin) => {
-    const actualIndex = currentPlugins().indexOf(plugin);
-    const latest = plugin.releases.find((release) => release.latest) || plugin.releases[0];
-    return `
-      <button type="button" class="plugin-btn ${actualIndex === selectedPluginIndex ? "active" : ""}" data-index="${actualIndex}">
-        <strong>${escapeHtml(plugin.name)}</strong>
-        <span>${plugin.releases.length} release${plugin.releases.length === 1 ? "" : "s"}${latest ? ` · latest ${escapeHtml(latest.version)}` : ""}</span>
-      </button>
-    `;
-  }).join("");
-
-  grid.innerHTML = plugins.map((plugin) => {
-    const actualIndex = currentPlugins().indexOf(plugin);
-    const latest = plugin.releases.find((release) => release.latest) || plugin.releases[0];
-    return `
-      <button type="button" class="plugin-card ${actualIndex === selectedPluginIndex ? "active" : ""}" data-index="${actualIndex}">
-        <strong>${escapeHtml(plugin.name)}</strong>
-        <p>${escapeHtml(plugin.description || "No plugin description yet.")}</p>
-        <div class="meta-row">
-          <span class="tag">category ${escapeHtml(category.name)}</span>
-          <span class="tag">${plugin.releases.length} releases</span>
-          ${latest ? `<span class="tag">latest ${escapeHtml(latest.version)}</span>` : ""}
-        </div>
-      </button>
-    `;
-  }).join("");
-
-  document.querySelectorAll("[data-index]").forEach((button) => {
-    button.addEventListener("click", () => {
-      selectedPluginIndex = Number(button.dataset.index);
-      renderAll();
-    });
-  });
-}
-
-function renderSelectedPlugin() {
-  const category = currentCategory();
-  const plugin = currentPlugin();
-  const detail = document.getElementById("pluginDetail");
-  const releases = document.getElementById("releaseList");
-  const releaseLabel = document.getElementById("releaseLabel");
-
-  if (!category || !plugin) {
-    detail.innerHTML = '<div class="empty">Create a category, add a plugin, then upload releases from the admin panel.</div>';
-    releases.innerHTML = "";
-    releaseLabel.textContent = "Choose a plugin to see its builds";
-    return;
-  }
-
-  releaseLabel.textContent = `${plugin.name} builds in ${category.name}`;
-  detail.innerHTML = `
-    <div class="plugin-top">
-      <div class="plugin-copy">
-        <h2>${escapeHtml(plugin.name)}</h2>
-        <p>${escapeHtml(plugin.description || "No plugin description yet.")}</p>
-        <div class="tag-row">
-          <span class="tag">category ${escapeHtml(category.name)}</span>
-          ${plugin.author ? `<span class="tag">author ${escapeHtml(plugin.author)}</span>` : ""}
-          <span class="tag">${plugin.releases.length} releases</span>
-        </div>
-      </div>
-      <div class="plugin-links">
-        ${renderExternalLink(plugin.website, "↗ Website")}
-        ${renderExternalLink(plugin.source, "⌥ Source")}
-      </div>
-    </div>
-  `;
-
-  if (!plugin.releases.length) {
-    releases.innerHTML = '<div class="empty">No releases uploaded for this plugin yet.</div>';
-    return;
-  }
-
-  releases.innerHTML = [...plugin.releases]
-    .sort((a, b) => Number(b.latest) - Number(a.latest))
-    .map((release) => {
-      const safeDownload = toSafeExternalUrl(release.download);
-      return `
-        <div class="release-card ${release.latest ? "latest" : ""}">
-          <div class="release-top">
-            <div class="release-name">
-              <strong>${escapeHtml(release.name || release.version)}</strong>
-              <span>v${escapeHtml(release.version)}</span>
-            </div>
-            <div class="badges">
-              ${release.latest ? '<span class="badge b-latest">latest</span>' : ""}
-              <span class="badge ${TYPE_BADGE[release.type] || "b-pre"}">${escapeHtml(release.type || "unknown")}</span>
-              <span class="badge ${STATUS_BADGE[release.status] || "b-warn"}">${escapeHtml(release.status || "unknown")}</span>
-              ${release.loader ? `<span class="badge b-latest" style="background:rgba(255,255,255,.05);border-color:var(--border2);color:var(--text2);">${escapeHtml(release.loader)}</span>` : ""}
-              ${release.minecraft ? `<span class="badge b-latest" style="background:rgba(255,255,255,.05);border-color:var(--border2);color:var(--text2);">MC ${escapeHtml(release.minecraft)}</span>` : ""}
-            </div>
+    function renderPluginGrid() {
+      const subcategory = currentSubcategory();
+      const query = document.getElementById("pluginSearch").value.trim().toLowerCase();
+      const grid = document.getElementById("pluginGrid");
+      if (!subcategory) {
+        grid.innerHTML = "";
+        return;
+      }
+      const items = subcategory.plugins.filter((plugin) => !query || plugin.name.toLowerCase().includes(query));
+      grid.innerHTML = items.map((plugin) => {
+        const idx = subcategory.plugins.indexOf(plugin);
+        return `<button class="plugin-card ${idx === selectedPluginIndex ? "active" : ""}" type="button" data-index="${idx}">
+          <strong>${escapeHtml(plugin.name)}</strong>
+          <p>${escapeHtml(plugin.description || "No plugin description yet.")}</p>
+          <div class="tags">
+            <span class="tag">section ${escapeHtml(subcategory.name)}</span>
+            <span class="tag">${plugin.releases.length} releases</span>
           </div>
-          <p>${escapeHtml(release.description || "No release description yet.")}</p>
-          ${Array.isArray(release.changelog) && release.changelog.length ? `
-            <div class="changelog">
-              <strong>Changelog</strong>
-              <ul>${release.changelog.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-            </div>
-          ` : ""}
-          <div class="release-actions">
-            ${safeDownload ? `
-              <a href="${escapeAttr(safeDownload)}" target="_blank" rel="noopener" class="download-btn download-primary">⬇ Download Build</a>
-              <a href="${escapeAttr(safeDownload)}" target="_blank" rel="noopener" class="download-btn download-secondary">⌥ Direct Link</a>
-            ` : '<span class="download-btn download-secondary">Download unavailable</span>'}
+        </button>`;
+      }).join("");
+      grid.querySelectorAll("[data-index]").forEach((button) => {
+        button.addEventListener("click", () => {
+          selectedPluginIndex = Number(button.dataset.index);
+          renderAll();
+        });
+      });
+    }
+
+    function renderPluginDetail() {
+      const category = currentCategory();
+      const subcategory = currentSubcategory();
+      const plugin = currentPlugin();
+      const detail = document.getElementById("pluginDetail");
+      const list = document.getElementById("releaseList");
+
+      if (!category || !subcategory || !plugin) {
+        document.getElementById("detailHead").textContent = "Plugin Details";
+        document.getElementById("detailSub").textContent = "Pick a plugin to see releases";
+        detail.innerHTML = '<div class="detail-empty">Choose a category, then a plugin section, then a plugin.</div>';
+        list.innerHTML = "";
+        return;
+      }
+
+      document.getElementById("detailHead").textContent = plugin.name;
+      document.getElementById("detailSub").textContent = `${category.name} -> ${subcategory.name}`;
+
+      detail.innerHTML = `
+        <div class="plugin-detail">
+          <h3>${escapeHtml(plugin.name)}</h3>
+          <p>${escapeHtml(plugin.description || "No plugin description yet.")}</p>
+          <div class="tags">
+            <span class="tag">category ${escapeHtml(category.name)}</span>
+            <span class="tag">section ${escapeHtml(subcategory.name)}</span>
+            ${plugin.author ? `<span class="tag">author ${escapeHtml(plugin.author)}</span>` : ""}
+          </div>
+          <div class="plugin-links">
+            ${renderLink(plugin.website, "↗ Website")}
+            ${renderLink(plugin.source, "⌥ Source")}
           </div>
         </div>
       `;
-    }).join("");
-}
 
-function renderExternalLink(url, label) {
-  const safe = toSafeExternalUrl(url);
-  return safe ? `<a href="${escapeAttr(safe)}" target="_blank" rel="noopener" class="link-btn">${label}</a>` : "";
-}
+      if (!plugin.releases.length) {
+        list.innerHTML = '<div class="detail-empty">No releases for this plugin yet.</div>';
+        return;
+      }
 
-function toSafeExternalUrl(value) {
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" ? url.toString() : "";
-  } catch {
-    return "";
-  }
-}
+      list.innerHTML = [...plugin.releases]
+        .sort((a, b) => Number(b.latest) - Number(a.latest))
+        .map((release) => `
+          <div class="release-card ${release.latest ? "latest" : ""}">
+            <div class="release-top">
+              <div class="release-name">
+                <strong>${escapeHtml(release.name || release.version)}</strong>
+                <span>v${escapeHtml(release.version)}</span>
+              </div>
+              <div class="release-tags">
+                ${release.latest ? '<span class="badge latest">latest</span>' : ""}
+                <span class="badge ${release.type === "stable" ? "stable" : "pre"}">${escapeHtml(release.type || "unknown")}</span>
+                <span class="badge ${release.status || "maintenance"}">${escapeHtml(release.status || "unknown")}</span>
+                ${release.loader ? `<span class="badge latest" style="color:var(--muted);border-color:var(--line);background:#f3f7fb;">${escapeHtml(release.loader)}</span>` : ""}
+                ${release.minecraft ? `<span class="badge latest" style="color:var(--muted);border-color:var(--line);background:#f3f7fb;">MC ${escapeHtml(release.minecraft)}</span>` : ""}
+              </div>
+            </div>
+            <p>${escapeHtml(release.description || "No release description yet.")}</p>
+            ${Array.isArray(release.changelog) && release.changelog.length ? `
+              <div class="notes">
+                <strong>Changelog</strong>
+                <ul>${release.changelog.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+              </div>
+            ` : ""}
+            <div class="release-actions">
+              ${renderLink(release.download, "⬇ Download Build")}
+            </div>
+          </div>
+        `).join("");
+    }
 
-function stringValue(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+    function renderLink(url, label) {
+      const safe = toSafeExternalUrl(url);
+      return safe ? `<a href="${escapeAttr(safe)}" target="_blank" rel="noopener" class="link-btn">${label}</a>` : "";
+    }
 
-function escapeHtml(value) {
-  return String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-}
+    function toSafeExternalUrl(value) {
+      try {
+        const url = new URL(value);
+        return url.protocol === "https:" ? url.toString() : "";
+      } catch {
+        return "";
+      }
+    }
 
-function escapeAttr(value) {
-  return escapeHtml(value).replace(/'/g, "&#39;");
-}
+    function escapeHtml(value) {
+      return String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
 
-loadCatalog();
-</script>
+    function escapeAttr(value) {
+      return escapeHtml(value).replace(/'/g, "&#39;");
+    }
+
+    loadCatalog();
+  </script>
 </body>
 </html>
