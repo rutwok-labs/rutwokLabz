@@ -1,6 +1,16 @@
 {
   "plugin": {
-    "name": "ExamplePlugin",
-    "versions": []
+    "name": "SlimeFunCore",
+    "versions": [
+      {
+        "name": "2614",
+        "version": "1.21.11",
+        "type": "stable",
+        "latest": false,
+        "status": "success",
+        "loader": "PaperMC",
+        "download": "https://cdn.modrinth.com/data/Fz9hstnG/versions/1fCkq2KW/SlimefunCore4-2614.jar"
+      }
+    ]
   }
 }
