@@ -22,7 +22,7 @@
         "description": "Latest stable build with bug fixes and performance improvements.",
         "changelog": [
           "Updated to modrith api for plugin update",
-          "Improved machine tick performance",
+          "Improved machine tick performance"
         ],
         "download": "https://cdn.modrinth.com/data/Fz9hstnG/versions/1fCkq2KW/SlimefunCore4-2614.jar"
       }
