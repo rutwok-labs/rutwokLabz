@@ -1,7 +1,7 @@
 {
   "catalog": {
-    "title": "SlimeFun Blob",
-    "description": "Manage categories, subcategories, plugins, and builds from one dashboard.",
+    "title": "Plugin Catalog",
+    "description": "two side of one",
     "categories": [
       {
         "name": "Core",
@@ -41,8 +41,33 @@
         "name": "Addon",
         "subcategories": [
           {
-            "name": "General",
-            "plugins": []
+            "name": "FluffyMachines",
+            "plugins": [
+              {
+                "name": "FluffyMachines",
+                "description": "add more items",
+                "author": "rutwokLabz",
+                "website": "https://github.com/rutwok-labs/SF4-Addons/blob/main/Addons",
+                "source": "https://github.com/rutwok-labs/SF4-Addons/blob/main/Addons",
+                "releases": [
+                  {
+                    "name": "FluffyMachines1.00",
+                    "version": "1.0.0",
+                    "type": "stable",
+                    "latest": true,
+                    "status": "success",
+                    "loader": "PaperMC",
+                    "minecraft": "1.21.11",
+                    "description": "no changes first release",
+                    "changelog": [
+                      "- update to 1.21.11",
+                      "- paper"
+                    ],
+                    "download": "https://github.com/rutwok-labs/SF4-Addons/raw/refs/heads/main/Addons/FluffyMachines/releases/FluffyMachines%20v1.0.0.jar"
+                  }
+                ]
+              }
+            ]
           }
         ]
       }
