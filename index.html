@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plugin Release Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b0d12;
+      --surface: #111520;
+      --surface2: #161b27;
+      --border: #1e2535;
+      --border2: #252d40;
+      --accent: #4f8ef7;
+      --accent2: #7b61ff;
+      --text: #e2e8f4;
+      --text2: #8b95b0;
+      --text3: #555e78;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --latest: #f59e0b;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Sora', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Background grid ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(79,142,247,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,142,247,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Header ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11,13,18,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .header-logo .logo-icon {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-refresh {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text2);
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Layout ── */
+    .app-layout {
+      display: flex;
+      position: relative;
+      z-index: 1;
+      min-height: calc(100vh - 60px);
+    }
+
+    /* ── Sidebar ── */
+    aside {
+      width: 240px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+      padding: 1.5rem 0;
+      position: sticky;
+      top: 60px;
+      height: calc(100vh - 60px);
+      overflow-y: auto;
+    }
+
+    .sidebar-title {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      padding: 0 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .sidebar-version {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 1.25rem;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-left: 2px solid transparent;
+      text-decoration: none;
+    }
+    .sidebar-version:hover { background: var(--surface2); }
+    .sidebar-version.active {
+      background: rgba(79,142,247,0.08);
+      border-left-color: var(--accent);
+    }
+
+    .sv-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .sv-dot.success { background: var(--green); }
+    .sv-dot.fail { background: var(--red); }
+    .sv-dot.maintenance { background: var(--yellow); }
+
+    .sv-info { flex: 1; min-width: 0; }
+    .sv-ver {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sv-type {
+      font-size: 0.65rem;
+      color: var(--text3);
+      margin-top: 1px;
+    }
+
+    .sv-latest-badge {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      font-weight: 700;
+      background: rgba(245,158,11,0.15);
+      color: var(--latest);
+      border: 1px solid rgba(245,158,11,0.3);
+      padding: 1px 5px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Main content ── */
+    main {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      max-width: 900px;
+    }
+
+    .plugin-hero {
+      margin-bottom: 2rem;
+    }
+
+    .plugin-name {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--text) 40%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.4rem;
+    }
+
+    .plugin-meta {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text3);
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Version Cards ── */
+    .versions-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .version-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+      scroll-margin-top: 80px;
+    }
+    .version-card:hover {
+      border-color: var(--border2);
+      transform: translateY(-1px);
+    }
+
+    .version-card.is-latest {
+      border-color: rgba(245,158,11,0.35);
+      background: linear-gradient(135deg, var(--surface) 70%, rgba(245,158,11,0.04));
+    }
+    .version-card.is-latest::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--latest), transparent);
+    }
+
+    .card-corner-icon {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 1.2rem;
+      opacity: 0.4;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 3px 8px;
+      border-radius: 5px;
+      border: 1px solid;
+    }
+
+    .badge-latest {
+      background: rgba(245,158,11,0.12);
+      color: var(--latest);
+      border-color: rgba(245,158,11,0.3);
+    }
+    .badge-stable {
+      background: rgba(79,142,247,0.1);
+      color: var(--accent);
+      border-color: rgba(79,142,247,0.25);
+    }
+    .badge-prerelease {
+      background: rgba(123,97,255,0.1);
+      color: var(--accent2);
+      border-color: rgba(123,97,255,0.25);
+    }
+    .badge-success {
+      background: rgba(34,197,94,0.1);
+      color: var(--green);
+      border-color: rgba(34,197,94,0.25);
+    }
+    .badge-fail {
+      background: rgba(239,68,68,0.1);
+      color: var(--red);
+      border-color: rgba(239,68,68,0.25);
+    }
+    .badge-maintenance {
+      background: rgba(245,158,11,0.1);
+      color: var(--yellow);
+      border-color: rgba(245,158,11,0.25);
+    }
+
+    .card-title-block { flex: 1; }
+    .card-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .card-version {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--text3);
+    }
+
+    .card-details {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .detail-label {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
+    .detail-value {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text2);
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 20px;
+      border-radius: var(--radius-sm);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-download.primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(79,142,247,0.25);
+    }
+    .btn-download.primary:hover {
+      box-shadow: 0 6px 24px rgba(79,142,247,0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-download.secondary {
+      background: var(--surface2);
+      color: var(--text2);
+      border: 1px solid var(--border2);
+    }
+    .btn-download.secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ── Loading / Error states ── */
+    .state-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem;
+      color: var(--text3);
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--border2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-box {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: var(--radius);
+      padding: 1rem 1.5rem;
+      color: var(--red);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+    /* ── Animations ── */
+    .version-card {
+      animation: fadeUp 0.35s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      aside { display: none; }
+      main { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">
+    <div class="logo-icon">⚡</div>
+    <span id="headerPluginName">Plugin Dashboard</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn-refresh" onclick="loadData()">↻ Refresh</button>
+    <a href="admin.html" class="btn-refresh" style="text-decoration:none;">⚙ Admin</a>
+  </div>
+</header>
+
+<div class="app-layout">
+  <aside id="sidebar">
+    <div class="sidebar-title">Versions</div>
+    <div id="sidebarList"></div>
+  </aside>
+
+  <main>
+    <div class="plugin-hero">
+      <div class="plugin-name" id="pluginName">Loading...</div>
+      <div class="plugin-meta" id="pluginMeta"></div>
+    </div>
+
+    <div class="section-label">All Releases</div>
+    <div class="versions-grid" id="versionsGrid">
+      <div class="state-container">
+        <div class="loading-spinner"></div>
+        <span>Fetching releases...</span>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const LOADER_ICONS = { PaperMC: '📄', Bukkit: '🪣', Purpur: '💜' };
+const STATUS_ICONS = { success: '✅', fail: '❌', maintenance: '🔧' };
+const TYPE_ICONS   = { stable: '🔒', 'pre-release': '🧪' };
+
+async function loadData() {
+  const grid = document.getElementById('versionsGrid');
+  grid.innerHTML = `<div class="state-container"><div class="loading-spinner"></div><span>Fetching releases...</span></div>`;
+
+  try {
+    const res = await fetch('/.netlify/functions/api');
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    const data = await res.json();
+    render(data);
+  } catch (err) {
+    console.error('[Dashboard] Load error:', err);
+    grid.innerHTML = `<div class="error-box">⚠ Failed to load plugin data: ${err.message}</div>`;
+  }
+}
+
+function render(data) {
+  const plugin = data.plugin;
+  const versions = plugin.versions || [];
+
+  document.title = plugin.name + ' — Release Dashboard';
+  document.getElementById('headerPluginName').textContent = plugin.name;
+  document.getElementById('pluginName').textContent = plugin.name;
+
+  const latest = versions.find(v => v.latest);
+  document.getElementById('pluginMeta').textContent =
+    `${versions.length} release${versions.length !== 1 ? 's' : ''}` +
+    (latest ? ` · Latest: v${latest.version}` : '');
+
+  // Sidebar
+  const sidebarList = document.getElementById('sidebarList');
+  sidebarList.innerHTML = versions.map((v, i) => `
+    <a class="sidebar-version ${v.latest ? 'active' : ''}" href="#card-${i}">
+      <span class="sv-dot ${v.status}"></span>
+      <div class="sv-info">
+        <div class="sv-ver">v${v.version}</div>
+        <div class="sv-type">${v.type}</div>
+      </div>
+      ${v.latest ? '<span class="sv-latest-badge">LATEST</span>' : ''}
+    </a>
+  `).join('');
+
+  // Cards — latest first
+  const sorted = [...versions].sort((a, b) => (b.latest ? 1 : 0) - (a.latest ? 1 : 0));
+  const grid = document.getElementById('versionsGrid');
+  grid.innerHTML = sorted.map((v, i) => {
+    const origIdx = versions.indexOf(v);
+    return `
+    <div class="version-card ${v.latest ? 'is-latest' : ''}" id="card-${origIdx}" style="animation-delay:${i * 0.05}s">
+      <span class="card-corner-icon">${LOADER_ICONS[v.loader] || '🔌'}</span>
+
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-name">${escHtml(v.name)}</div>
+          <div class="card-version">v${escHtml(v.version)}</div>
+        </div>
+        <div class="card-badges">
+          ${v.latest ? '<span class="badge badge-latest">★ LATEST</span>' : ''}
+          <span class="badge badge-${v.type === 'stable' ? 'stable' : 'prerelease'}">${TYPE_ICONS[v.type] || ''} ${v.type}</span>
+          <span class="badge badge-${v.status}">${STATUS_ICONS[v.status] || ''} ${v.status}</span>
+        </div>
+      </div>
+
+      <div class="card-details">
+        <div class="detail-item">
+          <span class="detail-label">Loader</span>
+          <span class="detail-value">${escHtml(v.loader)}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Release Type</span>
+          <span class="detail-value">${escHtml(v.type)}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Status</span>
+          <span class="detail-value">${escHtml(v.status)}</span>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <a href="${escHtml(v.download)}" target="_blank" rel="noopener noreferrer"
+           class="btn-download ${v.latest ? 'primary' : 'secondary'}">
+          ⬇ Download ${v.latest ? '(Latest)' : 'v' + escHtml(v.version)}
+        </a>
+      </div>
+    </div>
+  `}).join('');
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+loadData();
+</script>
+</body>
+</html>

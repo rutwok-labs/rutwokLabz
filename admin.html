@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Plugin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b0d12;
+      --surface: #111520;
+      --surface2: #161b27;
+      --surface3: #1c2236;
+      --border: #1e2535;
+      --border2: #252d40;
+      --accent: #4f8ef7;
+      --accent2: #7b61ff;
+      --text: #e2e8f4;
+      --text2: #8b95b0;
+      --text3: #555e78;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Sora', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(79,142,247,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,142,247,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* ── Auth Gate ── */
+    #authGate {
+      position: fixed;
+      inset: 0;
+      background: rgba(11,13,18,0.97);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(8px);
+    }
+
+    .auth-box {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      width: 380px;
+      text-align: center;
+    }
+
+    .auth-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .auth-title {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    .auth-sub { font-size: 0.8rem; color: var(--text3); margin-bottom: 1.5rem; }
+
+    .auth-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 1rem;
+      text-align: center;
+      letter-spacing: 0.1em;
+    }
+    .auth-input:focus { border-color: var(--accent); }
+
+    .auth-btn {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .auth-btn:hover { opacity: 0.85; }
+
+    .auth-error {
+      font-family: var(--mono);
+      font-size: 0.73rem;
+      color: var(--red);
+      margin-top: 0.75rem;
+      display: none;
+    }
+
+    /* ── Header ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11,13,18,0.9);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .logo-icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .logo-badge {
+      font-size: 0.62rem;
+      background: rgba(239,68,68,0.15);
+      color: var(--red);
+      border: 1px solid rgba(239,68,68,0.3);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .header-right { display: flex; align-items: center; gap: 10px; }
+
+    .autosave-indicator {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text3);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.3s;
+    }
+    .autosave-indicator.saving { color: var(--yellow); }
+    .autosave-indicator.saved  { color: var(--green); }
+    .autosave-indicator.error  { color: var(--red); }
+
+    .autosave-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .link-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text2);
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .link-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Main Layout ── */
+    .admin-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 1.5rem;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Panels ── */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-body { padding: 1.5rem; }
+
+    /* ── Form ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .form-full { grid-column: 1 / -1; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+
+    label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
+
+    input[type="text"], input[type="url"], select {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      padding: 9px 12px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(79,142,247,0.1);
+    }
+    input.invalid { border-color: var(--red) !important; }
+
+    select option { background: var(--surface2); }
+
+    /* Toggle */
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      padding: 9px 12px;
+    }
+    .toggle-label { font-family: var(--mono); font-size: 0.8rem; color: var(--text2); }
+
+    .toggle {
+      position: relative;
+      width: 38px;
+      height: 20px;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--border2);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle-slider::after {
+      content: '';
+      position: absolute;
+      width: 14px; height: 14px;
+      left: 3px; top: 3px;
+      background: var(--text3);
+      border-radius: 50%;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .toggle input:checked + .toggle-slider { background: rgba(245,158,11,0.3); }
+    .toggle input:checked + .toggle-slider::after {
+      transform: translateX(18px);
+      background: var(--yellow);
+    }
+
+    /* Action buttons */
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 1.25rem;
+    }
+
+    .btn-primary {
+      flex: 1;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-primary:hover { box-shadow: 0 4px 16px rgba(79,142,247,0.3); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-secondary {
+      padding: 10px 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      color: var(--text2);
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    .validation-error {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--red);
+      margin-top: 4px;
+      display: none;
+    }
+
+    /* ── Version List (right panel) ── */
+    .version-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .vl-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .vl-item:hover { border-color: var(--border2); }
+    .vl-item.selected { border-color: var(--accent); background: rgba(79,142,247,0.06); }
+
+    .vl-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .vl-dot.success { background: var(--green); }
+    .vl-dot.fail    { background: var(--red); }
+    .vl-dot.maintenance { background: var(--yellow); }
+
+    .vl-info { flex: 1; min-width: 0; }
+    .vl-name {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .vl-meta { font-size: 0.65rem; color: var(--text3); margin-top: 2px; }
+
+    .vl-badges { display: flex; gap: 4px; flex-shrink: 0; }
+    .mini-badge {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    .mini-latest {
+      background: rgba(245,158,11,0.15);
+      color: var(--yellow);
+    }
+
+    .vl-delete {
+      background: none;
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 2px 4px;
+      transition: color 0.15s;
+      flex-shrink: 0;
+    }
+    .vl-delete:hover { color: var(--red); }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast-item {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid;
+      animation: toastIn 0.25s ease, toastOut 0.3s ease 2.5s forwards;
+      pointer-events: none;
+    }
+    .toast-item.success { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); color: var(--green); }
+    .toast-item.error   { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.3); color: var(--red); }
+    .toast-item.info    { background: rgba(79,142,247,0.12); border-color: rgba(79,142,247,0.3); color: var(--accent); }
+
+    @keyframes toastIn { from { opacity: 0; transform: translateX(20px); } }
+    @keyframes toastOut { to   { opacity: 0; transform: translateX(20px); } }
+
+    /* ── Plugin name section ── */
+    .plugin-name-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+    @media (max-width: 900px) {
+      .admin-layout { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Auth Gate ── -->
+<div id="authGate">
+  <div class="auth-box">
+    <div class="auth-icon">🔐</div>
+    <div class="auth-title">Admin Access</div>
+    <div class="auth-sub">Enter your admin token to continue</div>
+    <input type="password" id="authInput" class="auth-input" placeholder="••••••••••••"
+           autocomplete="current-password" />
+    <button class="auth-btn" onclick="authenticate()">Unlock Panel</button>
+    <div class="auth-error" id="authError">Invalid token. Try again.</div>
+  </div>
+</div>
+
+<!-- ── Header ── -->
+<header>
+  <div class="header-logo">
+    <div class="logo-icon">⚡</div>
+    <span>Plugin Dashboard</span>
+    <span class="logo-badge">ADMIN</span>
+  </div>
+  <div class="header-right">
+    <div class="autosave-indicator" id="autosaveIndicator">
+      <span class="autosave-dot"></span>
+      <span id="autosaveText">Ready</span>
+    </div>
+    <a href="index.html" class="link-btn">← Public View</a>
+  </div>
+</header>
+
+<!-- ── Admin Layout ── -->
+<div class="admin-layout">
+  <!-- Left: Form -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">📝 Version Editor</div>
+      <div id="editingBadge" style="font-family:var(--mono);font-size:0.65rem;color:var(--text3);">New Release</div>
+    </div>
+    <div class="panel-body">
+
+      <!-- Plugin name -->
+      <div class="plugin-name-row">
+        <div class="form-group" style="flex:1">
+          <label>Plugin Name</label>
+          <input type="text" id="pluginName" placeholder="ExamplePlugin" />
+        </div>
+      </div>
+
+      <!-- Version form -->
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Release Name</label>
+          <input type="text" id="vName" placeholder="Stable Release" />
+          <span class="validation-error" id="err-vName">Required</span>
+        </div>
+        <div class="form-group">
+          <label>Version Number</label>
+          <input type="text" id="vVersion" placeholder="1.0.0" />
+          <span class="validation-error" id="err-vVersion">Required</span>
+        </div>
+        <div class="form-group">
+          <label>Release Type</label>
+          <select id="vType">
+            <option value="stable">Stable</option>
+            <option value="pre-release">Pre-Release</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Loader</label>
+          <select id="vLoader">
+            <option value="PaperMC">PaperMC</option>
+            <option value="Bukkit">Bukkit</option>
+            <option value="Purpur">Purpur</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="vStatus">
+            <option value="success">Success</option>
+            <option value="fail">Fail</option>
+            <option value="maintenance">Maintenance</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Mark as Latest</label>
+          <div class="toggle-group">
+            <span class="toggle-label">Latest Version</span>
+            <label class="toggle">
+              <input type="checkbox" id="vLatest" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group form-full">
+          <label>Download Link</label>
+          <input type="text" id="vDownload" placeholder="https://github.com/.../releases/download/..." />
+          <span class="validation-error" id="err-vDownload">Must be a valid URL</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-secondary" onclick="resetForm()">✕ Clear</button>
+        <button class="btn-primary" id="saveBtn" onclick="saveVersion()">
+          ⬆ Save & Push to GitHub
+        </button>
+      </div>
+
+      <div id="formError" style="font-family:var(--mono);font-size:0.73rem;color:var(--red);margin-top:1rem;display:none;"></div>
+    </div>
+  </div>
+
+  <!-- Right: Version list -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">📦 Versions <span id="vCount" style="color:var(--text3);font-weight:400;">— 0</span></div>
+      <button class="link-btn" onclick="loadData()">↻</button>
+    </div>
+    <div class="panel-body" style="max-height:calc(100vh - 200px);overflow-y:auto;">
+      <div id="versionList">
+        <div style="color:var(--text3);font-family:var(--mono);font-size:0.75rem;text-align:center;padding:2rem;">
+          Loading...
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ─── State ─────────────────────────────────────────────────────── */
+let adminToken = '';
+let currentData = { plugin: { name: '', versions: [] } };
+let editingVersion = null; // null = new, string = version number being edited
+let autoSaveTimer = null;
+
+const ADMIN_TOKEN_KEY = 'pluginAdminToken';
+
+/* ─── Auth ──────────────────────────────────────────────────────── */
+function authenticate() {
+  const token = document.getElementById('authInput').value.trim();
+  if (!token) return;
+  adminToken = token;
+  sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
+  document.getElementById('authGate').style.display = 'none';
+  loadData();
+}
+
+document.getElementById('authInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') authenticate();
+});
+
+// Restore session
+(function() {
+  const saved = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+  if (saved) {
+    adminToken = saved;
+    document.getElementById('authGate').style.display = 'none';
+    loadData();
+  }
+})();
+
+/* ─── Load data ─────────────────────────────────────────────────── */
+async function loadData() {
+  try {
+    const res = await fetch('/.netlify/functions/api');
+    if (!res.ok) throw new Error(`API error ${res.status}`);
+    const data = await res.json();
+    currentData = data;
+    document.getElementById('pluginName').value = data.plugin?.name || '';
+    renderVersionList();
+    console.log('[Admin] Data loaded:', data);
+  } catch (err) {
+    console.error('[Admin] Load error:', err);
+    toast('Failed to load data: ' + err.message, 'error');
+  }
+}
+
+/* ─── Render version list ───────────────────────────────────────── */
+function renderVersionList() {
+  const versions = currentData.plugin?.versions || [];
+  document.getElementById('vCount').textContent = `— ${versions.length}`;
+
+  if (!versions.length) {
+    document.getElementById('versionList').innerHTML =
+      `<div style="color:var(--text3);font-family:var(--mono);font-size:0.75rem;text-align:center;padding:2rem;">No versions yet</div>`;
+    return;
+  }
+
+  document.getElementById('versionList').innerHTML = versions.map((v, i) => `
+    <div class="vl-item ${editingVersion === v.version ? 'selected' : ''}" onclick="editVersion(${i})">
+      <span class="vl-dot ${v.status}"></span>
+      <div class="vl-info">
+        <div class="vl-name">v${escHtml(v.version)} — ${escHtml(v.name)}</div>
+        <div class="vl-meta">${v.type} · ${v.loader} · ${v.status}</div>
+      </div>
+      <div class="vl-badges">
+        ${v.latest ? '<span class="mini-badge mini-latest">LATEST</span>' : ''}
+      </div>
+      <button class="vl-delete" onclick="event.stopPropagation(); deleteVersion(${i})" title="Delete">✕</button>
+    </div>
+  `).join('');
+}
+
+/* ─── Edit existing version ─────────────────────────────────────── */
+function editVersion(idx) {
+  const v = currentData.plugin.versions[idx];
+  editingVersion = v.version;
+  document.getElementById('editingBadge').textContent = `Editing v${v.version}`;
+
+  document.getElementById('vName').value    = v.name;
+  document.getElementById('vVersion').value = v.version;
+  document.getElementById('vType').value    = v.type;
+  document.getElementById('vLoader').value  = v.loader;
+  document.getElementById('vStatus').value  = v.status;
+  document.getElementById('vLatest').checked = v.latest;
+  document.getElementById('vDownload').value = v.download;
+
+  renderVersionList();
+  clearErrors();
+}
+
+/* ─── Delete version ────────────────────────────────────────────── */
+async function deleteVersion(idx) {
+  const v = currentData.plugin.versions[idx];
+  if (!confirm(`Delete v${v.version}?`)) return;
+
+  currentData.plugin.versions.splice(idx, 1);
+
+  if (editingVersion === v.version) {
+    resetForm();
+  }
+
+  await pushToGitHub(currentData);
+  renderVersionList();
+}
+
+/* ─── Save version ──────────────────────────────────────────────── */
+async function saveVersion() {
+  if (!validate()) return;
+
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Saving...';
+
+  const pluginName = document.getElementById('pluginName').value.trim() || 'Plugin';
+  const newVersion = {
+    name:     document.getElementById('vName').value.trim(),
+    version:  document.getElementById('vVersion').value.trim(),
+    type:     document.getElementById('vType').value,
+    latest:   document.getElementById('vLatest').checked,
+    status:   document.getElementById('vStatus').value,
+    loader:   document.getElementById('vLoader').value,
+    download: document.getElementById('vDownload').value.trim(),
+  };
+
+  // Update local state
+  currentData.plugin.name = pluginName;
+  const existingIdx = currentData.plugin.versions.findIndex(v => v.version === newVersion.version);
+  if (existingIdx >= 0) {
+    currentData.plugin.versions[existingIdx] = newVersion;
+  } else {
+    currentData.plugin.versions.push(newVersion);
+  }
+
+  // Enforce single latest
+  if (newVersion.latest) {
+    currentData.plugin.versions = currentData.plugin.versions.map(v => ({
+      ...v, latest: v.version === newVersion.version
+    }));
+  }
+
+  const ok = await pushToGitHub(currentData);
+
+  btn.disabled = false;
+  btn.textContent = '⬆ Save & Push to GitHub';
+
+  if (ok) {
+    editingVersion = newVersion.version;
+    renderVersionList();
+    toast(`v${newVersion.version} saved successfully!`, 'success');
+  }
+}
+
+/* ─── Push to GitHub via serverless function ────────────────────── */
+async function pushToGitHub(data) {
+  setAutosave('saving', 'Saving...');
+  try {
+    const res = await fetch('/.netlify/functions/update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Token': adminToken,
+      },
+      body: JSON.stringify({ plugin: data.plugin }),
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      throw new Error(result.error || `HTTP ${res.status}`);
+    }
+
+    console.log('[Admin] Pushed to GitHub:', result.sha);
+    setAutosave('saved', 'Saved ✓');
+    setTimeout(() => setAutosave('', 'Ready'), 2500);
+    return true;
+  } catch (err) {
+    console.error('[Admin] Push error:', err);
+    setAutosave('error', 'Save failed');
+    toast('Error: ' + err.message, 'error');
+    document.getElementById('formError').textContent = err.message;
+    document.getElementById('formError').style.display = 'block';
+    return false;
+  }
+}
+
+/* ─── Auto-save ─────────────────────────────────────────────────── */
+function scheduleAutosave() {
+  clearTimeout(autoSaveTimer);
+  setAutosave('', 'Pending...');
+  autoSaveTimer = setTimeout(() => {
+    if (validate(true)) saveVersion();
+  }, 1800);
+}
+
+// Attach auto-save listeners
+['vName','vVersion','vType','vLoader','vStatus','vDownload','vLatest','pluginName'].forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const evt = el.type === 'checkbox' ? 'change' : 'input';
+  el.addEventListener(evt, scheduleAutosave);
+});
+
+/* ─── Validation ─────────────────────────────────────────────────── */
+function validate(silent = false) {
+  let valid = true;
+
+  const fields = [
+    { id: 'vName',     errId: 'err-vName',     check: v => v.trim().length > 0,                    msg: 'Required' },
+    { id: 'vVersion',  errId: 'err-vVersion',  check: v => v.trim().length > 0,                    msg: 'Required' },
+    { id: 'vDownload', errId: 'err-vDownload', check: v => v.trim().startsWith('http'),             msg: 'Must be a valid URL' },
+  ];
+
+  fields.forEach(({ id, errId, check, msg }) => {
+    const el = document.getElementById(id);
+    const err = document.getElementById(errId);
+    if (!check(el.value)) {
+      valid = false;
+      if (!silent) {
+        el.classList.add('invalid');
+        err.textContent = msg;
+        err.style.display = 'block';
+      }
+    } else {
+      el.classList.remove('invalid');
+      if (err) err.style.display = 'none';
+    }
+  });
+
+  return valid;
+}
+
+function clearErrors() {
+  ['vName','vVersion','vDownload'].forEach(id => {
+    document.getElementById(id)?.classList.remove('invalid');
+  });
+  ['err-vName','err-vVersion','err-vDownload'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  document.getElementById('formError').style.display = 'none';
+}
+
+/* ─── Reset form ─────────────────────────────────────────────────── */
+function resetForm() {
+  editingVersion = null;
+  document.getElementById('editingBadge').textContent = 'New Release';
+  ['vName','vVersion','vDownload'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('vType').value   = 'stable';
+  document.getElementById('vLoader').value = 'PaperMC';
+  document.getElementById('vStatus').value = 'success';
+  document.getElementById('vLatest').checked = false;
+  clearErrors();
+  renderVersionList();
+}
+
+/* ─── Autosave indicator ─────────────────────────────────────────── */
+function setAutosave(type, text) {
+  const el = document.getElementById('autosaveIndicator');
+  const txt = document.getElementById('autosaveText');
+  el.className = 'autosave-indicator ' + type;
+  txt.textContent = text;
+}
+
+/* ─── Toast ──────────────────────────────────────────────────────── */
+function toast(msg, type = 'info') {
+  const container = document.getElementById('toast');
+  const el = document.createElement('div');
+  el.className = `toast-item ${type}`;
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+/* ─── Helpers ────────────────────────────────────────────────────── */
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
