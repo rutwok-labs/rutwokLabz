@@ -865,6 +865,31 @@
     line-height: 1.7;
   }
 
+  /* ── Scope tabs (modal Core / Addon switcher) ── */
+  .scope-tab {
+    flex: 1;
+    appearance: none;
+    border: 1px solid rgba(0, 200, 255, 0.16);
+    background: rgba(0, 200, 255, 0.03);
+    color: var(--muted);
+    border-radius: 12px;
+    min-height: 40px;
+    font: 600 0.8rem var(--mono);
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 140ms ease;
+  }
+  .scope-tab:hover {
+    border-color: rgba(0, 200, 255, 0.30);
+    color: var(--text);
+  }
+  .scope-tab-active {
+    border-color: rgba(0, 200, 255, 0.50);
+    background: linear-gradient(135deg, rgba(0, 180, 255, 0.22), rgba(0, 120, 220, 0.18));
+    color: var(--accent);
+    box-shadow: 0 0 18px rgba(0, 200, 255, 0.14);
+  }
+
   /* ── Scrollbar ── */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -948,9 +973,9 @@
       <div class="sub">registered under core</div>
     </article>
     <article class="stat">
-      <div class="label">Addon Sections</div>
+      <div class="label">Addon Plugins</div>
       <div class="value" id="statSections">0</div>
-      <div class="sub">release groupings</div>
+      <div class="sub">across all addon sections</div>
     </article>
     <article class="stat">
       <div class="label">Total Releases</div>
@@ -1155,23 +1180,40 @@
 
     <div class="alert" id="modalAlert"></div>
 
-    <div class="field-grid triple">
+    <!-- Type tabs: Core / Addon -->
+    <div class="scope-tabs" style="display:flex;gap:8px;margin-bottom:14px;">
+      <button type="button" id="scopeTabCore"  class="scope-tab scope-tab-active">⬡ Core</button>
+      <button type="button" id="scopeTabAddon" class="scope-tab">⬢ Addon</button>
+    </div>
+    <!-- hidden real input keeps the rest of the JS working unchanged -->
+    <select id="releaseScopeInput" style="display:none;">
+      <option value="core">Core</option>
+      <option value="addon">Addon</option>
+    </select>
+
+    <!-- Addon: section → plugin selects (hidden when Core) -->
+    <div id="addonPickerRow" class="field-grid" style="display:none;margin-bottom:14px;">
       <div class="field">
-        <label for="releaseScopeInput">Scope</label>
-        <select id="releaseScopeInput">
-          <option value="core">Core</option>
-          <option value="addon">Addon</option>
-        </select>
-      </div>
-      <div class="field" id="releaseSectionField">
-        <label for="releaseSectionInput">Addon section</label>
-        <input id="releaseSectionInput" type="text" placeholder="General" />
+        <label for="releaseSectionSelect">Section</label>
+        <select id="releaseSectionSelect"></select>
       </div>
       <div class="field">
-        <label for="releasePluginInput">Plugin</label>
-        <input id="releasePluginInput" type="text" placeholder="Plugin name" />
+        <label for="releaseAddonPluginSelect">Plugin</label>
+        <select id="releaseAddonPluginSelect"></select>
       </div>
     </div>
+    <!-- hidden text inputs kept for JS compatibility -->
+    <input id="releaseSectionInput"  type="hidden" value="" />
+
+    <!-- Core: plugin select (hidden when Addon) -->
+    <div id="corePickerRow" class="field-grid" style="margin-bottom:14px;">
+      <div class="field full">
+        <label for="releaseCorePluginSelect">Plugin</label>
+        <select id="releaseCorePluginSelect"></select>
+      </div>
+    </div>
+    <!-- hidden text input for plugin kept for JS compat -->
+    <input id="releasePluginInput" type="hidden" value="" />
 
     <div class="field-grid">
       <div class="field">
@@ -1534,11 +1576,13 @@ function renderAll() {
 
 function renderStats() {
   const corePlugins  = arrayOf(state.catalog.catalog.core.plugins).length;
-  const addonSections = arrayOf(state.catalog.catalog.addons.sections).length;
+  // Count total addon plugins across all sections
+  const addonPlugins = arrayOf(state.catalog.catalog.addons.sections)
+    .reduce((sum, sec) => sum + arrayOf(sec.plugins).length, 0);
   const releases     = flattenReleases();
   const missing      = releases.filter(e => !isHttpsUrl(e.release.download)).length;
   document.getElementById("statCore").textContent         = String(corePlugins);
-  document.getElementById("statSections").textContent     = String(addonSections);
+  document.getElementById("statSections").textContent     = String(addonPlugins);
   document.getElementById("statReleases").textContent     = String(releases.length);
   document.getElementById("statMissingUrls").textContent  = String(missing);
 }
