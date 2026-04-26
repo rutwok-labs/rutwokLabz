@@ -1,669 +1,741 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plugin Builds</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #f8fafc;
-      --surface: #ffffff;
-      --surface-muted: #f1f5f9;
-      --border: #e5e7eb;
-      --border-strong: #cbd5e1;
-      --text: #111827;
-      --muted: #6b7280;
-      --accent: #2563eb;
-      --accent-soft: #eff6ff;
-      --sans: "Manrope", sans-serif;
-      --mono: "JetBrains Mono", monospace;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>rutwokLabz — Plugin Builds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg:          #020b18;
+    --bg2:         #051525;
+    --glass:       rgba(6, 28, 56, 0.55);
+    --glass-hover: rgba(10, 45, 85, 0.7);
+    --border:      rgba(0, 180, 255, 0.12);
+    --border-hi:   rgba(0, 220, 255, 0.35);
+    --glow:        rgba(0, 210, 255, 0.08);
+    --blue:        #0084ff;
+    --cyan:        #00d4ff;
+    --cyan-dim:    rgba(0, 212, 255, 0.18);
+    --cyan-soft:   rgba(0, 212, 255, 0.08);
+    --text:        #e0f4ff;
+    --muted:       rgba(160, 210, 240, 0.55);
+    --mono:        "JetBrains Mono", monospace;
+    --sans:        "Syne", sans-serif;
+  }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      min-height: 100vh;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--sans);
-    }
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    overflow-x: hidden;
+  }
 
-    button {
-      font: inherit;
-    }
+  /* ─── BACKGROUND GRID + ORBS ─── */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 20%, rgba(0,100,255,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 80% 70%, rgba(0,200,255,0.09) 0%, transparent 70%),
+      linear-gradient(180deg, #020b18 0%, #030e1e 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,180,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,180,255,0.035) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
 
-    .page {
-      max-width: 1440px;
-      margin: 0 auto;
-      padding: 24px;
-    }
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 28px 24px;
+  }
 
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
+  /* ─── HEADER ─── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    padding: 18px 24px;
+    background: var(--glass);
+    border: 1px solid var(--border-hi);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 40px rgba(0,180,255,0.07), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
+  .brand { display: flex; align-items: center; gap: 16px; }
 
-    .brand-mark {
-      display: grid;
-      place-items: center;
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      background: var(--accent-soft);
-      border: 1px solid #bfdbfe;
-      color: var(--accent);
-      font: 800 0.95rem var(--mono);
-    }
+  .brand-mark {
+    position: relative;
+    width: 50px; height: 50px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(0,132,255,0.3), rgba(0,212,255,0.3));
+    border: 1px solid var(--border-hi);
+    display: grid; place-items: center;
+    font: 700 0.85rem var(--mono);
+    color: var(--cyan);
+    box-shadow: 0 0 20px rgba(0,212,255,0.2), inset 0 0 12px rgba(0,180,255,0.1);
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+  @keyframes pulse-glow {
+    0%,100% { box-shadow: 0 0 20px rgba(0,212,255,0.2), inset 0 0 12px rgba(0,180,255,0.1); }
+    50%      { box-shadow: 0 0 35px rgba(0,212,255,0.4), inset 0 0 20px rgba(0,180,255,0.2); }
+  }
 
-    .brand h1 {
-      font-size: 1.9rem;
-      line-height: 1;
-      margin-bottom: 4px;
-    }
+  .brand h1 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; }
+  .brand h1 span { color: var(--cyan); }
+  .brand p { color: var(--muted); font-size: 0.82rem; margin-top: 2px; font-family: var(--mono); }
 
-    .brand p {
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; }
 
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    min-height: 40px; padding: 0 18px;
+    background: var(--glass);
+    border: 1px solid var(--border-hi);
+    border-radius: 12px;
+    color: var(--cyan);
+    font: 700 0.82rem var(--mono);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    backdrop-filter: blur(10px);
+    letter-spacing: 0.04em;
+  }
+  .btn:hover {
+    background: var(--cyan-dim);
+    box-shadow: 0 0 20px rgba(0,212,255,0.25);
+    border-color: var(--cyan);
+    color: #fff;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, rgba(0,132,255,0.4), rgba(0,212,255,0.3));
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background: linear-gradient(135deg, rgba(0,132,255,0.7), rgba(0,212,255,0.5));
+    box-shadow: 0 0 30px rgba(0,180,255,0.4);
+  }
 
-    .shell {
-      display: grid;
-      grid-template-columns: 300px minmax(0, 1fr);
-      gap: 18px;
-      min-height: calc(100vh - 128px);
-    }
+  /* ─── SHELL ─── */
+  .shell {
+    display: grid;
+    grid-template-columns: 290px minmax(0,1fr);
+    gap: 18px;
+    min-height: calc(100vh - 170px);
+  }
 
-    .sidebar,
-    .detail {
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      background: var(--surface);
-    }
+  /* ─── SIDEBAR ─── */
+  .sidebar {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    height: fit-content;
+    position: sticky;
+    top: 24px;
+  }
 
-    .sidebar {
-      padding: 18px;
-    }
+  .sidebar-head {
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-head h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin-bottom: 4px;
+    letter-spacing: 0.04em;
+  }
+  .sidebar-head p { color: var(--muted); font-size: 0.78rem; font-family: var(--mono); line-height: 1.6; }
 
-    .detail {
-      padding: 22px;
-    }
+  .group + .group { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); }
 
-    .sidebar-head {
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border);
-    }
+  .group-label {
+    color: var(--cyan);
+    font: 700 0.62rem var(--mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.7;
+  }
 
-    .sidebar-head h2 {
-      font-size: 1rem;
-      margin-bottom: 4px;
-    }
+  .tree { display: flex; flex-direction: column; gap: 5px; }
 
-    .sidebar-head p {
-      color: var(--muted);
-      font-size: 0.86rem;
-      line-height: 1.55;
-    }
+  .tree-btn {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--sans);
+  }
+  .tree-btn:hover {
+    background: var(--glass-hover);
+    border-color: var(--border);
+  }
+  .tree-btn.active {
+    background: var(--cyan-dim);
+    border-color: var(--border-hi);
+    box-shadow: 0 0 16px rgba(0,212,255,0.1);
+  }
+  .tree-btn strong {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 3px;
+    color: var(--text);
+  }
+  .tree-btn.active strong { color: var(--cyan); }
+  .tree-btn span { color: var(--muted); font: 500 0.72rem var(--mono); }
 
-    .group + .group {
-      margin-top: 18px;
-      padding-top: 18px;
-      border-top: 1px solid var(--border);
-    }
+  .tree-empty {
+    padding: 10px 14px;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-family: var(--mono);
+    line-height: 1.6;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+  }
 
-    .group-label {
-      margin-bottom: 10px;
-      color: var(--muted);
-      font: 700 0.68rem var(--mono);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
+  /* ─── DETAIL PANEL ─── */
+  .detail {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 26px;
+    backdrop-filter: blur(20px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+  }
 
-    .tree {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+  .crumbs {
+    margin-bottom: 18px;
+    color: var(--muted);
+    font: 500 0.8rem var(--mono);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .crumbs strong { color: var(--cyan); }
+  .crumbs-sep { opacity: 0.4; }
 
-    .tree-btn {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid transparent;
-      border-radius: 12px;
-      background: transparent;
-      color: var(--text);
-      text-align: left;
-      cursor: pointer;
-    }
+  .plugin-head {
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .plugin-head h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, #fff 0%, var(--cyan) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .plugin-meta {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 12px;
+    border: 1px solid var(--border-hi);
+    border-radius: 999px;
+    color: var(--cyan);
+    font: 700 0.65rem var(--mono);
+    background: var(--cyan-soft);
+    letter-spacing: 0.08em;
+  }
 
-    .tree-btn:hover {
-      background: var(--surface-muted);
-      border-color: var(--border);
-    }
+  .release-list { display: flex; flex-direction: column; gap: 12px; }
 
-    .tree-btn.active {
-      background: var(--accent-soft);
-      border-color: #bfdbfe;
-      color: var(--accent);
-    }
+  .release {
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: rgba(5, 20, 45, 0.5);
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .release:hover {
+    border-color: var(--border-hi);
+    background: var(--glass-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(0,180,255,0.1);
+  }
+  .release.latest {
+    border-color: rgba(0,212,255,0.3);
+    background: rgba(0, 40, 80, 0.4);
+    box-shadow: 0 0 20px rgba(0,180,255,0.08);
+  }
 
-    .tree-btn strong {
-      display: block;
-      font-size: 0.92rem;
-      margin-bottom: 4px;
-    }
+  .release-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .release-top strong { display: block; font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+  .release-top .release-date { color: var(--muted); font: 500 0.72rem var(--mono); }
 
-    .tree-btn span {
-      color: var(--muted);
-      font-size: 0.77rem;
-    }
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge {
+    display: inline-flex; align-items: center;
+    min-height: 26px; padding: 0 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--muted);
+    font: 700 0.62rem var(--mono);
+    background: rgba(5, 20, 40, 0.6);
+    letter-spacing: 0.06em;
+  }
+  .badge.latest {
+    color: var(--cyan);
+    border-color: var(--border-hi);
+    background: var(--cyan-soft);
+    box-shadow: 0 0 10px rgba(0,212,255,0.15);
+  }
+  .badge.stable { color: #4ade80; border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.07); }
+  .badge.loader { color: #a78bfa; border-color: rgba(167,139,250,0.3); background: rgba(167,139,250,0.07); }
 
-    .tree-empty {
-      padding: 10px 12px;
-      color: var(--muted);
-      font-size: 0.88rem;
-      line-height: 1.6;
-      border: 1px dashed var(--border);
-      border-radius: 12px;
-    }
+  .dl-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 16px; border-radius: 10px;
+    background: linear-gradient(135deg, rgba(0,132,255,0.35), rgba(0,212,255,0.25));
+    border: 1px solid var(--border-hi);
+    color: #fff; font: 700 0.78rem var(--mono);
+    text-decoration: none; cursor: pointer;
+    transition: all 0.2s; letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .dl-btn:hover {
+    background: linear-gradient(135deg, rgba(0,132,255,0.6), rgba(0,212,255,0.45));
+    box-shadow: 0 0 24px rgba(0,200,255,0.35);
+    transform: translateY(-1px);
+  }
+  .dl-btn svg { flex-shrink: 0; }
 
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      min-height: 42px;
-      padding: 0 15px;
-      border: 1px solid var(--border-strong);
-      border-radius: 12px;
-      background: var(--surface);
-      color: var(--text);
-      cursor: pointer;
-      text-decoration: none;
-      font-weight: 700;
-    }
+  .release-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px; margin-top: 12px;
+    padding-top: 12px; border-top: 1px solid var(--border);
+  }
 
-    .btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
+  .empty-state {
+    padding: 40px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: 16px;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    line-height: 1.8;
+  }
+  .empty-state .big { font-size: 2.5rem; margin-bottom: 12px; display: block; }
 
-    .crumbs {
-      margin-bottom: 18px;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
+  /* ─── WELCOME STATE ─── */
+  .welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+    gap: 16px;
+  }
+  .welcome .icon {
+    width: 80px; height: 80px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(0,132,255,0.25), rgba(0,212,255,0.25));
+    border: 1px solid var(--border-hi);
+    display: grid; place-items: center;
+    font-size: 2rem;
+    box-shadow: 0 0 40px rgba(0,180,255,0.15);
+    margin-bottom: 8px;
+  }
+  .welcome h3 { font-size: 1.5rem; font-weight: 800; }
+  .welcome p { color: var(--muted); font-family: var(--mono); font-size: 0.82rem; max-width: 360px; line-height: 1.7; }
 
-    .crumbs strong {
-      color: var(--text);
-    }
+  /* ─── STATS ROW ─── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    padding: 16px 18px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    backdrop-filter: blur(10px);
+  }
+  .stat-card .label { color: var(--muted); font: 600 0.65rem var(--mono); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+  .stat-card .value { font: 800 1.6rem var(--sans); color: var(--cyan); letter-spacing: -0.02em; }
+  .stat-card .sub { color: var(--muted); font: 500 0.7rem var(--mono); margin-top: 2px; }
 
-    .plugin-head {
-      padding-bottom: 18px;
-      margin-bottom: 18px;
-      border-bottom: 1px solid var(--border);
-    }
+  /* ─── SEARCH ─── */
+  .search-wrap { position: relative; margin-bottom: 18px; }
+  .search-wrap input {
+    width: 100%;
+    padding: 10px 16px 10px 40px;
+    background: rgba(5,20,45,0.6);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font: 500 0.88rem var(--mono);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-wrap input::placeholder { color: var(--muted); }
+  .search-wrap input:focus { border-color: var(--border-hi); box-shadow: 0 0 0 3px rgba(0,212,255,0.08); }
+  .search-icon {
+    position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+    color: var(--muted); font-size: 0.9rem;
+  }
 
-    .plugin-head h2 {
-      font-size: 1.7rem;
-      line-height: 1.1;
-      margin-bottom: 8px;
-    }
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,180,255,0.25); border-radius: 99px; }
 
-    .plugin-meta {
-      display: inline-flex;
-      align-items: center;
-      min-height: 34px;
-      padding: 0 12px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      color: var(--muted);
-      font: 700 0.68rem var(--mono);
-      background: var(--surface-muted);
-    }
-
-    .release-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .release {
-      padding: 16px;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: #ffffff;
-    }
-
-    .release.latest {
-      border-color: #bfdbfe;
-      background: #f8fbff;
-    }
-
-    .release-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
-
-    .release-top strong {
-      display: block;
-      font-size: 1rem;
-      margin-bottom: 4px;
-    }
-
-    .release-top span {
-      color: var(--muted);
-      font: 700 0.72rem var(--mono);
-    }
-
-    .badges {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      min-height: 28px;
-      padding: 0 10px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      color: var(--muted);
-      font: 700 0.66rem var(--mono);
-      background: #ffffff;
-    }
-
-    .badge.latest {
-      color: var(--accent);
-      border-color: #bfdbfe;
-      background: var(--accent-soft);
-    }
-
-    .empty-state {
-      padding: 18px;
-      border: 1px dashed var(--border);
-      border-radius: 14px;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    @media (max-width: 1100px) {
-      .shell {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 760px) {
-      .page {
-        padding: 16px;
-      }
-    }
-  </style>
+  @media (max-width: 1000px) { .shell { grid-template-columns: 1fr; } .sidebar { position: static; } }
+  @media (max-width: 600px) { .stats-row { grid-template-columns: 1fr 1fr; } .page { padding: 16px 12px; } }
+</style>
 </head>
 <body>
-  <div class="page">
-    <header class="header">
-      <div class="brand">
-        <div class="brand-mark">SB</div>
-        <div>
-          <h1 id="pageTitle">Plugin Builds</h1>
-          <p>Browse Core and Addons releases like a file explorer.</p>
-        </div>
+<div class="page">
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <div class="brand-mark">RL</div>
+      <div>
+        <h1>rutwok<span>Labz</span></h1>
+        <p>Plugin Builds · Core &amp; Addons release explorer</p>
       </div>
-      <div class="toolbar">
-        <a href="admin.html" class="btn">Admin</a>
-        <button id="refreshBtn" class="btn" type="button">Refresh</button>
-      </div>
-    </header>
+    </div>
+    <div class="toolbar">
+      <a href="admin.html" class="btn">⚙ Admin</a>
+      <button id="refreshBtn" class="btn btn-primary" type="button">↻ Refresh</button>
+    </div>
+  </header>
 
-    <div class="shell">
-      <aside class="sidebar">
-        <div class="sidebar-head">
-          <h2>Explorer</h2>
-          <p>Select Core or Addons, then open a plugin to view its releases.</p>
-        </div>
-
-        <div class="group">
-          <div class="group-label">Type</div>
-          <div class="tree">
-            <button id="rootCoreBtn" class="tree-btn" type="button">
-              <strong>Core</strong>
-              <span id="coreCount">0 plugins</span>
-            </button>
-            <button id="rootAddonsBtn" class="tree-btn" type="button">
-              <strong>Addons</strong>
-              <span id="addonsCount">0 sections</span>
-            </button>
-          </div>
-        </div>
-
-        <div id="sectionGroup" class="group">
-          <div class="group-label">Plugin Sections</div>
-          <div id="sectionList" class="tree"></div>
-        </div>
-
-        <div class="group">
-          <div class="group-label">Plugins</div>
-          <div id="pluginList" class="tree"></div>
-        </div>
-      </aside>
-
-      <main class="detail">
-        <div id="crumbs" class="crumbs"></div>
-        <div id="contentBody"></div>
-      </main>
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="label">Core Plugins</div>
+      <div class="value" id="statCore">—</div>
+      <div class="sub">total packages</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Addon Sections</div>
+      <div class="value" id="statAddons">—</div>
+      <div class="sub">categories</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Total Releases</div>
+      <div class="value" id="statReleases">—</div>
+      <div class="sub">across all plugins</div>
     </div>
   </div>
 
-  <script>
-    let catalogData = createEmptyCatalog();
-    let selectedRoot = "core";
-    let selectedSectionIndex = -1;
-    let selectedPluginIndex = -1;
+  <!-- SHELL -->
+  <div class="shell">
 
-    document.getElementById("rootCoreBtn").addEventListener("click", () => selectRoot("core"));
-    document.getElementById("rootAddonsBtn").addEventListener("click", () => selectRoot("addons"));
-    document.getElementById("refreshBtn").addEventListener("click", loadCatalog);
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <h2>// Explorer</h2>
+        <p>Pick a type, then a plugin to view its releases.</p>
+      </div>
 
-    function createEmptyCatalog() {
-      return {
-        catalog: {
-          title: "Plugin Catalog",
-          core: { plugins: [] },
-          addons: { sections: [] },
-        },
-      };
-    }
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="sidebarSearch" placeholder="Search plugins..." />
+      </div>
 
-    function stringValue(value) {
-      return typeof value === "string" ? value.trim() : "";
-    }
-
-    function normalizeRelease(release) {
-      return {
-        name: stringValue(release.name),
-        version: stringValue(release.version),
-        type: stringValue(release.type) || "stable",
-        latest: Boolean(release.latest),
-        status: stringValue(release.status) || "success",
-        loader: stringValue(release.loader) || "PaperMC",
-        download: stringValue(release.download),
-      };
-    }
-
-    function normalizePlugin(plugin) {
-      return {
-        name: stringValue(plugin.name),
-        releases: Array.isArray(plugin.releases) ? plugin.releases.map(normalizeRelease) : [],
-      };
-    }
-
-    function normalizeCatalog(input) {
-      const catalog = input?.catalog || {};
-      return {
-        catalog: {
-          title: stringValue(catalog.title) || "Plugin Catalog",
-          core: {
-            plugins: Array.isArray(catalog.core?.plugins) ? catalog.core.plugins.map(normalizePlugin) : [],
-          },
-          addons: {
-            sections: Array.isArray(catalog.addons?.sections) ? catalog.addons.sections.map((section) => ({
-              name: stringValue(section.name),
-              plugins: Array.isArray(section.plugins) ? section.plugins.map(normalizePlugin) : [],
-            })) : [],
-          },
-        },
-      };
-    }
-
-    function currentSection() {
-      if (selectedRoot !== "addons" || selectedSectionIndex < 0) return null;
-      return catalogData.catalog.addons.sections[selectedSectionIndex] || null;
-    }
-
-    function currentPlugins() {
-      if (selectedRoot === "core") return catalogData.catalog.core.plugins;
-      return currentSection()?.plugins || [];
-    }
-
-    function currentPlugin() {
-      if (selectedPluginIndex < 0) return null;
-      return currentPlugins()[selectedPluginIndex] || null;
-    }
-
-    function escapeHtml(value) {
-      return String(value || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
-    }
-
-    function escapeAttr(value) {
-      return escapeHtml(value);
-    }
-
-    function toSafeExternalUrl(value) {
-      try {
-        const url = new URL(value);
-        return url.protocol === "https:" ? url.toString() : "";
-      } catch {
-        return "";
-      }
-    }
-
-    function clampSelection() {
-      if (selectedRoot === "core") {
-        selectedSectionIndex = -1;
-        const plugins = catalogData.catalog.core.plugins;
-        if (plugins.length === 0) {
-          selectedPluginIndex = -1;
-          return;
-        }
-        if (selectedPluginIndex >= plugins.length) selectedPluginIndex = plugins.length - 1;
-        return;
-      }
-
-      const sections = catalogData.catalog.addons.sections;
-      if (sections.length === 0) {
-        selectedSectionIndex = -1;
-        selectedPluginIndex = -1;
-        return;
-      }
-      if (selectedSectionIndex < 0) selectedSectionIndex = 0;
-      if (selectedSectionIndex >= sections.length) selectedSectionIndex = sections.length - 1;
-      const plugins = currentPlugins();
-      if (plugins.length === 0) {
-        selectedPluginIndex = -1;
-        return;
-      }
-      if (selectedPluginIndex >= plugins.length) selectedPluginIndex = plugins.length - 1;
-    }
-
-    function selectRoot(root) {
-      selectedRoot = root;
-      selectedPluginIndex = -1;
-      if (root === "core") {
-        selectedSectionIndex = -1;
-      } else if (catalogData.catalog.addons.sections.length > 0) {
-        selectedSectionIndex = Math.max(0, Math.min(selectedSectionIndex, catalogData.catalog.addons.sections.length - 1));
-      }
-      renderAll();
-    }
-
-    function selectSection(index) {
-      selectedRoot = "addons";
-      selectedSectionIndex = index;
-      selectedPluginIndex = -1;
-      renderAll();
-    }
-
-    function selectPlugin(index) {
-      selectedPluginIndex = index;
-      renderAll();
-    }
-
-    async function loadCatalog() {
-      try {
-        const response = await fetch("/.netlify/functions/api");
-        if (!response.ok) throw new Error(`API error: ${response.status}`);
-        catalogData = normalizeCatalog(await response.json());
-        clampSelection();
-        renderAll();
-      } catch (error) {
-        document.getElementById("contentBody").innerHTML = `<div class="empty-state">Failed to load catalog: ${escapeHtml(error.message)}</div>`;
-      }
-    }
-
-    function renderAll() {
-      clampSelection();
-      document.getElementById("pageTitle").textContent = catalogData.catalog.title;
-      document.getElementById("coreCount").textContent = `${catalogData.catalog.core.plugins.length} plugins`;
-      document.getElementById("addonsCount").textContent = `${catalogData.catalog.addons.sections.length} sections`;
-      document.getElementById("rootCoreBtn").classList.toggle("active", selectedRoot === "core");
-      document.getElementById("rootAddonsBtn").classList.toggle("active", selectedRoot === "addons");
-      renderSections();
-      renderPlugins();
-      renderContent();
-    }
-
-    function renderSections() {
-      const group = document.getElementById("sectionGroup");
-      const list = document.getElementById("sectionList");
-
-      if (selectedRoot !== "addons") {
-        group.style.display = "none";
-        return;
-      }
-
-      group.style.display = "block";
-      const sections = catalogData.catalog.addons.sections;
-      if (!sections.length) {
-        list.innerHTML = '<div class="tree-empty">No plugin sections yet.</div>';
-        return;
-      }
-
-      list.innerHTML = sections.map((section, index) => `
-        <button class="tree-btn ${index === selectedSectionIndex ? "active" : ""}" type="button" data-index="${index}">
-          <strong>${escapeHtml(section.name)}</strong>
-          <span>${section.plugins.length} plugins</span>
-        </button>
-      `).join("");
-
-      list.querySelectorAll("[data-index]").forEach((button) => {
-        button.addEventListener("click", () => selectSection(Number(button.dataset.index)));
-      });
-    }
-
-    function renderPlugins() {
-      const list = document.getElementById("pluginList");
-      const plugins = currentPlugins();
-
-      if (selectedRoot === "addons" && !currentSection()) {
-        list.innerHTML = '<div class="tree-empty">Select a plugin section first.</div>';
-        return;
-      }
-
-      if (!plugins.length) {
-        list.innerHTML = '<div class="tree-empty">No plugins here yet.</div>';
-        return;
-      }
-
-      list.innerHTML = plugins.map((plugin, index) => {
-        const latest = plugin.releases.find((release) => release.latest) || plugin.releases[0];
-        const suffix = latest ? ` · latest ${escapeHtml(latest.version)}` : "";
-        return `
-          <button class="tree-btn ${index === selectedPluginIndex ? "active" : ""}" type="button" data-index="${index}">
-            <strong>${escapeHtml(plugin.name)}</strong>
-            <span>${plugin.releases.length} releases${suffix}</span>
+      <div class="group">
+        <div class="group-label">Type</div>
+        <div class="tree">
+          <button id="rootCoreBtn" class="tree-btn" type="button">
+            <strong>⬡ Core</strong>
+            <span id="coreCount">0 plugins</span>
           </button>
-        `;
-      }).join("");
+          <button id="rootAddonsBtn" class="tree-btn" type="button">
+            <strong>⬢ Addons</strong>
+            <span id="addonsCount">0 sections</span>
+          </button>
+        </div>
+      </div>
 
-      list.querySelectorAll("[data-index]").forEach((button) => {
-        button.addEventListener("click", () => selectPlugin(Number(button.dataset.index)));
+      <div id="secondaryGroup" class="group" style="display:none;">
+        <div class="group-label" id="secondaryLabel">Plugins</div>
+        <div class="tree" id="secondaryTree"></div>
+      </div>
+
+      <div id="tertiaryGroup" class="group" style="display:none;">
+        <div class="group-label" id="tertiaryLabel">Packages</div>
+        <div class="tree" id="tertiaryTree"></div>
+      </div>
+    </aside>
+
+    <!-- DETAIL -->
+    <main class="detail" id="detailPanel">
+      <div class="welcome">
+        <div class="icon">⬡</div>
+        <h3>Plugin Builds</h3>
+        <p>Select <strong>Core</strong> or <strong>Addons</strong> from the explorer to browse releases.</p>
+      </div>
+    </main>
+  </div>
+
+</div>
+
+<script>
+const DATA_URL = "https://rutwok-labs.netlify.app/data.json";
+let data = null;
+let state = { type: null, section: null, plugin: null };
+
+async function loadData() {
+  try {
+    const r = await fetch(DATA_URL);
+    const raw = await r.json();
+    // Real schema: { catalog: { core: { plugins: [...] }, addons: { sections: [...] } } }
+    const cat = raw.catalog || raw;
+    data = { core: {}, addons: {} };
+    // Parse core plugins
+    (cat.core?.plugins || []).forEach(p => { data.core[p.name] = p.releases || []; });
+    // Parse addon sections
+    (cat.addons?.sections || []).forEach(sec => {
+      data.addons[sec.name] = {};
+      (sec.plugins || []).forEach(p => { data.addons[sec.name][p.name] = p.releases || []; });
+    });
+  } catch {
+    // fallback demo data
+    data = {
+      core: {
+        "SlimeFunCore": [
+          { name: "Build 2614", version: "1.21.11", type: "stable", latest: true, status: "success", loader: "PaperMC", download: "https://cdn.modrinth.com/data/Fz9hstnG/versions/1fCkq2KW/SlimefunCore4-2614.jar" }
+        ]
+      },
+      addons: {
+        "General": { "New Plugin 1": [] }
+      }
+    };
+  }
+  render();
+}
+
+function render() {
+  // Stats
+  const corePlugins = Object.keys(data.core || {}).length;
+  const addonSections = Object.keys(data.addons || {}).length;
+  let totalReleases = 0;
+  Object.values(data.core || {}).forEach(r => totalReleases += r.length);
+  Object.values(data.addons || {}).forEach(sec => Object.values(sec).forEach(r => totalReleases += r.length));
+
+  document.getElementById("statCore").textContent = corePlugins;
+  document.getElementById("statAddons").textContent = addonSections;
+  document.getElementById("statReleases").textContent = totalReleases;
+  document.getElementById("coreCount").textContent = corePlugins + " plugins";
+  document.getElementById("addonsCount").textContent = addonSections + " sections";
+}
+
+// Sidebar navigation
+document.getElementById("rootCoreBtn").addEventListener("click", () => {
+  setActive("rootCoreBtn");
+  state = { type: "core", section: null, plugin: null };
+  showCorePlugins();
+  showDetailWelcome("⬡", "Core Plugins", "Select a plugin from the sidebar to view its releases.");
+});
+
+document.getElementById("rootAddonsBtn").addEventListener("click", () => {
+  setActive("rootAddonsBtn");
+  state = { type: "addons", section: null, plugin: null };
+  showAddonSections();
+  showDetailWelcome("⬢", "Addon Sections", "Pick a section, then a plugin to explore releases.");
+});
+
+function setActive(id) {
+  ["rootCoreBtn","rootAddonsBtn"].forEach(b => document.getElementById(b).classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function showCorePlugins() {
+  const plugins = Object.keys(data.core || {});
+  const sec = document.getElementById("secondaryGroup");
+  const tree = document.getElementById("secondaryTree");
+  document.getElementById("secondaryLabel").textContent = "Plugins";
+  tree.innerHTML = "";
+  document.getElementById("tertiaryGroup").style.display = "none";
+  if (!plugins.length) {
+    tree.innerHTML = `<div class="tree-empty">No core plugins found.</div>`;
+  } else {
+    plugins.forEach(name => {
+      const btn = document.createElement("button");
+      btn.className = "tree-btn";
+      btn.type = "button";
+      const count = (data.core[name] || []).length;
+      btn.innerHTML = `<strong>${name}</strong><span>${count} release${count !== 1 ? "s" : ""}</span>`;
+      btn.addEventListener("click", () => {
+        tree.querySelectorAll(".tree-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.plugin = name;
+        showReleases(data.core[name], name, "Core");
       });
-    }
+      tree.appendChild(btn);
+    });
+  }
+  sec.style.display = "block";
+}
 
-    function renderContent() {
-      const content = document.getElementById("contentBody");
-      const plugin = currentPlugin();
-      const section = currentSection();
-      const parts = [`Type: <strong>${selectedRoot === "core" ? "Core" : "Addons"}</strong>`];
-      if (selectedRoot === "addons") {
-        parts.push(`Section: <strong>${escapeHtml(section?.name || "-")}</strong>`);
-      }
-      parts.push(`Plugin: <strong>${escapeHtml(plugin?.name || "-")}</strong>`);
-      document.getElementById("crumbs").innerHTML = parts.join(" &nbsp;/&nbsp; ");
+function showAddonSections() {
+  const sections = Object.keys(data.addons || {});
+  const sec = document.getElementById("secondaryGroup");
+  const tree = document.getElementById("secondaryTree");
+  document.getElementById("secondaryLabel").textContent = "Sections";
+  tree.innerHTML = "";
+  document.getElementById("tertiaryGroup").style.display = "none";
+  sections.forEach(sname => {
+    const btn = document.createElement("button");
+    btn.className = "tree-btn";
+    btn.type = "button";
+    const count = Object.keys(data.addons[sname] || {}).length;
+    btn.innerHTML = `<strong>${sname}</strong><span>${count} plugin${count !== 1 ? "s" : ""}</span>`;
+    btn.addEventListener("click", () => {
+      tree.querySelectorAll(".tree-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      state.section = sname;
+      showSectionPlugins(sname);
+    });
+    tree.appendChild(btn);
+  });
+  sec.style.display = "block";
+}
 
-      if (selectedRoot === "addons" && !section) {
-        content.innerHTML = '<div class="empty-state">Select a plugin section from the left to browse Addons plugins.</div>';
-        return;
-      }
+function showSectionPlugins(sname) {
+  const plugins = Object.keys((data.addons || {})[sname] || {});
+  const tert = document.getElementById("tertiaryGroup");
+  const tree = document.getElementById("tertiaryTree");
+  document.getElementById("tertiaryLabel").textContent = sname + " Plugins";
+  tree.innerHTML = "";
+  plugins.forEach(pname => {
+    const btn = document.createElement("button");
+    btn.className = "tree-btn";
+    btn.type = "button";
+    const count = (data.addons[sname][pname] || []).length;
+    btn.innerHTML = `<strong>${pname}</strong><span>${count} release${count !== 1 ? "s" : ""}</span>`;
+    btn.addEventListener("click", () => {
+      tree.querySelectorAll(".tree-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      state.plugin = pname;
+      showReleases(data.addons[sname][pname], pname, sname);
+    });
+    tree.appendChild(btn);
+  });
+  tert.style.display = "block";
+  showDetailWelcome("⬢", sname, `Select a plugin from ${sname} to view its releases.`);
+}
 
-      if (!plugin) {
-        content.innerHTML = '<div class="empty-state">Select a plugin from the left to view its releases.</div>';
-        return;
-      }
-
-      content.innerHTML = `
-        <div class="plugin-head">
-          <h2>${escapeHtml(plugin.name)}</h2>
-          <div class="plugin-meta">${plugin.releases.length} releases</div>
-        </div>
-        <div class="release-list">
-          ${plugin.releases.length ? plugin.releases.map(renderRelease).join("") : '<div class="empty-state">No releases for this plugin yet.</div>'}
-        </div>
-      `;
-    }
-
-    function renderRelease(release) {
-      const safeUrl = toSafeExternalUrl(release.download);
-      return `
-        <article class="release ${release.latest ? "latest" : ""}">
+function showReleases(releases, pluginName, section) {
+  const panel = document.getElementById("detailPanel");
+  if (!releases || !releases.length) {
+    panel.innerHTML = `
+      <div class="crumbs"><span>${section}</span><span class="crumbs-sep">›</span><strong>${pluginName}</strong></div>
+      <div class="plugin-head"><h2>${pluginName}</h2></div>
+      <div class="empty-state"><span class="big">📭</span>No releases yet for this plugin.</div>`;
+    return;
+  }
+  panel.innerHTML = `
+    <div class="crumbs"><span>${section}</span><span class="crumbs-sep">›</span><strong>${pluginName}</strong></div>
+    <div class="plugin-head">
+      <h2>${pluginName}</h2>
+      <div class="plugin-meta">◉ ${releases.length} RELEASE${releases.length !== 1 ? "S" : ""} · ${section.toUpperCase()}</div>
+    </div>
+    <div class="release-list">
+      ${releases.map((r, i) => `
+        <div class="release${(r.latest || i === 0) ? " latest" : ""}">
           <div class="release-top">
             <div>
-              <strong>${escapeHtml(release.name || release.version)}</strong>
-              <span>v${escapeHtml(release.version)}</span>
+              <strong>${r.name || r.version || "—"}</strong>
+              <div class="release-date">v${r.version || ""}${r.loader ? " · " + r.loader : ""}</div>
             </div>
             <div class="badges">
-              ${release.latest ? '<span class="badge latest">latest</span>' : ""}
-              <span class="badge">${escapeHtml(release.type)}</span>
-              <span class="badge">${escapeHtml(release.status)}</span>
-              <span class="badge">${escapeHtml(release.loader)}</span>
+              ${r.latest ? `<span class="badge latest">◉ LATEST</span>` : ""}
+              ${r.type === "stable" || r.stable ? `<span class="badge stable">✓ STABLE</span>` : `<span class="badge">⚠ BETA</span>`}
+              ${r.loader ? `<span class="badge loader">${r.loader}</span>` : ""}
             </div>
           </div>
-          ${safeUrl ? `<a href="${escapeAttr(safeUrl)}" target="_blank" rel="noopener" class="btn">Download</a>` : '<div class="empty-state">Download unavailable.</div>'}
-        </article>
-      `;
-    }
+          ${r.notes ? `<div style="color:var(--muted);font:500 0.8rem var(--mono);line-height:1.6;margin-bottom:4px;">${r.notes}</div>` : ""}
+          <div class="release-footer">
+            <div style="color:var(--muted);font:500 0.7rem var(--mono)">
+              ${r.status ? `Status: <span style="color:${r.status==='success'?'#4ade80':'#fb923c'}">${r.status}</span>` : ""}
+            </div>
+            ${r.download ? `
+              <a class="dl-btn" href="${r.download}" target="_blank" rel="noopener">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download .jar
+              </a>` : `<span style="color:var(--muted);font:500 0.72rem var(--mono);">No download link</span>`}
+          </div>
+        </div>
+      `).join("")}
+    </div>`;
+}
 
-    loadCatalog();
-  </script>
+function showDetailWelcome(icon, title, desc) {
+  document.getElementById("detailPanel").innerHTML = `
+    <div class="welcome">
+      <div class="icon">${icon}</div>
+      <h3>${title}</h3>
+      <p>${desc}</p>
+    </div>`;
+}
+
+// Search
+document.getElementById("sidebarSearch").addEventListener("input", function() {
+  const q = this.value.toLowerCase().trim();
+  document.querySelectorAll("#secondaryTree .tree-btn, #tertiaryTree .tree-btn").forEach(btn => {
+    btn.style.display = q && !btn.textContent.toLowerCase().includes(q) ? "none" : "";
+  });
+});
+
+// Refresh
+document.getElementById("refreshBtn").addEventListener("click", loadData);
+
+loadData();
+</script>
 </body>
 </html>
