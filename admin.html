@@ -6,72 +6,102 @@
 <title>rutwokLabz Control Room</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg: #0f1117;
-    --bg-soft: #171a23;
-    --panel: rgba(19, 23, 34, 0.9);
-    --panel-strong: rgba(13, 16, 25, 0.96);
-    --panel-alt: rgba(31, 36, 51, 0.72);
-    --line: rgba(189, 255, 0, 0.16);
-    --line-strong: rgba(189, 255, 0, 0.32);
-    --text: #f3f5ef;
-    --muted: #9ea79a;
-    --accent: #bdff00;
-    --accent-ink: #192100;
-    --accent-soft: rgba(189, 255, 0, 0.12);
-    --warn: #ffb703;
-    --danger: #ff5c75;
-    --success: #60d394;
-    --mono: "IBM Plex Mono", monospace;
-    --sans: "Bricolage Grotesque", sans-serif;
-    --shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
-    --radius: 26px;
+    --bg:            #040d1a;
+    --bg-soft:       #071222;
+    --panel:         rgba(6, 18, 38, 0.92);
+    --panel-strong:  rgba(4, 12, 26, 0.97);
+    --line:          rgba(0, 200, 255, 0.13);
+    --line-strong:   rgba(0, 200, 255, 0.28);
+    --text:          #e4f0ff;
+    --muted:         #6a88aa;
+    --accent:        #00c8ff;
+    --accent-dim:    #0099cc;
+    --accent-soft:   rgba(0, 200, 255, 0.10);
+    --accent-ink:    #001a26;
+    --cyan:          #00ffe0;
+    --cyan-soft:     rgba(0, 255, 224, 0.09);
+    --warn:          #ffb703;
+    --danger:        #ff4d6d;
+    --success:       #00e5a0;
+    --mono:          "JetBrains Mono", monospace;
+    --sans:          "Space Grotesk", sans-serif;
+    --shadow:        0 28px 80px rgba(0, 10, 30, 0.55), 0 0 0 1px rgba(0, 200, 255, 0.06);
+    --radius:        26px;
+    --glow:          0 0 40px rgba(0, 200, 255, 0.12);
   }
 
   * { box-sizing: border-box; }
 
-  html, body {
-    margin: 0;
-    min-height: 100%;
-  }
+  html, body { margin: 0; min-height: 100%; }
 
   body {
     background:
-      radial-gradient(circle at top left, rgba(189, 255, 0, 0.1), transparent 28%),
-      radial-gradient(circle at 85% 12%, rgba(255, 183, 3, 0.08), transparent 18%),
-      linear-gradient(180deg, #0b0d13 0%, #10131b 100%);
+      radial-gradient(ellipse at 10% 0%, rgba(0, 120, 255, 0.14) 0%, transparent 45%),
+      radial-gradient(ellipse at 90% 5%,  rgba(0, 220, 255, 0.09) 0%, transparent 35%),
+      radial-gradient(ellipse at 50% 90%, rgba(0, 60, 120, 0.18)  0%, transparent 55%),
+      linear-gradient(180deg, #040d1a 0%, #060e20 100%);
     color: var(--text);
     font-family: var(--sans);
     overflow-x: hidden;
   }
 
+  /* Subtle grid overlay */
   body::before {
     content: "";
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
-    background-size: 42px 42px;
-    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent 92%);
+      linear-gradient(rgba(0, 180, 255, 0.022) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 180, 255, 0.022) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,0.65), transparent 88%);
     pointer-events: none;
     z-index: 0;
   }
 
-  a {
-    color: inherit;
+  /* Scan-line texture */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.07) 2px,
+      rgba(0, 0, 0, 0.07) 4px
+    );
+    pointer-events: none;
+    z-index: 0;
   }
 
+  a { color: inherit; }
+
+  /* ── Shell ── */
   .shell {
     position: relative;
     z-index: 1;
     max-width: 1500px;
     margin: 0 auto;
-    padding: 28px 20px 40px;
+    padding: 28px 20px 48px;
   }
 
+  /* ── Shared card surface ── */
+  .hero-card,
+  .hero-actions,
+  .panel,
+  .modal-card,
+  .toast {
+    border: 1px solid var(--line);
+    background: linear-gradient(160deg, rgba(8, 22, 50, 0.97), rgba(4, 12, 28, 0.95));
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(20px);
+  }
+
+  /* ── Hero ── */
   .hero {
     display: grid;
     grid-template-columns: minmax(0, 1.2fr) auto;
@@ -80,33 +110,35 @@
     margin-bottom: 20px;
   }
 
-  .hero-card,
-  .hero-actions,
-  .panel,
-  .modal-card,
-  .toast {
-    border: 1px solid var(--line);
-    background: linear-gradient(180deg, rgba(25, 29, 40, 0.96), rgba(14, 17, 25, 0.94));
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(18px);
-  }
-
   .hero-card {
     border-radius: 34px;
-    padding: 28px 30px;
+    padding: 30px 32px;
     position: relative;
     overflow: hidden;
+  }
+
+  /* Ambient glow behind hero */
+  .hero-card::before {
+    content: "";
+    position: absolute;
+    width: 480px;
+    height: 480px;
+    right: -180px;
+    top: -220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 200, 255, 0.16), transparent 65%);
+    pointer-events: none;
   }
 
   .hero-card::after {
     content: "";
     position: absolute;
-    width: 340px;
-    height: 340px;
-    right: -120px;
-    top: -160px;
+    bottom: -60px;
+    left: -60px;
+    width: 300px;
+    height: 300px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(189, 255, 0, 0.2), transparent 68%);
+    background: radial-gradient(circle, rgba(0, 100, 200, 0.10), transparent 70%);
     pointer-events: none;
   }
 
@@ -114,29 +146,48 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 7px 12px;
+    padding: 6px 14px;
     border: 1px solid var(--line-strong);
     border-radius: 999px;
     color: var(--accent);
-    background: rgba(189, 255, 0, 0.08);
-    font: 600 0.68rem var(--mono);
-    letter-spacing: 0.12em;
+    background: var(--accent-soft);
+    font: 600 0.67rem var(--mono);
+    letter-spacing: 0.14em;
     text-transform: uppercase;
   }
 
+  .eyebrow::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(0.85); }
+  }
+
   .hero-title {
-    margin: 16px 0 12px;
-    font-size: clamp(2rem, 4vw, 3.75rem);
-    line-height: 0.95;
+    margin: 18px 0 14px;
+    font-size: clamp(2rem, 4vw, 3.6rem);
+    line-height: 0.96;
     letter-spacing: -0.04em;
-    max-width: 10ch;
+    max-width: 12ch;
+    background: linear-gradient(135deg, #ffffff 0%, var(--accent) 60%, var(--cyan) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .hero-copy {
-    max-width: 62ch;
+    max-width: 60ch;
     color: var(--muted);
-    font-size: 0.98rem;
-    line-height: 1.7;
+    font-size: 0.96rem;
+    line-height: 1.72;
   }
 
   .hero-actions {
@@ -144,14 +195,14 @@
     padding: 18px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    min-width: 260px;
+    gap: 10px;
+    min-width: 268px;
   }
 
   .hero-actions .stack {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
   }
 
   .hero-actions .meta {
@@ -164,15 +215,14 @@
   .auth-panel {
     margin-top: 12px;
     padding: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(0, 200, 255, 0.1);
     border-radius: 18px;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(0, 200, 255, 0.04);
   }
 
-  .auth-panel .helper {
-    margin-top: 10px;
-  }
+  .auth-panel .helper { margin-top: 8px; }
 
+  /* ── Stats ── */
   .stats {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -181,32 +231,46 @@
   }
 
   .stat {
-    padding: 18px;
+    padding: 20px;
     border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    background: linear-gradient(180deg, rgba(25, 29, 40, 0.94), rgba(16, 19, 28, 0.96));
+    border: 1px solid rgba(0, 200, 255, 0.08);
+    background: linear-gradient(160deg, rgba(8, 22, 50, 0.92), rgba(4, 12, 28, 0.96));
     box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.5;
   }
 
   .stat .label {
     color: var(--muted);
-    font: 600 0.66rem var(--mono);
-    letter-spacing: 0.14em;
+    font: 600 0.64rem var(--mono);
+    letter-spacing: 0.16em;
     text-transform: uppercase;
   }
 
   .stat .value {
-    margin: 12px 0 4px;
-    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    margin: 14px 0 4px;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
     line-height: 1;
     letter-spacing: -0.04em;
+    color: var(--accent);
+    text-shadow: 0 0 30px rgba(0, 200, 255, 0.35);
   }
 
   .stat .sub {
     color: var(--muted);
-    font: 500 0.74rem var(--mono);
+    font: 500 0.73rem var(--mono);
   }
 
+  /* ── Workspace ── */
   .workspace {
     display: grid;
     grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.78fr);
@@ -237,41 +301,44 @@
 
   .panel-title {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     letter-spacing: -0.03em;
+    color: #d0e8ff;
   }
 
   .panel-copy {
-    margin: 6px 0 0;
+    margin: 5px 0 0;
     color: var(--muted);
-    font: 500 0.82rem var(--mono);
+    font: 500 0.8rem var(--mono);
     line-height: 1.7;
   }
 
   .action-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
   }
 
+  /* ── Buttons ── */
   .btn {
     appearance: none;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(0, 200, 255, 0.14);
+    background: rgba(0, 200, 255, 0.03);
     color: var(--text);
-    border-radius: 16px;
-    min-height: 44px;
+    border-radius: 14px;
+    min-height: 42px;
     padding: 0 16px;
-    font: 600 0.8rem var(--mono);
+    font: 600 0.78rem var(--mono);
     letter-spacing: 0.04em;
     cursor: pointer;
-    transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
+    transition: transform 140ms ease, border-color 140ms ease, background 140ms ease, color 140ms ease, box-shadow 140ms ease;
   }
 
   .btn:hover {
     transform: translateY(-1px);
-    border-color: rgba(255, 255, 255, 0.16);
-    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(0, 200, 255, 0.30);
+    background: rgba(0, 200, 255, 0.07);
+    box-shadow: 0 0 20px rgba(0, 200, 255, 0.08);
   }
 
   .btn:focus-visible,
@@ -283,68 +350,81 @@
   }
 
   .btn-primary {
-    border-color: rgba(189, 255, 0, 0.34);
-    background: linear-gradient(135deg, rgba(189, 255, 0, 0.9), rgba(136, 201, 0, 0.95));
-    color: #101506;
+    border-color: rgba(0, 200, 255, 0.45);
+    background: linear-gradient(135deg, rgba(0, 180, 255, 0.88), rgba(0, 120, 220, 0.92));
+    color: #ffffff;
+    box-shadow: 0 0 24px rgba(0, 180, 255, 0.22);
   }
 
   .btn-primary:hover {
-    border-color: rgba(189, 255, 0, 0.48);
-    background: linear-gradient(135deg, rgba(201, 255, 46, 0.98), rgba(143, 214, 0, 1));
+    border-color: rgba(0, 220, 255, 0.6);
+    background: linear-gradient(135deg, rgba(0, 210, 255, 0.95), rgba(0, 150, 240, 1));
+    box-shadow: 0 0 32px rgba(0, 200, 255, 0.35);
+    color: #ffffff;
   }
 
   .btn-secondary {
-    border-color: rgba(189, 255, 0, 0.24);
+    border-color: rgba(0, 200, 255, 0.28);
+    color: var(--accent);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(0, 200, 255, 0.08);
     color: var(--accent);
   }
 
   .btn-danger {
-    border-color: rgba(255, 92, 117, 0.24);
+    border-color: rgba(255, 77, 109, 0.24);
     color: var(--danger);
   }
 
-  .btn-inline {
-    min-height: 34px;
-    padding: 0 10px;
-    border-radius: 12px;
-    font-size: 0.72rem;
+  .btn-danger:hover {
+    background: rgba(255, 77, 109, 0.07);
+    border-color: rgba(255, 77, 109, 0.40);
   }
 
+  .btn-inline {
+    min-height: 32px;
+    padding: 0 10px;
+    border-radius: 10px;
+    font-size: 0.70rem;
+  }
+
+  /* ── Alerts ── */
   .alert {
     display: none;
     margin-bottom: 14px;
-    padding: 12px 14px;
-    border-radius: 16px;
-    font: 500 0.78rem var(--mono);
+    padding: 11px 14px;
+    border-radius: 14px;
+    font: 500 0.77rem var(--mono);
     line-height: 1.6;
   }
 
-  .alert.show {
-    display: block;
-  }
+  .alert.show { display: block; }
 
   .alert.success {
     color: var(--success);
-    border: 1px solid rgba(96, 211, 148, 0.2);
-    background: rgba(96, 211, 148, 0.08);
+    border: 1px solid rgba(0, 229, 160, 0.2);
+    background: rgba(0, 229, 160, 0.07);
   }
 
   .alert.error {
     color: var(--danger);
-    border: 1px solid rgba(255, 92, 117, 0.18);
-    background: rgba(255, 92, 117, 0.08);
+    border: 1px solid rgba(255, 77, 109, 0.18);
+    background: rgba(255, 77, 109, 0.07);
   }
 
   .alert.info {
     color: var(--accent);
-    border: 1px solid rgba(189, 255, 0, 0.18);
-    background: rgba(189, 255, 0, 0.08);
+    border: 1px solid rgba(0, 200, 255, 0.20);
+    background: rgba(0, 200, 255, 0.07);
   }
 
+  /* ── Table ── */
   .table-wrap {
     overflow: auto;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 24px;
+    border: 1px solid rgba(0, 200, 255, 0.08);
+    border-radius: 22px;
   }
 
   table {
@@ -353,94 +433,85 @@
     min-width: 1080px;
   }
 
-  th,
-  td {
-    padding: 14px 16px;
+  th, td {
+    padding: 13px 16px;
     text-align: left;
     vertical-align: top;
   }
 
   th {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(0, 200, 255, 0.03);
     color: var(--muted);
-    font: 600 0.66rem var(--mono);
-    letter-spacing: 0.14em;
+    font: 600 0.63rem var(--mono);
+    letter-spacing: 0.16em;
     text-transform: uppercase;
+    border-bottom: 1px solid rgba(0, 200, 255, 0.07);
   }
 
   td {
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    font: 500 0.8rem var(--mono);
-    color: #dde2d7;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    font: 500 0.79rem var(--mono);
+    color: #c4d8f0;
   }
 
   tbody tr {
-    background: rgba(255, 255, 255, 0.01);
-    transition: background 160ms ease, transform 160ms ease;
+    background: rgba(0, 200, 255, 0.01);
+    transition: background 140ms ease;
   }
 
-  tbody tr:hover {
-    background: rgba(255, 255, 255, 0.04);
-  }
+  tbody tr:hover { background: rgba(0, 200, 255, 0.05); }
 
-  tbody tr.is-selected {
-    background: rgba(189, 255, 0, 0.08);
-  }
+  tbody tr.is-selected { background: rgba(0, 200, 255, 0.09); }
 
-  .row-trigger {
-    cursor: pointer;
-  }
+  .row-trigger { cursor: pointer; }
 
-  .muted {
-    color: var(--muted);
-  }
-
-  .mono {
-    font-family: var(--mono);
-  }
+  .muted { color: var(--muted); }
+  .mono  { font-family: var(--mono); }
 
   .cluster {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
   }
 
+  /* ── Pills ── */
   .pill {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
+    gap: 5px;
+    padding: 5px 10px;
     border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     background: rgba(255, 255, 255, 0.03);
-    font: 600 0.68rem var(--mono);
-    color: #dde2d7;
+    font: 600 0.66rem var(--mono);
+    color: #c4d8f0;
   }
 
   .pill.accent {
-    border-color: rgba(189, 255, 0, 0.3);
-    background: rgba(189, 255, 0, 0.1);
+    border-color: rgba(0, 200, 255, 0.32);
+    background: rgba(0, 200, 255, 0.10);
     color: var(--accent);
   }
 
   .pill.success {
-    border-color: rgba(96, 211, 148, 0.3);
-    background: rgba(96, 211, 148, 0.1);
+    border-color: rgba(0, 229, 160, 0.30);
+    background: rgba(0, 229, 160, 0.09);
     color: var(--success);
   }
 
   .pill.warn {
-    border-color: rgba(255, 183, 3, 0.3);
-    background: rgba(255, 183, 3, 0.1);
+    border-color: rgba(255, 183, 3, 0.28);
+    background: rgba(255, 183, 3, 0.09);
     color: var(--warn);
   }
 
   .pill.danger {
-    border-color: rgba(255, 92, 117, 0.3);
-    background: rgba(255, 92, 117, 0.08);
+    border-color: rgba(255, 77, 109, 0.28);
+    background: rgba(255, 77, 109, 0.08);
     color: var(--danger);
   }
 
+  /* ── Status dot ── */
   .status-link {
     display: inline-flex;
     align-items: center;
@@ -448,18 +519,25 @@
   }
 
   .status-dot {
-    width: 9px;
-    height: 9px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: var(--danger);
-    box-shadow: 0 0 0 5px rgba(255, 92, 117, 0.08);
+    box-shadow: 0 0 0 4px rgba(255, 77, 109, 0.10);
   }
 
   .status-dot.ready {
     background: var(--success);
-    box-shadow: 0 0 0 5px rgba(96, 211, 148, 0.08);
+    box-shadow: 0 0 0 4px rgba(0, 229, 160, 0.10);
+    animation: dot-pulse 2.4s ease-in-out infinite;
   }
 
+  @keyframes dot-pulse {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(0, 229, 160, 0.10); }
+    50%       { box-shadow: 0 0 0 7px rgba(0, 229, 160, 0.04); }
+  }
+
+  /* ── Layout helpers ── */
   .split {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -479,17 +557,15 @@
   .field {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 7px;
   }
 
-  .field.full {
-    grid-column: 1 / -1;
-  }
+  .field.full { grid-column: 1 / -1; }
 
   label {
     color: var(--muted);
-    font: 600 0.66rem var(--mono);
-    letter-spacing: 0.12em;
+    font: 600 0.64rem var(--mono);
+    letter-spacing: 0.14em;
     text-transform: uppercase;
   }
 
@@ -497,25 +573,27 @@
   select,
   textarea {
     width: 100%;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 200, 255, 0.12);
+    background: rgba(0, 200, 255, 0.04);
     color: var(--text);
-    border-radius: 16px;
-    padding: 12px 14px;
-    font: 500 0.88rem var(--mono);
-    transition: border-color 160ms ease, background 160ms ease;
+    border-radius: 14px;
+    padding: 11px 14px;
+    font: 500 0.86rem var(--mono);
+    transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
   }
 
   input::placeholder,
-  textarea::placeholder {
-    color: #757d79;
-  }
+  textarea::placeholder { color: #3a5470; }
+
+  select option { background: #071626; color: var(--text); }
 
   input:focus,
   select:focus,
   textarea:focus {
-    border-color: rgba(189, 255, 0, 0.34);
-    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(0, 200, 255, 0.40);
+    background: rgba(0, 200, 255, 0.07);
+    box-shadow: 0 0 0 3px rgba(0, 200, 255, 0.08);
+    outline: none;
   }
 
   textarea {
@@ -524,43 +602,51 @@
     line-height: 1.6;
   }
 
+  /* ── Checkbox row ── */
   .checkbox-row {
     display: flex;
     align-items: center;
     gap: 10px;
-    min-height: 48px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 16px;
-    padding: 12px 14px;
+    min-height: 46px;
+    border: 1px solid rgba(0, 200, 255, 0.12);
+    background: rgba(0, 200, 255, 0.04);
+    border-radius: 14px;
+    padding: 11px 14px;
   }
 
   .checkbox-row input {
-    width: 18px;
-    height: 18px;
+    width: 17px;
+    height: 17px;
     accent-color: var(--accent);
     margin: 0;
   }
 
   .checkbox-copy {
-    color: #dde2d7;
-    font: 500 0.84rem var(--mono);
+    color: #c4d8f0;
+    font: 500 0.82rem var(--mono);
   }
 
+  /* ── Registry / Section lists ── */
   .registry-list,
   .section-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-top: 16px;
+    gap: 10px;
+    margin-top: 14px;
   }
 
   .registry-item,
   .section-item {
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 200, 255, 0.08);
+    border-radius: 18px;
+    background: rgba(0, 200, 255, 0.03);
     padding: 14px;
+    transition: border-color 140ms ease;
+  }
+
+  .registry-item:hover,
+  .section-item:hover {
+    border-color: rgba(0, 200, 255, 0.15);
   }
 
   .registry-head,
@@ -574,25 +660,27 @@
 
   .registry-head strong,
   .section-head strong {
-    font: 600 0.92rem var(--mono);
+    font: 600 0.9rem var(--mono);
+    color: var(--accent);
   }
 
   .plugin-chip-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
+    gap: 7px;
+    margin-top: 11px;
   }
 
   .plugin-chip {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 10px;
+    gap: 7px;
+    padding: 7px 10px;
     border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.03);
-    font: 500 0.72rem var(--mono);
+    border: 1px solid rgba(0, 200, 255, 0.12);
+    background: rgba(0, 200, 255, 0.04);
+    font: 500 0.71rem var(--mono);
+    color: #9ab8d4;
   }
 
   .plugin-chip button {
@@ -603,83 +691,90 @@
     cursor: pointer;
     font: inherit;
     padding: 0;
+    opacity: 0.7;
+    transition: opacity 140ms ease;
   }
 
+  .plugin-chip button:hover { opacity: 1; }
+
   .empty {
-    padding: 18px;
-    border-radius: 18px;
-    border: 1px dashed rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.02);
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px dashed rgba(0, 200, 255, 0.12);
+    background: rgba(0, 200, 255, 0.02);
     color: var(--muted);
-    font: 500 0.8rem var(--mono);
+    font: 500 0.79rem var(--mono);
     line-height: 1.7;
   }
 
-  .inspector-card {
-    min-height: 280px;
-  }
+  /* ── Inspector ── */
+  .inspector-card { min-height: 280px; }
 
   .inspector-title {
     margin: 0 0 10px;
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     letter-spacing: -0.03em;
+    color: var(--accent);
+    text-shadow: 0 0 24px rgba(0, 200, 255, 0.25);
   }
 
   .detail-list {
     display: grid;
-    gap: 10px;
-    margin-top: 18px;
+    gap: 9px;
+    margin-top: 16px;
   }
 
   .detail {
-    padding: 12px 14px;
-    border-radius: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(255, 255, 255, 0.02);
+    padding: 11px 13px;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 200, 255, 0.07);
+    background: rgba(0, 200, 255, 0.03);
   }
 
   .detail .k {
     color: var(--muted);
-    font: 600 0.65rem var(--mono);
-    letter-spacing: 0.12em;
+    font: 600 0.63rem var(--mono);
+    letter-spacing: 0.13em;
     text-transform: uppercase;
   }
 
   .detail .v {
-    margin-top: 8px;
-    font: 500 0.84rem var(--mono);
+    margin-top: 7px;
+    font: 500 0.82rem var(--mono);
     line-height: 1.6;
     word-break: break-word;
+    color: #c4d8f0;
   }
 
   .source-note {
     margin-top: 12px;
     color: var(--muted);
-    font: 500 0.72rem var(--mono);
+    font: 500 0.71rem var(--mono);
     line-height: 1.7;
   }
 
+  /* ── Modal ── */
   .modal {
     position: fixed;
     inset: 0;
     display: none;
     place-items: center;
     padding: 20px;
-    background: rgba(6, 8, 12, 0.72);
-    backdrop-filter: blur(10px);
+    background: rgba(2, 6, 18, 0.78);
+    backdrop-filter: blur(12px);
     z-index: 50;
   }
 
-  .modal.open {
-    display: grid;
-  }
+  .modal.open { display: grid; }
 
   .modal-card {
-    width: min(760px, 100%);
+    width: min(780px, 100%);
     border-radius: 30px;
-    padding: 22px;
+    padding: 24px;
     max-height: calc(100vh - 40px);
     overflow: auto;
+    /* Extra glow on modal */
+    box-shadow: var(--shadow), 0 0 80px rgba(0, 180, 255, 0.10);
   }
 
   .modal-head {
@@ -687,60 +782,75 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
   }
 
   .modal-title {
     margin: 0;
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     letter-spacing: -0.03em;
+    color: #d8efff;
   }
 
   .modal-copy {
-    margin: 6px 0 0;
+    margin: 5px 0 0;
     color: var(--muted);
-    font: 500 0.78rem var(--mono);
+    font: 500 0.77rem var(--mono);
     line-height: 1.7;
   }
 
   .modal-close {
     appearance: none;
-    border: none;
-    background: transparent;
+    border: 1px solid rgba(0, 200, 255, 0.14);
+    background: rgba(0, 200, 255, 0.04);
     color: var(--muted);
-    font: 500 1.3rem var(--mono);
+    font: 500 1rem var(--mono);
+    border-radius: 10px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
     cursor: pointer;
-    line-height: 1;
+    transition: border-color 140ms, color 140ms;
+    flex-shrink: 0;
+  }
+
+  .modal-close:hover {
+    border-color: var(--danger);
+    color: var(--danger);
   }
 
   .modal-actions {
     display: flex;
     justify-content: space-between;
     gap: 10px;
-    margin-top: 16px;
+    margin-top: 18px;
     flex-wrap: wrap;
   }
 
   .modal-actions .right {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
   }
 
+  /* ── Toast ── */
   .toast {
     position: fixed;
     right: 18px;
     bottom: 18px;
     min-width: 220px;
-    border-radius: 18px;
-    padding: 14px 16px;
-    color: var(--text);
-    font: 500 0.8rem var(--mono);
+    border-radius: 16px;
+    padding: 13px 16px;
+    border-color: rgba(0, 200, 255, 0.22);
+    color: var(--accent);
+    font: 600 0.76rem var(--mono);
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(16px);
     pointer-events: none;
-    transition: opacity 180ms ease, transform 180ms ease;
+    transition: opacity 200ms ease, transform 200ms ease;
     z-index: 60;
+    box-shadow: 0 0 30px rgba(0, 200, 255, 0.15);
   }
 
   .toast.show {
@@ -748,59 +858,48 @@
     transform: translateY(0);
   }
 
+  /* ── Helper text ── */
   .helper {
     color: var(--muted);
-    font: 500 0.72rem var(--mono);
+    font: 500 0.71rem var(--mono);
     line-height: 1.7;
   }
 
-  @media (max-width: 1180px) {
-    .workspace,
-    .hero {
-      grid-template-columns: 1fr;
-    }
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0, 180, 255, 0.18); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(0, 200, 255, 0.32); }
 
-    .hero-actions {
-      min-width: 0;
-    }
+  /* ── Responsive ── */
+  @media (max-width: 1180px) {
+    .workspace, .hero { grid-template-columns: 1fr; }
+    .hero-actions { min-width: 0; }
   }
 
   @media (max-width: 900px) {
-    .stats,
-    .split,
-    .field-grid,
-    .field-grid.triple {
+    .stats, .split, .field-grid, .field-grid.triple {
       grid-template-columns: 1fr 1fr;
     }
   }
 
   @media (max-width: 720px) {
-    .shell {
-      padding: 16px 12px 32px;
-    }
+    .shell { padding: 14px 12px 32px; }
 
-    .stats,
-    .split,
-    .field-grid,
-    .field-grid.triple {
+    .stats, .split, .field-grid, .field-grid.triple {
       grid-template-columns: 1fr;
     }
 
-    .hero-card,
-    .panel,
-    .hero-actions,
-    .modal-card {
-      border-radius: 24px;
-      padding: 18px;
+    .hero-card, .panel, .hero-actions, .modal-card {
+      border-radius: 22px;
+      padding: 16px;
     }
 
-    .action-row,
-    .modal-actions .right {
+    .action-row, .modal-actions .right {
       width: 100%;
     }
 
-    .action-row .btn,
-    .modal-actions .right .btn {
+    .action-row .btn, .modal-actions .right .btn {
       width: 100%;
       justify-content: center;
     }
@@ -809,14 +908,16 @@
 </head>
 <body>
 <div class="shell">
+
+  <!-- ── Hero ── -->
   <section class="hero">
     <div class="hero-card">
       <div class="eyebrow">Catalog Control Surface</div>
       <h1 class="hero-title">Admin built around the real release schema.</h1>
       <p class="hero-copy">
-        This editor now works with your actual <span class="mono">catalog.core.plugins</span> and
+        This editor works with your actual <span class="mono">catalog.core.plugins</span> and
         <span class="mono">catalog.addons.sections</span> structure, including the exact
-        <span class="mono">download</span> field that the public release page uses.
+        <span class="mono">download</span> field the public release page uses.
       </p>
     </div>
 
@@ -830,8 +931,7 @@
         <button class="btn btn-danger" id="logoutAuthBtn" type="button">Logout</button>
       </div>
       <div class="meta">
-        Release downloads come directly from each release object's <span class="mono">download</span> URL.
-        Select a release and use the inspector download button to trigger the file request instantly.
+        Release downloads link directly from each release object's <span class="mono">download</span> URL.
         <div class="auth-panel">
           <span class="pill danger" id="authStatusPill">Locked</span>
           <div class="helper" id="authStatusCopy">Login with your admin token before creating, deleting, or saving changes.</div>
@@ -840,6 +940,7 @@
     </aside>
   </section>
 
+  <!-- ── Stats ── -->
   <section class="stats">
     <article class="stat">
       <div class="label">Core Plugins</div>
@@ -863,16 +964,16 @@
     </article>
   </section>
 
+  <!-- ── Workspace ── -->
   <section class="workspace">
     <main class="main-column">
+
+      <!-- Release Registry -->
       <section class="panel">
         <div class="panel-head">
           <div>
             <h2 class="panel-title">Release Registry</h2>
-            <p class="panel-copy">
-              Edit the exact fields used by the public site: release name, version, type, latest flag,
-              status, loader, and download URL.
-            </p>
+            <p class="panel-copy">Edit release name, version, type, latest flag, status, loader, and download URL.</p>
           </div>
           <div class="action-row">
             <button class="btn btn-primary" id="addCoreReleaseBtn" type="button">Add core release</button>
@@ -902,13 +1003,12 @@
         </div>
       </section>
 
+      <!-- Catalog Structure -->
       <section class="panel">
         <div class="panel-head">
           <div>
             <h2 class="panel-title">Catalog Structure</h2>
-            <p class="panel-copy">
-              Add core plugins, addon sections, and addon plugins without dropping into raw JSON.
-            </p>
+            <p class="panel-copy">Add core plugins, addon sections, and addon plugins without touching raw JSON.</p>
           </div>
         </div>
 
@@ -958,14 +1058,12 @@
         </div>
       </section>
 
+      <!-- Raw JSON -->
       <section class="panel">
         <div class="panel-head">
           <div>
             <h2 class="panel-title">Raw JSON</h2>
-            <p class="panel-copy">
-              Apply structured edits directly to the live working catalog state. The editor will normalize
-              the payload back to the expected schema.
-            </p>
+            <p class="panel-copy">Apply structured edits directly to the live working catalog state.</p>
           </div>
           <div class="action-row">
             <button class="btn" id="formatJsonBtn" type="button">Format</button>
@@ -978,13 +1076,13 @@
     </main>
 
     <aside class="side-column">
+
+      <!-- Inspector -->
       <section class="panel inspector-card">
         <div class="panel-head">
           <div>
             <h2 class="panel-title">Release Inspector</h2>
-            <p class="panel-copy">
-              Select a release from the table to inspect its download URL and trigger the browser download flow.
-            </p>
+            <p class="panel-copy">Select a release from the table to inspect and trigger the browser download.</p>
           </div>
         </div>
         <div id="inspectorBody" class="empty">
@@ -992,13 +1090,12 @@
         </div>
       </section>
 
+      <!-- Catalog Settings -->
       <section class="panel">
         <div class="panel-head">
           <div>
             <h2 class="panel-title">Catalog Settings</h2>
-            <p class="panel-copy">
-              Update the catalog title and remote JSON source used by this admin page.
-            </p>
+            <p class="panel-copy">Update the catalog title and remote JSON source used by this admin page.</p>
           </div>
         </div>
 
@@ -1023,13 +1120,12 @@
         </p>
       </section>
 
+      <!-- Safety Checks -->
       <section class="panel">
         <div class="panel-head">
           <div>
             <h2 class="panel-title">Safety Checks</h2>
-            <p class="panel-copy">
-              Use these controls to reset local editor state. They do not push changes anywhere on their own.
-            </p>
+            <p class="panel-copy">Reset local editor state without pushing changes anywhere.</p>
           </div>
         </div>
 
@@ -1046,16 +1142,15 @@
   </section>
 </div>
 
+<!-- ── Release Modal ── -->
 <div class="modal" id="releaseModal" aria-hidden="true">
   <div class="modal-card">
     <div class="modal-head">
       <div>
         <h3 class="modal-title" id="modalTitle">Add release</h3>
-        <p class="modal-copy" id="modalCopy">
-          Create a release entry that is immediately compatible with the public dashboard.
-        </p>
+        <p class="modal-copy" id="modalCopy">Create a release entry that is immediately compatible with the public dashboard.</p>
       </div>
-      <button class="modal-close" id="closeModalBtn" type="button" aria-label="Close modal">x</button>
+      <button class="modal-close" id="closeModalBtn" type="button" aria-label="Close modal">✕</button>
     </div>
 
     <div class="alert" id="modalAlert"></div>
@@ -1139,6 +1234,7 @@
   </div>
 </div>
 
+<!-- ── Auth Modal ── -->
 <div class="modal" id="authModal" aria-hidden="true">
   <div class="modal-card">
     <div class="modal-head">
@@ -1148,7 +1244,7 @@
           Validate your <span class="mono">ADMIN_TOKEN</span> with the Worker before changing or publishing the catalog.
         </p>
       </div>
-      <button class="modal-close" id="closeAuthModalBtn" type="button" aria-label="Close auth modal">x</button>
+      <button class="modal-close" id="closeAuthModalBtn" type="button" aria-label="Close auth modal">✕</button>
     </div>
 
     <div class="alert" id="authAlert"></div>
@@ -1161,7 +1257,7 @@
     </div>
 
     <div class="modal-actions">
-      <div class="helper">This token stays in browser session storage and is sent only to your Worker auth/save routes.</div>
+      <div class="helper">Token stays in browser session storage and is sent only to your Worker auth/save routes.</div>
       <div class="right">
         <button class="btn" id="cancelAuthBtn" type="button">Cancel</button>
         <button class="btn btn-primary" id="submitAuthBtn" type="button">Unlock admin</button>
@@ -1173,14 +1269,14 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const STORAGE_KEY = "rutwokLabz.admin.dataUrl";
+const STORAGE_KEY            = "rutwokLabz.admin.dataUrl";
 const ADMIN_TOKEN_STORAGE_KEY = "rutwokLabz.admin.token";
-const DEFAULT_DATA_URL = "/api/catalog";
-const API_AUTH_URL = "/api/admin/auth";
-const API_SAVE_URL = "/api/admin/save";
-const RELEASE_TYPES = ["stable", "pre-release"];
-const RELEASE_STATUSES = ["success", "fail", "maintenance"];
-const RELEASE_LOADERS = ["PaperMC", "Bukkit", "Purpur"];
+const DEFAULT_DATA_URL       = "/api/catalog";
+const API_AUTH_URL           = "/api/admin/auth";
+const API_SAVE_URL           = "/api/admin/save";
+const RELEASE_TYPES          = ["stable", "pre-release"];
+const RELEASE_STATUSES       = ["success", "fail", "maintenance"];
+const RELEASE_LOADERS        = ["PaperMC", "Bukkit", "Purpur"];
 
 const state = {
   catalog: createSampleCatalog(),
@@ -1220,10 +1316,7 @@ function createSampleCatalog() {
           {
             name: "General",
             plugins: [
-              {
-                name: "New Plugin 1",
-                releases: []
-              }
+              { name: "New Plugin 1", releases: [] }
             ]
           }
         ]
@@ -1236,16 +1329,15 @@ function normalizeCatalog(raw) {
   if (raw && typeof raw === "object" && (raw.core || raw.addons) && !raw.catalog) {
     return convertLegacyCatalog(raw);
   }
-
   const catalog = raw && typeof raw === "object" ? (raw.catalog || raw) : {};
   return {
     catalog: {
       title: asText(catalog.title) || "rutwokLabz Plugin Catalog",
       core: {
-        plugins: arrayOf(catalog.core && catalog.core.plugins).map(normalizePlugin).filter((plugin) => plugin.name),
+        plugins: arrayOf(catalog.core && catalog.core.plugins).map(normalizePlugin).filter(p => p.name),
       },
       addons: {
-        sections: arrayOf(catalog.addons && catalog.addons.sections).map(normalizeSection).filter((section) => section.name),
+        sections: arrayOf(catalog.addons && catalog.addons.sections).map(normalizeSection).filter(s => s.name),
       }
     }
   };
@@ -1254,33 +1346,31 @@ function normalizeCatalog(raw) {
 function convertLegacyCatalog(raw) {
   const corePlugins = Object.entries(raw.core || {}).map(([name, releases]) => ({
     name,
-    releases: arrayOf(releases).map((release, index) => ({
-      name: asText(release.name) || asText(release.version) || "Release " + String(index + 1),
-      version: asText(release.version) || "0.0.0",
-      type: release.stable === false ? "pre-release" : "stable",
-      latest: index === 0,
+    releases: arrayOf(releases).map((r, i) => ({
+      name: asText(r.name) || asText(r.version) || "Release " + String(i + 1),
+      version: asText(r.version) || "0.0.0",
+      type: r.stable === false ? "pre-release" : "stable",
+      latest: i === 0,
       status: "success",
       loader: "PaperMC",
-      download: asText(release.download),
+      download: asText(r.download),
     }))
   }));
-
   const addonSections = Object.entries(raw.addons || {}).map(([sectionName, plugins]) => ({
     name: sectionName,
     plugins: Object.entries(plugins || {}).map(([pluginName, releases]) => ({
       name: pluginName,
-      releases: arrayOf(releases).map((release, index) => ({
-        name: asText(release.name) || asText(release.version) || "Release " + String(index + 1),
-        version: asText(release.version) || "0.0.0",
-        type: release.stable === false ? "pre-release" : "stable",
-        latest: index === 0,
+      releases: arrayOf(releases).map((r, i) => ({
+        name: asText(r.name) || asText(r.version) || "Release " + String(i + 1),
+        version: asText(r.version) || "0.0.0",
+        type: r.stable === false ? "pre-release" : "stable",
+        latest: i === 0,
         status: "success",
         loader: "PaperMC",
-        download: asText(release.download),
+        download: asText(r.download),
       }))
     }))
   }));
-
   return {
     catalog: {
       title: "rutwokLabz Plugin Catalog",
@@ -1293,278 +1383,185 @@ function convertLegacyCatalog(raw) {
 function normalizePlugin(plugin) {
   return {
     name: asText(plugin && plugin.name),
-    releases: arrayOf(plugin && plugin.releases).map(normalizeRelease).filter((release) => release.name || release.version),
+    releases: arrayOf(plugin && plugin.releases).map(normalizeRelease).filter(r => r.name || r.version),
   };
 }
 
 function normalizeSection(section) {
   return {
     name: asText(section && section.name),
-    plugins: arrayOf(section && section.plugins).map(normalizePlugin).filter((plugin) => plugin.name),
+    plugins: arrayOf(section && section.plugins).map(normalizePlugin).filter(p => p.name),
   };
 }
 
 function normalizeRelease(release) {
-  const type = RELEASE_TYPES.includes(asText(release && release.type)) ? asText(release.type) : "stable";
+  const type   = RELEASE_TYPES.includes(asText(release && release.type))     ? asText(release.type)   : "stable";
   const status = RELEASE_STATUSES.includes(asText(release && release.status)) ? asText(release.status) : "success";
-  const loader = RELEASE_LOADERS.includes(asText(release && release.loader)) ? asText(release.loader) : "PaperMC";
-
+  const loader = RELEASE_LOADERS.includes(asText(release && release.loader))  ? asText(release.loader) : "PaperMC";
   return {
-    name: asText(release && release.name),
-    version: asText(release && release.version),
-    type,
-    latest: release && release.latest === true,
-    status,
-    loader,
+    name:     asText(release && release.name),
+    version:  asText(release && release.version),
+    type, latest: release && release.latest === true, status, loader,
     download: asText(release && release.download),
   };
 }
 
-function arrayOf(value) {
-  return Array.isArray(value) ? value : [];
-}
-
-function asText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+function arrayOf(value) { return Array.isArray(value) ? value : []; }
+function asText(value)  { return typeof value === "string" ? value.trim() : ""; }
 
 function isHttpsUrl(value) {
   if (!value) return false;
-  try {
-    const parsed = new URL(value);
-    return parsed.protocol === "https:";
-  } catch (error) {
-    return false;
-  }
+  try { return new URL(value).protocol === "https:"; } catch { return false; }
 }
 
 function escapeHtml(value) {
   return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
 function pluginSignature(scope, section, pluginName, release) {
-  return [
-    scope,
-    section || "",
-    pluginName || "",
+  return [scope, section || "", pluginName || "",
     release && release.version ? release.version : "",
-    release && release.name ? release.name : ""
-  ].join("|");
+    release && release.name    ? release.name    : ""].join("|");
 }
 
 function flattenReleases() {
   const entries = [];
-
-  arrayOf(state.catalog.catalog.core.plugins).forEach((plugin, pluginIndex) => {
-    arrayOf(plugin.releases).forEach((release, releaseIndex) => {
-      entries.push({
-        scope: "core",
-        section: "",
-        pluginName: plugin.name,
-        release,
-        pluginIndex,
-        releaseIndex,
-        signature: pluginSignature("core", "", plugin.name, release),
+  arrayOf(state.catalog.catalog.core.plugins).forEach((plugin, pi) => {
+    arrayOf(plugin.releases).forEach((release, ri) => {
+      entries.push({ scope:"core", section:"", pluginName:plugin.name, release, pluginIndex:pi, releaseIndex:ri,
+        signature: pluginSignature("core","",plugin.name,release) });
+    });
+  });
+  arrayOf(state.catalog.catalog.addons.sections).forEach((section, si) => {
+    arrayOf(section.plugins).forEach((plugin, pi) => {
+      arrayOf(plugin.releases).forEach((release, ri) => {
+        entries.push({ scope:"addon", section:section.name, pluginName:plugin.name, release,
+          sectionIndex:si, pluginIndex:pi, releaseIndex:ri,
+          signature: pluginSignature("addon",section.name,plugin.name,release) });
       });
     });
   });
-
-  arrayOf(state.catalog.catalog.addons.sections).forEach((section, sectionIndex) => {
-    arrayOf(section.plugins).forEach((plugin, pluginIndex) => {
-      arrayOf(plugin.releases).forEach((release, releaseIndex) => {
-        entries.push({
-          scope: "addon",
-          section: section.name,
-          pluginName: plugin.name,
-          release,
-          sectionIndex,
-          pluginIndex,
-          releaseIndex,
-          signature: pluginSignature("addon", section.name, plugin.name, release),
-        });
-      });
-    });
-  });
-
-  return entries.sort((left, right) => {
-    if (left.release.latest !== right.release.latest) return left.release.latest ? -1 : 1;
-    if (left.scope !== right.scope) return left.scope === "core" ? -1 : 1;
-    if (left.section !== right.section) return left.section.localeCompare(right.section);
-    if (left.pluginName !== right.pluginName) return left.pluginName.localeCompare(right.pluginName);
-    return left.release.name.localeCompare(right.release.name);
+  return entries.sort((a, b) => {
+    if (a.release.latest !== b.release.latest) return a.release.latest ? -1 : 1;
+    if (a.scope !== b.scope) return a.scope === "core" ? -1 : 1;
+    if (a.section !== b.section) return a.section.localeCompare(b.section);
+    if (a.pluginName !== b.pluginName) return a.pluginName.localeCompare(b.pluginName);
+    return a.release.name.localeCompare(b.release.name);
   });
 }
 
 function findCorePlugin(name) {
-  return arrayOf(state.catalog.catalog.core.plugins).find((plugin) => plugin.name.toLowerCase() === name.toLowerCase()) || null;
+  return arrayOf(state.catalog.catalog.core.plugins).find(p => p.name.toLowerCase() === name.toLowerCase()) || null;
 }
 
 function ensureCorePlugin(name) {
-  const normalizedName = asText(name);
-  if (!normalizedName) return null;
-  let plugin = findCorePlugin(normalizedName);
-  if (!plugin) {
-    plugin = { name: normalizedName, releases: [] };
-    state.catalog.catalog.core.plugins.push(plugin);
-  }
-  return plugin;
+  const n = asText(name); if (!n) return null;
+  let p = findCorePlugin(n);
+  if (!p) { p = { name: n, releases: [] }; state.catalog.catalog.core.plugins.push(p); }
+  return p;
 }
 
 function findAddonSection(name) {
-  return arrayOf(state.catalog.catalog.addons.sections).find((section) => section.name.toLowerCase() === name.toLowerCase()) || null;
+  return arrayOf(state.catalog.catalog.addons.sections).find(s => s.name.toLowerCase() === name.toLowerCase()) || null;
 }
 
 function ensureAddonSection(name) {
-  const normalizedName = asText(name);
-  if (!normalizedName) return null;
-  let section = findAddonSection(normalizedName);
-  if (!section) {
-    section = { name: normalizedName, plugins: [] };
-    state.catalog.catalog.addons.sections.push(section);
-  }
-  return section;
+  const n = asText(name); if (!n) return null;
+  let s = findAddonSection(n);
+  if (!s) { s = { name: n, plugins: [] }; state.catalog.catalog.addons.sections.push(s); }
+  return s;
 }
 
 function ensureAddonPlugin(sectionName, pluginName) {
   const section = ensureAddonSection(sectionName);
-  const normalizedPluginName = asText(pluginName);
-  if (!section || !normalizedPluginName) return null;
-
-  let plugin = arrayOf(section.plugins).find((item) => item.name.toLowerCase() === normalizedPluginName.toLowerCase()) || null;
-  if (!plugin) {
-    plugin = { name: normalizedPluginName, releases: [] };
-    section.plugins.push(plugin);
-  }
-  return plugin;
-}
-
-function getPluginForScope(scope, sectionName, pluginName, createIfMissing) {
-  if (scope === "core") {
-    return createIfMissing ? ensureCorePlugin(pluginName) : findCorePlugin(pluginName);
-  }
-  if (scope === "addon") {
-    return createIfMissing ? ensureAddonPlugin(sectionName, pluginName) : findAddonPlugin(sectionName, pluginName);
-  }
-  return null;
+  const n = asText(pluginName); if (!section || !n) return null;
+  let p = arrayOf(section.plugins).find(x => x.name.toLowerCase() === n.toLowerCase()) || null;
+  if (!p) { p = { name: n, releases: [] }; section.plugins.push(p); }
+  return p;
 }
 
 function findAddonPlugin(sectionName, pluginName) {
-  const section = findAddonSection(sectionName);
-  if (!section) return null;
-  return arrayOf(section.plugins).find((plugin) => plugin.name.toLowerCase() === pluginName.toLowerCase()) || null;
+  const section = findAddonSection(sectionName); if (!section) return null;
+  return arrayOf(section.plugins).find(p => p.name.toLowerCase() === pluginName.toLowerCase()) || null;
+}
+
+function getPluginForScope(scope, sectionName, pluginName, create) {
+  if (scope === "core")  return create ? ensureCorePlugin(pluginName)              : findCorePlugin(pluginName);
+  if (scope === "addon") return create ? ensureAddonPlugin(sectionName, pluginName) : findAddonPlugin(sectionName, pluginName);
+  return null;
 }
 
 function normalizeLatestFlags(releases, preferredIndex) {
-  const items = arrayOf(releases);
-  if (!items.length) return;
-
-  const latestIndices = [];
-  items.forEach((release, index) => {
-    if (release.latest) latestIndices.push(index);
-  });
-
-  let finalIndex = typeof preferredIndex === "number" && preferredIndex >= 0 && preferredIndex < items.length ? preferredIndex : 0;
-  if (latestIndices.length === 1) {
-    return;
-  }
-
-  if (latestIndices.length === 0) {
-    items[finalIndex].latest = true;
-    return;
-  }
-
-  items.forEach((release, index) => {
-    release.latest = index === finalIndex;
-  });
+  const items = arrayOf(releases); if (!items.length) return;
+  const latestIndices = items.reduce((acc, r, i) => { if (r.latest) acc.push(i); return acc; }, []);
+  let fi = typeof preferredIndex === "number" && preferredIndex >= 0 && preferredIndex < items.length ? preferredIndex : 0;
+  if (latestIndices.length === 1) return;
+  if (latestIndices.length === 0) { items[fi].latest = true; return; }
+  items.forEach((r, i) => { r.latest = i === fi; });
 }
 
 function removeReleaseAtLocation(location) {
   if (!location) return null;
-
   if (location.scope === "core") {
     const plugin = state.catalog.catalog.core.plugins[location.pluginIndex];
     if (!plugin) return null;
     const removed = plugin.releases.splice(location.releaseIndex, 1)[0] || null;
-    normalizeLatestFlags(plugin.releases, 0);
-    return removed;
+    normalizeLatestFlags(plugin.releases, 0); return removed;
   }
-
   const section = state.catalog.catalog.addons.sections[location.sectionIndex];
-  const plugin = section && section.plugins[location.pluginIndex];
+  const plugin  = section && section.plugins[location.pluginIndex];
   if (!plugin) return null;
   const removed = plugin.releases.splice(location.releaseIndex, 1)[0] || null;
-  normalizeLatestFlags(plugin.releases, 0);
-  return removed;
+  normalizeLatestFlags(plugin.releases, 0); return removed;
 }
 
 function releaseExistsWithVersion(releases, version, ignoreIndex) {
-  return arrayOf(releases).some((release, index) => index !== ignoreIndex && release.version.toLowerCase() === version.toLowerCase());
+  return arrayOf(releases).some((r, i) => i !== ignoreIndex && r.version.toLowerCase() === version.toLowerCase());
 }
 
-function setSelectedSignature(signature) {
-  state.selectedSignature = signature || "";
-}
+function setSelectedSignature(sig) { state.selectedSignature = sig || ""; }
 
 function currentSelectedRelease() {
-  const match = flattenReleases().find((entry) => entry.signature === state.selectedSignature);
-  return match || null;
-}
-
-function bytesForCatalog() {
-  return new TextEncoder().encode(JSON.stringify(state.catalog)).length;
+  return flattenReleases().find(e => e.signature === state.selectedSignature) || null;
 }
 
 function renderAll() {
-  renderStats();
-  renderReleaseTable();
-  renderStructure();
-  renderInspector();
-  renderJsonEditor();
-  renderSettings();
-  renderAuthState();
+  renderStats(); renderReleaseTable(); renderStructure();
+  renderInspector(); renderJsonEditor(); renderSettings(); renderAuthState();
 }
 
 function renderStats() {
-  const corePlugins = arrayOf(state.catalog.catalog.core.plugins).length;
+  const corePlugins  = arrayOf(state.catalog.catalog.core.plugins).length;
   const addonSections = arrayOf(state.catalog.catalog.addons.sections).length;
-  const releases = flattenReleases();
-  const missingUrls = releases.filter((item) => !isHttpsUrl(item.release.download)).length;
-
-  document.getElementById("statCore").textContent = String(corePlugins);
-  document.getElementById("statSections").textContent = String(addonSections);
-  document.getElementById("statReleases").textContent = String(releases.length);
-  document.getElementById("statMissingUrls").textContent = String(missingUrls);
+  const releases     = flattenReleases();
+  const missing      = releases.filter(e => !isHttpsUrl(e.release.download)).length;
+  document.getElementById("statCore").textContent         = String(corePlugins);
+  document.getElementById("statSections").textContent     = String(addonSections);
+  document.getElementById("statReleases").textContent     = String(releases.length);
+  document.getElementById("statMissingUrls").textContent  = String(missing);
 }
 
 function renderReleaseTable() {
   const releases = flattenReleases();
-  const tbody = document.getElementById("releaseTableBody");
+  const tbody    = document.getElementById("releaseTableBody");
   tbody.innerHTML = "";
 
   if (!releases.length) {
     const row = document.createElement("tr");
     row.innerHTML = '<td colspan="9"><div class="empty">No releases yet. Use "Add core release" or "Add addon release" to create the first build entry.</div></td>';
-    tbody.appendChild(row);
-    return;
+    tbody.appendChild(row); return;
   }
 
-  if (!releases.some((entry) => entry.signature === state.selectedSignature)) {
+  if (!releases.some(e => e.signature === state.selectedSignature)) {
     state.selectedSignature = releases[0].signature;
   }
 
-  releases.forEach((entry) => {
+  releases.forEach(entry => {
     const tr = document.createElement("tr");
     tr.className = "row-trigger" + (entry.signature === state.selectedSignature ? " is-selected" : "");
-    tr.addEventListener("click", () => {
-      setSelectedSignature(entry.signature);
-      renderReleaseTable();
-      renderInspector();
-    });
+    tr.addEventListener("click", () => { setSelectedSignature(entry.signature); renderReleaseTable(); renderInspector(); });
 
     const flags = [];
     if (entry.release.latest) flags.push('<span class="pill accent">Latest</span>');
@@ -1584,171 +1581,109 @@ function renderReleaseTable() {
     ].join("");
 
     const actionCell = tr.querySelector("[data-actions]");
-
-    const editBtn = buildActionButton("Edit", "btn-inline", () => {
-      openReleaseModal("edit", entry);
-    });
-
-    const downloadBtn = buildActionButton("Download", "btn-inline", () => {
-      triggerDownload(entry.release.download);
-    });
-
-    const deleteBtn = buildActionButton("Delete", "btn-inline btn-danger", () => {
-      deleteRelease(entry);
-    });
-
-    actionCell.append(editBtn, downloadBtn, deleteBtn);
+    actionCell.append(
+      buildActionButton("Edit",     "btn-inline",             () => openReleaseModal("edit", entry)),
+      buildActionButton("Download", "btn-inline",             () => triggerDownload(entry.release.download)),
+      buildActionButton("Delete",   "btn-inline btn-danger",  () => deleteRelease(entry))
+    );
     tbody.appendChild(tr);
   });
 }
 
 function buildActionButton(label, className, handler) {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "btn " + className;
-  button.textContent = label;
-  button.addEventListener("click", (event) => {
-    event.stopPropagation();
-    handler();
-  });
-  return button;
+  const btn = document.createElement("button");
+  btn.type = "button"; btn.className = "btn " + className; btn.textContent = label;
+  btn.addEventListener("click", e => { e.stopPropagation(); handler(); });
+  return btn;
 }
 
 function releaseStatusClass(status) {
-  if (status === "success") return "success";
+  if (status === "success")     return "success";
   if (status === "maintenance") return "warn";
   return "danger";
 }
 
-function renderStructure() {
-  renderCoreRegistry();
-  renderAddonRegistry();
-  renderAddonSectionSelect();
-}
+function renderStructure() { renderCoreRegistry(); renderAddonRegistry(); renderAddonSectionSelect(); }
 
 function renderCoreRegistry() {
-  const target = document.getElementById("corePluginList");
+  const target  = document.getElementById("corePluginList");
   target.innerHTML = "";
-
   const plugins = arrayOf(state.catalog.catalog.core.plugins);
-  if (!plugins.length) {
-    target.innerHTML = '<div class="empty">No core plugins yet.</div>';
-    return;
-  }
+  if (!plugins.length) { target.innerHTML = '<div class="empty">No core plugins yet.</div>'; return; }
 
-  plugins.forEach((plugin) => {
+  plugins.forEach(plugin => {
     const item = document.createElement("div");
     item.className = "registry-item";
-
-    const releaseCount = arrayOf(plugin.releases).length;
-    item.innerHTML = [
-      '<div class="registry-head">',
-      '<div><strong>' + escapeHtml(plugin.name) + '</strong><div class="helper">' + String(releaseCount) + ' release' + (releaseCount === 1 ? "" : "s") + "</div></div>",
-      "</div>"
-    ].join("");
-
+    const rc = arrayOf(plugin.releases).length;
+    item.innerHTML = '<div class="registry-head"><div><strong>' + escapeHtml(plugin.name) + '</strong><div class="helper">' + String(rc) + " release" + (rc === 1 ? "" : "s") + "</div></div></div>";
     const head = item.querySelector(".registry-head");
-    const actions = document.createElement("div");
-    actions.className = "cluster";
+    const actions = document.createElement("div"); actions.className = "cluster";
     actions.append(
-      buildActionButton("Add release", "btn-inline", () => openReleaseModal("create", { scope: "core", section: "", pluginName: plugin.name })),
-      buildActionButton("Delete", "btn-inline btn-danger", () => deleteCorePlugin(plugin.name))
+      buildActionButton("Add release", "btn-inline",            () => openReleaseModal("create", { scope:"core", section:"", pluginName:plugin.name })),
+      buildActionButton("Delete",      "btn-inline btn-danger", () => deleteCorePlugin(plugin.name))
     );
-    head.appendChild(actions);
-    target.appendChild(item);
+    head.appendChild(actions); target.appendChild(item);
   });
 }
 
 function renderAddonRegistry() {
-  const target = document.getElementById("addonSectionList");
+  const target   = document.getElementById("addonSectionList");
   target.innerHTML = "";
-
   const sections = arrayOf(state.catalog.catalog.addons.sections);
-  if (!sections.length) {
-    target.innerHTML = '<div class="empty">No addon sections yet.</div>';
-    return;
-  }
+  if (!sections.length) { target.innerHTML = '<div class="empty">No addon sections yet.</div>'; return; }
 
-  sections.forEach((section) => {
+  sections.forEach(section => {
     const item = document.createElement("div");
     item.className = "section-item";
-
-    item.innerHTML = [
-      '<div class="section-head">',
-      '<div><strong>' + escapeHtml(section.name) + '</strong><div class="helper">' + String(arrayOf(section.plugins).length) + ' plugin' + (arrayOf(section.plugins).length === 1 ? "" : "s") + "</div></div>",
-      "</div>"
-    ].join("");
-
+    const pc = arrayOf(section.plugins).length;
+    item.innerHTML = '<div class="section-head"><div><strong>' + escapeHtml(section.name) + '</strong><div class="helper">' + String(pc) + " plugin" + (pc === 1 ? "" : "s") + "</div></div></div>";
     const head = item.querySelector(".section-head");
-    const headActions = document.createElement("div");
-    headActions.className = "cluster";
+    const headActions = document.createElement("div"); headActions.className = "cluster";
     headActions.append(
-      buildActionButton("Add release", "btn-inline", () => openReleaseModal("create", { scope: "addon", section: section.name, pluginName: "" })),
+      buildActionButton("Add release",    "btn-inline",            () => openReleaseModal("create", { scope:"addon", section:section.name, pluginName:"" })),
       buildActionButton("Delete section", "btn-inline btn-danger", () => deleteAddonSection(section.name))
     );
     head.appendChild(headActions);
 
-    const pluginList = document.createElement("div");
-    pluginList.className = "plugin-chip-list";
-
+    const pluginList = document.createElement("div"); pluginList.className = "plugin-chip-list";
     if (!arrayOf(section.plugins).length) {
-      pluginList.innerHTML = '<div class="empty" style="width:100%;">This section does not have any addon plugins yet.</div>';
+      pluginList.innerHTML = '<div class="empty" style="width:100%;">This section has no addon plugins yet.</div>';
     } else {
-      section.plugins.forEach((plugin) => {
-        const chip = document.createElement("div");
-        chip.className = "plugin-chip";
-
-        const label = document.createElement("span");
-        label.textContent = plugin.name + " (" + String(arrayOf(plugin.releases).length) + ")";
-
-        const removeButton = document.createElement("button");
-        removeButton.type = "button";
-        removeButton.textContent = "remove";
-        removeButton.addEventListener("click", () => deleteAddonPlugin(section.name, plugin.name));
-
-        chip.append(label, removeButton);
-        pluginList.appendChild(chip);
+      section.plugins.forEach(plugin => {
+        const chip = document.createElement("div"); chip.className = "plugin-chip";
+        const lbl  = document.createElement("span"); lbl.textContent = plugin.name + " (" + String(arrayOf(plugin.releases).length) + ")";
+        const rem  = document.createElement("button"); rem.type = "button"; rem.textContent = "remove";
+        rem.addEventListener("click", () => deleteAddonPlugin(section.name, plugin.name));
+        chip.append(lbl, rem); pluginList.appendChild(chip);
       });
     }
-
-    item.appendChild(pluginList);
-    target.appendChild(item);
+    item.appendChild(pluginList); target.appendChild(item);
   });
 }
 
 function renderAddonSectionSelect() {
-  const select = document.getElementById("addonSectionSelect");
+  const select   = document.getElementById("addonSectionSelect");
   const sections = arrayOf(state.catalog.catalog.addons.sections);
   select.innerHTML = "";
-
   if (!sections.length) {
-    const option = document.createElement("option");
-    option.value = "";
-    option.textContent = "Create a section first";
-    select.appendChild(option);
-    return;
+    const opt = document.createElement("option"); opt.value = ""; opt.textContent = "Create a section first";
+    select.appendChild(opt); return;
   }
-
-  sections.forEach((section) => {
-    const option = document.createElement("option");
-    option.value = section.name;
-    option.textContent = section.name;
-    select.appendChild(option);
+  sections.forEach(s => {
+    const opt = document.createElement("option"); opt.value = s.name; opt.textContent = s.name;
+    select.appendChild(opt);
   });
 }
 
 function renderInspector() {
   const target = document.getElementById("inspectorBody");
-  const entry = currentSelectedRelease();
-
+  const entry  = currentSelectedRelease();
   if (!entry) {
     target.className = "empty";
     target.innerHTML = "No release selected yet. Choose a row from the registry to inspect or edit it.";
     return;
   }
-
   target.className = "";
-
   const ready = isHttpsUrl(entry.release.download);
   target.innerHTML = [
     '<h3 class="inspector-title">' + escapeHtml(entry.release.name || entry.release.version || "Unnamed release") + "</h3>",
@@ -1759,34 +1694,26 @@ function renderInspector() {
     entry.release.latest ? '<span class="pill accent">Latest</span>' : "",
     "</div>",
     '<div class="detail-list">',
-    buildDetailHtml("Plugin", entry.pluginName),
-    buildDetailHtml("Section", entry.section || "Core release"),
-    buildDetailHtml("Version", entry.release.version || "-"),
-    buildDetailHtml("Loader", entry.release.loader || "-"),
+    buildDetailHtml("Plugin",   entry.pluginName),
+    buildDetailHtml("Section",  entry.section || "Core release"),
+    buildDetailHtml("Version",  entry.release.version || "-"),
+    buildDetailHtml("Loader",   entry.release.loader  || "-"),
     buildDetailHtml("Download URL", entry.release.download || "Missing"),
-    buildDetailHtml("Download health", ready ? "Ready for browser fetch" : "Missing or invalid https URL"),
+    buildDetailHtml("Health",   ready ? "Ready for browser fetch" : "Missing or invalid https URL"),
     "</div>"
   ].join("");
 
-  const actions = document.createElement("div");
-  actions.className = "action-row";
-  actions.style.marginTop = "16px";
+  const actions = document.createElement("div"); actions.className = "action-row"; actions.style.marginTop = "16px";
   actions.append(
-    buildActionButton("Edit release", "btn-inline", () => openReleaseModal("edit", entry)),
-    buildActionButton("Copy URL", "btn-inline", () => copyText(entry.release.download, "Copied release download URL.")),
-    buildActionButton("Download build", "btn-inline btn-primary", () => triggerDownload(entry.release.download))
+    buildActionButton("Edit release",  "btn-inline",          () => openReleaseModal("edit", entry)),
+    buildActionButton("Copy URL",      "btn-inline",          () => copyText(entry.release.download, "Copied release download URL.")),
+    buildActionButton("Download build","btn-inline btn-primary", () => triggerDownload(entry.release.download))
   );
-
   target.appendChild(actions);
 }
 
 function buildDetailHtml(key, value) {
-  return [
-    '<div class="detail">',
-    '<div class="k">' + escapeHtml(key) + "</div>",
-    '<div class="v">' + escapeHtml(value) + "</div>",
-    "</div>"
-  ].join("");
+  return '<div class="detail"><div class="k">' + escapeHtml(key) + '</div><div class="v">' + escapeHtml(value) + "</div></div>";
 }
 
 function renderJsonEditor() {
@@ -1799,13 +1726,11 @@ function renderSettings() {
 }
 
 function renderAuthState() {
-  const pill = document.getElementById("authStatusPill");
-  const copy = document.getElementById("authStatusCopy");
+  const pill    = document.getElementById("authStatusPill");
+  const copy    = document.getElementById("authStatusCopy");
   const unlocked = state.authVerified && !!state.adminToken;
-
-  pill.className = "pill " + (unlocked ? "success" : "danger");
+  pill.className  = "pill " + (unlocked ? "success" : "danger");
   pill.textContent = unlocked ? "Unlocked" : "Locked";
-
   if (unlocked) {
     copy.textContent = state.lastSavedSha
       ? "Authenticated. Latest saved commit sha: " + state.lastSavedSha.slice(0, 12)
@@ -1817,50 +1742,38 @@ function renderAuthState() {
 
 function openReleaseModal(mode, payload) {
   if (!ensureAuthenticated()) return;
-  state.modalMode = mode;
-  state.editingLocation = null;
-
+  state.modalMode = mode; state.editingLocation = null;
   const modalTitle = document.getElementById("modalTitle");
-  const modalCopy = document.getElementById("modalCopy");
+  const modalCopy  = document.getElementById("modalCopy");
 
   if (mode === "edit") {
     modalTitle.textContent = "Edit release";
-    modalCopy.textContent = "Update the selected release fields, including the exact download URL used by the public page.";
-
+    modalCopy.textContent  = "Update the selected release fields, including the exact download URL used by the public page.";
     const entry = payload;
-    state.editingLocation = {
-      scope: entry.scope,
-      section: entry.section,
-      pluginName: entry.pluginName,
-      signature: entry.signature,
-      sectionIndex: entry.sectionIndex,
-      pluginIndex: entry.pluginIndex,
-      releaseIndex: entry.releaseIndex,
-    };
-
-    document.getElementById("releaseScopeInput").value = entry.scope;
-    document.getElementById("releaseSectionInput").value = entry.section || "";
-    document.getElementById("releasePluginInput").value = entry.pluginName;
-    document.getElementById("releaseNameInput").value = entry.release.name;
-    document.getElementById("releaseVersionInput").value = entry.release.version;
-    document.getElementById("releaseTypeInput").value = entry.release.type;
-    document.getElementById("releaseStatusInput").value = entry.release.status;
-    document.getElementById("releaseLoaderInput").value = entry.release.loader;
+    state.editingLocation = { scope:entry.scope, section:entry.section, pluginName:entry.pluginName,
+      signature:entry.signature, sectionIndex:entry.sectionIndex, pluginIndex:entry.pluginIndex, releaseIndex:entry.releaseIndex };
+    document.getElementById("releaseScopeInput").value    = entry.scope;
+    document.getElementById("releaseSectionInput").value  = entry.section || "";
+    document.getElementById("releasePluginInput").value   = entry.pluginName;
+    document.getElementById("releaseNameInput").value     = entry.release.name;
+    document.getElementById("releaseVersionInput").value  = entry.release.version;
+    document.getElementById("releaseTypeInput").value     = entry.release.type;
+    document.getElementById("releaseStatusInput").value   = entry.release.status;
+    document.getElementById("releaseLoaderInput").value   = entry.release.loader;
     document.getElementById("releaseDownloadInput").value = entry.release.download;
     document.getElementById("releaseLatestInput").checked = entry.release.latest;
   } else {
     modalTitle.textContent = "Add release";
-    modalCopy.textContent = "Create a release entry that is immediately compatible with the public dashboard.";
-
+    modalCopy.textContent  = "Create a release entry that is immediately compatible with the public dashboard.";
     const scope = payload && payload.scope ? payload.scope : "core";
-    document.getElementById("releaseScopeInput").value = scope;
-    document.getElementById("releaseSectionInput").value = payload && payload.section ? payload.section : "";
-    document.getElementById("releasePluginInput").value = payload && payload.pluginName ? payload.pluginName : "";
-    document.getElementById("releaseNameInput").value = "";
-    document.getElementById("releaseVersionInput").value = "";
-    document.getElementById("releaseTypeInput").value = "stable";
-    document.getElementById("releaseStatusInput").value = "success";
-    document.getElementById("releaseLoaderInput").value = "PaperMC";
+    document.getElementById("releaseScopeInput").value    = scope;
+    document.getElementById("releaseSectionInput").value  = payload && payload.section    ? payload.section    : "";
+    document.getElementById("releasePluginInput").value   = payload && payload.pluginName ? payload.pluginName : "";
+    document.getElementById("releaseNameInput").value     = "";
+    document.getElementById("releaseVersionInput").value  = "";
+    document.getElementById("releaseTypeInput").value     = "stable";
+    document.getElementById("releaseStatusInput").value   = "success";
+    document.getElementById("releaseLoaderInput").value   = "PaperMC";
     document.getElementById("releaseDownloadInput").value = "";
     document.getElementById("releaseLatestInput").checked = true;
   }
@@ -1878,48 +1791,26 @@ function closeReleaseModal() {
 
 function updateReleaseScopeField() {
   const scope = document.getElementById("releaseScopeInput").value;
-  const field = document.getElementById("releaseSectionField");
-  field.style.display = scope === "addon" ? "flex" : "none";
+  document.getElementById("releaseSectionField").style.display = scope === "addon" ? "flex" : "none";
 }
 
 function readModalRelease() {
-  const scope = document.getElementById("releaseScopeInput").value;
-  const section = asText(document.getElementById("releaseSectionInput").value);
+  const scope      = document.getElementById("releaseScopeInput").value;
+  const section    = asText(document.getElementById("releaseSectionInput").value);
   const pluginName = asText(document.getElementById("releasePluginInput").value);
-  const name = asText(document.getElementById("releaseNameInput").value);
-  const version = asText(document.getElementById("releaseVersionInput").value);
-  const type = document.getElementById("releaseTypeInput").value;
-  const status = document.getElementById("releaseStatusInput").value;
-  const loader = document.getElementById("releaseLoaderInput").value;
-  const download = asText(document.getElementById("releaseDownloadInput").value);
-  const latest = document.getElementById("releaseLatestInput").checked;
+  const name       = asText(document.getElementById("releaseNameInput").value);
+  const version    = asText(document.getElementById("releaseVersionInput").value);
+  const type       = document.getElementById("releaseTypeInput").value;
+  const status     = document.getElementById("releaseStatusInput").value;
+  const loader     = document.getElementById("releaseLoaderInput").value;
+  const download   = asText(document.getElementById("releaseDownloadInput").value);
+  const latest     = document.getElementById("releaseLatestInput").checked;
 
-  if (!pluginName || !name || !version) {
-    throw new Error("Plugin, release name, and version are required.");
-  }
+  if (!pluginName || !name || !version) throw new Error("Plugin, release name, and version are required.");
+  if (scope === "addon" && !section)    throw new Error("Addon releases require a section name.");
+  if (!isHttpsUrl(download))            throw new Error("Download URL must be a valid https:// address.");
 
-  if (scope === "addon" && !section) {
-    throw new Error("Addon releases require a section name.");
-  }
-
-  if (!isHttpsUrl(download)) {
-    throw new Error("Download URL must be a valid https:// address.");
-  }
-
-  return {
-    scope,
-    section,
-    pluginName,
-    release: {
-      name,
-      version,
-      type,
-      latest,
-      status,
-      loader,
-      download,
-    }
-  };
+  return { scope, section, pluginName, release: { name, version, type, latest, status, loader, download } };
 }
 
 function saveReleaseFromModal() {
@@ -1927,9 +1818,7 @@ function saveReleaseFromModal() {
   try {
     const payload = readModalRelease();
     let targetPlugin = getPluginForScope(payload.scope, payload.section, payload.pluginName, true);
-    if (!targetPlugin) {
-      throw new Error("Could not resolve the target plugin.");
-    }
+    if (!targetPlugin) throw new Error("Could not resolve the target plugin.");
 
     if (state.modalMode === "edit" && state.editingLocation) {
       removeReleaseAtLocation(state.editingLocation);
@@ -1943,107 +1832,74 @@ function saveReleaseFromModal() {
     targetPlugin.releases.push(payload.release);
     const savedIndex = targetPlugin.releases.length - 1;
     normalizeLatestFlags(targetPlugin.releases, payload.release.latest ? savedIndex : findLatestIndex(targetPlugin.releases));
-
     state.selectedSignature = pluginSignature(payload.scope, payload.section, payload.pluginName, payload.release);
-    closeReleaseModal();
-    renderAll();
-    showToast("Release saved.");
+    closeReleaseModal(); renderAll(); showToast("Release saved.");
   } catch (error) {
     showAlert("modalAlert", "error", error.message);
   }
 }
 
 function findLatestIndex(releases) {
-  const index = arrayOf(releases).findIndex((release) => release.latest);
-  return index >= 0 ? index : 0;
+  const i = arrayOf(releases).findIndex(r => r.latest);
+  return i >= 0 ? i : 0;
 }
 
 function deleteRelease(entry) {
   if (!ensureAuthenticated()) return;
   const label = entry.release.version || entry.release.name || "this release";
   if (!window.confirm("Delete " + label + "?")) return;
-
   removeReleaseAtLocation(entry);
-  if (state.selectedSignature === entry.signature) {
-    state.selectedSignature = "";
-  }
-  renderAll();
-  showToast("Release deleted.");
+  if (state.selectedSignature === entry.signature) state.selectedSignature = "";
+  renderAll(); showToast("Release deleted.");
 }
 
 function deleteCorePlugin(pluginName) {
   if (!ensureAuthenticated()) return;
   if (!window.confirm("Delete core plugin " + pluginName + "?")) return;
-  state.catalog.catalog.core.plugins = arrayOf(state.catalog.catalog.core.plugins).filter((plugin) => plugin.name !== pluginName);
-  renderAll();
-  showToast("Core plugin deleted.");
+  state.catalog.catalog.core.plugins = arrayOf(state.catalog.catalog.core.plugins).filter(p => p.name !== pluginName);
+  renderAll(); showToast("Core plugin deleted.");
 }
 
 function deleteAddonSection(sectionName) {
   if (!ensureAuthenticated()) return;
   if (!window.confirm("Delete addon section " + sectionName + "?")) return;
-  state.catalog.catalog.addons.sections = arrayOf(state.catalog.catalog.addons.sections).filter((section) => section.name !== sectionName);
-  renderAll();
-  showToast("Addon section deleted.");
+  state.catalog.catalog.addons.sections = arrayOf(state.catalog.catalog.addons.sections).filter(s => s.name !== sectionName);
+  renderAll(); showToast("Addon section deleted.");
 }
 
 function deleteAddonPlugin(sectionName, pluginName) {
   if (!ensureAuthenticated()) return;
   if (!window.confirm("Delete addon plugin " + pluginName + "?")) return;
-  const section = findAddonSection(sectionName);
-  if (!section) return;
-  section.plugins = arrayOf(section.plugins).filter((plugin) => plugin.name !== pluginName);
-  renderAll();
-  showToast("Addon plugin deleted.");
+  const section = findAddonSection(sectionName); if (!section) return;
+  section.plugins = arrayOf(section.plugins).filter(p => p.name !== pluginName);
+  renderAll(); showToast("Addon plugin deleted.");
 }
 
 function addCorePluginFromInput() {
   if (!ensureAuthenticated()) return;
   const input = document.getElementById("newCorePluginName");
-  const name = asText(input.value);
-  if (!name) {
-    showAlert("releaseAlert", "error", "Enter a core plugin name first.");
-    return;
-  }
-  ensureCorePlugin(name);
-  input.value = "";
-  hideAlert("releaseAlert");
-  renderAll();
-  showToast("Core plugin created.");
+  const name  = asText(input.value);
+  if (!name) { showAlert("releaseAlert","error","Enter a core plugin name first."); return; }
+  ensureCorePlugin(name); input.value = ""; hideAlert("releaseAlert"); renderAll(); showToast("Core plugin created.");
 }
 
 function addSectionFromInput() {
   if (!ensureAuthenticated()) return;
   const input = document.getElementById("newSectionName");
-  const name = asText(input.value);
-  if (!name) {
-    showAlert("releaseAlert", "error", "Enter an addon section name first.");
-    return;
-  }
-  ensureAddonSection(name);
-  input.value = "";
-  hideAlert("releaseAlert");
-  renderAll();
-  showToast("Addon section created.");
+  const name  = asText(input.value);
+  if (!name) { showAlert("releaseAlert","error","Enter an addon section name first."); return; }
+  ensureAddonSection(name); input.value = ""; hideAlert("releaseAlert"); renderAll(); showToast("Addon section created.");
 }
 
 function addAddonPluginFromInput() {
   if (!ensureAuthenticated()) return;
   const sectionName = asText(document.getElementById("addonSectionSelect").value);
-  const pluginName = asText(document.getElementById("newAddonPluginName").value);
-  if (!sectionName) {
-    showAlert("releaseAlert", "error", "Create an addon section first.");
-    return;
-  }
-  if (!pluginName) {
-    showAlert("releaseAlert", "error", "Enter an addon plugin name first.");
-    return;
-  }
+  const pluginName  = asText(document.getElementById("newAddonPluginName").value);
+  if (!sectionName) { showAlert("releaseAlert","error","Create an addon section first."); return; }
+  if (!pluginName)  { showAlert("releaseAlert","error","Enter an addon plugin name first."); return; }
   ensureAddonPlugin(sectionName, pluginName);
   document.getElementById("newAddonPluginName").value = "";
-  hideAlert("releaseAlert");
-  renderAll();
-  showToast("Addon plugin created.");
+  hideAlert("releaseAlert"); renderAll(); showToast("Addon plugin created.");
 }
 
 function applyJsonEditor() {
@@ -2051,11 +1907,9 @@ function applyJsonEditor() {
   try {
     const parsed = JSON.parse(document.getElementById("jsonEditor").value);
     state.catalog = normalizeCatalog(parsed);
-    hideAlert("jsonAlert");
-    renderAll();
-    showToast("JSON applied.");
+    hideAlert("jsonAlert"); renderAll(); showToast("JSON applied.");
   } catch (error) {
-    showAlert("jsonAlert", "error", "Invalid JSON: " + error.message);
+    showAlert("jsonAlert","error","Invalid JSON: " + error.message);
   }
 }
 
@@ -2065,249 +1919,163 @@ function formatJsonEditor() {
     document.getElementById("jsonEditor").value = JSON.stringify(normalizeCatalog(parsed), null, 2);
     hideAlert("jsonAlert");
   } catch (error) {
-    showAlert("jsonAlert", "error", "Invalid JSON: " + error.message);
+    showAlert("jsonAlert","error","Invalid JSON: " + error.message);
   }
 }
 
 function applySettings() {
-  const title = asText(document.getElementById("catalogTitleInput").value);
+  const title   = asText(document.getElementById("catalogTitleInput").value);
   const dataUrl = asText(document.getElementById("dataUrlInput").value);
-
-  if (!title) {
-    showToast("Catalog title cannot be empty.");
-    return;
-  }
-
-  if (!dataUrl) {
-    showToast("Data URL cannot be empty.");
-    return;
-  }
-
+  if (!title)   { showToast("Catalog title cannot be empty."); return; }
+  if (!dataUrl) { showToast("Data URL cannot be empty."); return; }
   state.catalog.catalog.title = title;
   state.dataUrl = dataUrl;
   localStorage.setItem(STORAGE_KEY, dataUrl);
-  renderAll();
-  showToast("Settings applied.");
+  renderAll(); showToast("Settings applied.");
 }
 
 async function loadRemoteData() {
   try {
-    const response = await fetch(state.dataUrl, { cache: "no-store" });
-    const payload = await response.json().catch(() => ({}));
+    const response = await fetch(state.dataUrl, { cache:"no-store" });
+    const payload  = await response.json().catch(() => ({}));
     if (!response.ok) {
       if (payload && payload.missing) {
-        const missingKeys = Object.keys(payload.missing).filter((key) => payload.missing[key]);
-        if (missingKeys.length) {
-          throw new Error((payload.error || "Server misconfiguration") + " -> " + missingKeys.join(", "));
-        }
+        const mk = Object.keys(payload.missing).filter(k => payload.missing[k]);
+        if (mk.length) throw new Error((payload.error || "Server misconfiguration") + " -> " + mk.join(", "));
       }
       throw new Error(payload.error || ("Remote fetch failed with status " + response.status + "."));
     }
     state.catalog = normalizeCatalog(payload);
     state.selectedSignature = "";
-    hideAlert("releaseAlert");
-    hideAlert("jsonAlert");
-    renderAll();
-    showToast("Remote catalog loaded.");
+    hideAlert("releaseAlert"); hideAlert("jsonAlert");
+    renderAll(); showToast("Remote catalog loaded.");
   } catch (error) {
-    showAlert("releaseAlert", "error", error.message);
+    showAlert("releaseAlert","error",error.message);
   }
 }
 
 async function saveRemoteData() {
   if (!ensureAuthenticated()) return;
-
   try {
     const response = await fetch(API_SAVE_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Admin-Token": state.adminToken,
-      },
+      headers: { "Content-Type":"application/json", "X-Admin-Token": state.adminToken },
       body: JSON.stringify(state.catalog),
     });
-
     const result = await response.json().catch(() => ({}));
-    if (!response.ok || !result.success) {
-      throw new Error(result.error || "Save failed.");
-    }
-
-    state.catalog = normalizeCatalog(result.data || state.catalog);
+    if (!response.ok || !result.success) throw new Error(result.error || "Save failed.");
+    state.catalog     = normalizeCatalog(result.data || state.catalog);
     state.lastSavedSha = asText(result.sha);
-    renderAll();
-    showToast("Saved to GitHub.");
+    renderAll(); showToast("Saved to GitHub.");
   } catch (error) {
-    showAlert("releaseAlert", "error", error.message);
+    showAlert("releaseAlert","error",error.message);
   }
 }
 
 function exportCatalog() {
-  const blob = new Blob([JSON.stringify(state.catalog, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
+  const blob   = new Blob([JSON.stringify(state.catalog, null, 2)], { type:"application/json" });
+  const url    = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = "data.json";
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  URL.revokeObjectURL(url);
-  showToast("Exported data.json.");
+  anchor.href = url; anchor.download = "data.json";
+  document.body.appendChild(anchor); anchor.click(); anchor.remove();
+  URL.revokeObjectURL(url); showToast("Exported data.json.");
 }
 
 async function copyText(value, successMessage) {
   const text = asText(value);
-  if (!text) {
-    showToast("Nothing to copy yet.");
-    return;
-  }
-
-  try {
-    await navigator.clipboard.writeText(text);
-    showToast(successMessage || "Copied.");
-  } catch (error) {
-    showToast("Clipboard access failed.");
-  }
+  if (!text) { showToast("Nothing to copy yet."); return; }
+  try { await navigator.clipboard.writeText(text); showToast(successMessage || "Copied."); }
+  catch { showToast("Clipboard access failed."); }
 }
 
-function copyCurrentJson() {
-  copyText(JSON.stringify(state.catalog, null, 2), "Copied catalog JSON.");
-}
+function copyCurrentJson() { copyText(JSON.stringify(state.catalog, null, 2), "Copied catalog JSON."); }
 
 function triggerDownload(url) {
-  if (!isHttpsUrl(url)) {
-    showToast("Release download URL is missing or invalid.");
-    return;
-  }
-
+  if (!isHttpsUrl(url)) { showToast("Release download URL is missing or invalid."); return; }
   const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.target = "_blank";
-  anchor.rel = "noopener";
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
+  anchor.href = url; anchor.target = "_blank"; anchor.rel = "noopener";
+  document.body.appendChild(anchor); anchor.click(); anchor.remove();
   showToast("Download request started.");
 }
 
 function resetToSample() {
   if (!ensureAuthenticated()) return;
-  state.catalog = createSampleCatalog();
-  state.selectedSignature = "";
-  renderAll();
-  showToast("Loaded sample catalog.");
+  state.catalog = createSampleCatalog(); state.selectedSignature = "";
+  renderAll(); showToast("Loaded sample catalog.");
 }
 
 function resetToBlank() {
   if (!ensureAuthenticated()) return;
   if (!window.confirm("Start a blank catalog?")) return;
-  state.catalog = {
-    catalog: {
-      title: "rutwokLabz Plugin Catalog",
-      core: { plugins: [] },
-      addons: { sections: [] }
-    }
-  };
+  state.catalog = { catalog: { title:"rutwokLabz Plugin Catalog", core:{ plugins:[] }, addons:{ sections:[] } } };
   state.selectedSignature = "";
-  renderAll();
-  showToast("Blank catalog ready.");
+  renderAll(); showToast("Blank catalog ready.");
 }
 
 function testModalDownload() {
-  const value = asText(document.getElementById("releaseDownloadInput").value);
-  triggerDownload(value);
+  triggerDownload(asText(document.getElementById("releaseDownloadInput").value));
 }
 
-function hasAdminToken() {
-  return !!asText(state.adminToken);
-}
+function hasAdminToken() { return !!asText(state.adminToken); }
 
 function ensureAuthenticated() {
-  if (state.authVerified && hasAdminToken()) {
-    return true;
-  }
-  openAuthModal();
-  showToast("Admin login required.");
-  return false;
+  if (state.authVerified && hasAdminToken()) return true;
+  openAuthModal(); showToast("Admin login required."); return false;
 }
 
 function openAuthModal() {
   hideAlert("authAlert");
   document.getElementById("authTokenInput").value = state.adminToken || "";
   document.getElementById("authModal").classList.add("open");
-  document.getElementById("authModal").setAttribute("aria-hidden", "false");
+  document.getElementById("authModal").setAttribute("aria-hidden","false");
 }
 
 function closeAuthModal() {
   document.getElementById("authModal").classList.remove("open");
-  document.getElementById("authModal").setAttribute("aria-hidden", "true");
+  document.getElementById("authModal").setAttribute("aria-hidden","true");
 }
 
 async function submitAuth() {
   const token = asText(document.getElementById("authTokenInput").value);
-  if (!token) {
-    showAlert("authAlert", "error", "Enter your admin token.");
-    return;
-  }
-
+  if (!token) { showAlert("authAlert","error","Enter your admin token."); return; }
   try {
     const response = await fetch(API_AUTH_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Admin-Token": token,
-      },
+      headers: { "Content-Type":"application/json", "X-Admin-Token": token },
       body: JSON.stringify({ token }),
     });
     const result = await response.json().catch(() => ({}));
-    if (!response.ok || !result.success) {
-      throw new Error(result.error || "Authentication failed.");
-    }
-
-    state.adminToken = token;
+    if (!response.ok || !result.success) throw new Error(result.error || "Authentication failed.");
+    state.adminToken  = token;
     state.authVerified = true;
     sessionStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, token);
-    hideAlert("authAlert");
-    closeAuthModal();
-    renderAuthState();
+    hideAlert("authAlert"); closeAuthModal(); renderAuthState();
     showToast("Admin unlocked.");
   } catch (error) {
     state.authVerified = false;
-    showAlert("authAlert", "error", error.message);
+    showAlert("authAlert","error",error.message);
   }
 }
 
 function logoutAuth() {
-  state.adminToken = "";
-  state.authVerified = false;
-  state.lastSavedSha = "";
+  state.adminToken = ""; state.authVerified = false; state.lastSavedSha = "";
   sessionStorage.removeItem(ADMIN_TOKEN_STORAGE_KEY);
-  renderAuthState();
-  showToast("Admin session cleared.");
+  renderAuthState(); showToast("Admin session cleared.");
 }
 
 async function restoreAdminSession() {
-  if (!hasAdminToken()) {
-    renderAuthState();
-    return;
-  }
-
+  if (!hasAdminToken()) { renderAuthState(); return; }
   try {
     const response = await fetch(API_AUTH_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Admin-Token": state.adminToken,
-      },
+      headers: { "Content-Type":"application/json", "X-Admin-Token": state.adminToken },
       body: JSON.stringify({ token: state.adminToken }),
     });
     const result = await response.json().catch(() => ({}));
-    if (!response.ok || !result.success) {
-      throw new Error("Stored token is no longer valid.");
-    }
+    if (!response.ok || !result.success) throw new Error("Stored token is no longer valid.");
     state.authVerified = true;
-  } catch (error) {
-    state.adminToken = "";
-    state.authVerified = false;
+  } catch {
+    state.adminToken = ""; state.authVerified = false;
     sessionStorage.removeItem(ADMIN_TOKEN_STORAGE_KEY);
   }
   renderAuthState();
@@ -2315,25 +2083,20 @@ async function restoreAdminSession() {
 
 function showAlert(id, type, message) {
   const node = document.getElementById(id);
-  node.className = "alert show " + type;
-  node.textContent = message;
+  node.className = "alert show " + type; node.textContent = message;
 }
 
 function hideAlert(id) {
   const node = document.getElementById(id);
-  node.className = "alert";
-  node.textContent = "";
+  node.className = "alert"; node.textContent = "";
 }
 
 let toastTimer = 0;
 function showToast(message) {
   const node = document.getElementById("toast");
-  node.textContent = message;
-  node.classList.add("show");
+  node.textContent = message; node.classList.add("show");
   window.clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => {
-    node.classList.remove("show");
-  }, 2400);
+  toastTimer = window.setTimeout(() => node.classList.remove("show"), 2600);
 }
 
 function bindEvents() {
@@ -2342,8 +2105,8 @@ function bindEvents() {
   document.getElementById("exportBtn").addEventListener("click", exportCatalog);
   document.getElementById("openAuthBtn").addEventListener("click", openAuthModal);
   document.getElementById("logoutAuthBtn").addEventListener("click", logoutAuth);
-  document.getElementById("addCoreReleaseBtn").addEventListener("click", () => openReleaseModal("create", { scope: "core", section: "", pluginName: "" }));
-  document.getElementById("addAddonReleaseBtn").addEventListener("click", () => openReleaseModal("create", { scope: "addon", section: "", pluginName: "" }));
+  document.getElementById("addCoreReleaseBtn").addEventListener("click", () => openReleaseModal("create", { scope:"core", section:"", pluginName:"" }));
+  document.getElementById("addAddonReleaseBtn").addEventListener("click", () => openReleaseModal("create", { scope:"addon", section:"", pluginName:"" }));
   document.getElementById("addCorePluginBtn").addEventListener("click", addCorePluginFromInput);
   document.getElementById("addSectionBtn").addEventListener("click", addSectionFromInput);
   document.getElementById("addAddonPluginBtn").addEventListener("click", addAddonPluginFromInput);
@@ -2361,16 +2124,8 @@ function bindEvents() {
   document.getElementById("closeAuthModalBtn").addEventListener("click", closeAuthModal);
   document.getElementById("cancelAuthBtn").addEventListener("click", closeAuthModal);
   document.getElementById("submitAuthBtn").addEventListener("click", submitAuth);
-  document.getElementById("releaseModal").addEventListener("click", (event) => {
-    if (event.target === document.getElementById("releaseModal")) {
-      closeReleaseModal();
-    }
-  });
-  document.getElementById("authModal").addEventListener("click", (event) => {
-    if (event.target === document.getElementById("authModal")) {
-      closeAuthModal();
-    }
-  });
+  document.getElementById("releaseModal").addEventListener("click", e => { if (e.target === document.getElementById("releaseModal")) closeReleaseModal(); });
+  document.getElementById("authModal").addEventListener("click", e => { if (e.target === document.getElementById("authModal")) closeAuthModal(); });
 }
 
 function init() {
