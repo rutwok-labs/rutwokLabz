@@ -1,1541 +1,833 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin - Plugin Builds</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #f8fafc;
-      --surface: #ffffff;
-      --surface-muted: #f1f5f9;
-      --border: #e5e7eb;
-      --border-strong: #cbd5e1;
-      --text: #111827;
-      --muted: #6b7280;
-      --accent: #2563eb;
-      --accent-soft: #eff6ff;
-      --cyan: #06b6d4;
-      --good: #16a34a;
-      --warn: #d97706;
-      --bad: #dc2626;
-      --sans: "Manrope", sans-serif;
-      --mono: "JetBrains Mono", monospace;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      min-height: 100vh;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--sans);
-    }
-
-    button, input, select, textarea { font: inherit; }
-
-    .auth-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 30;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background: rgba(248, 250, 252, 0.9);
-      backdrop-filter: blur(6px);
-    }
-
-    .auth-card {
-      width: min(420px, 100%);
-      padding: 28px;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      background: var(--surface);
-    }
-
-    .auth-card strong,
-    .meta-label {
-      display: inline-block;
-      margin-bottom: 10px;
-      color: var(--accent);
-      font: 700 0.7rem var(--mono);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .auth-card h2 {
-      font-size: 1.35rem;
-      margin-bottom: 8px;
-    }
-
-    .auth-card p {
-      margin-bottom: 16px;
-      color: var(--muted);
-      line-height: 1.65;
-    }
-
-    .page {
-      max-width: 1440px;
-      margin: 0 auto;
-      padding: 24px;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .brand-mark {
-      display: grid;
-      place-items: center;
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      background: var(--accent-soft);
-      border: 1px solid #bfdbfe;
-      color: var(--accent);
-      font: 800 0.95rem var(--mono);
-    }
-
-    .brand h1 {
-      font-size: 1.9rem;
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-
-    .brand p {
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .shell {
-      display: grid;
-      grid-template-columns: 300px minmax(0, 1fr);
-      gap: 18px;
-      min-height: calc(100vh - 128px);
-    }
-
-    .sidebar,
-    .detail {
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      background: var(--surface);
-    }
-
-    .sidebar {
-      padding: 18px;
-    }
-
-    .detail {
-      padding: 22px;
-    }
-
-    .sidebar-head {
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .sidebar-head h2 {
-      font-size: 1rem;
-      margin-bottom: 4px;
-    }
-
-    .sidebar-head p {
-      color: var(--muted);
-      font-size: 0.86rem;
-      line-height: 1.55;
-    }
-
-    .group + .group {
-      margin-top: 18px;
-      padding-top: 18px;
-      border-top: 1px solid var(--border);
-    }
-
-    .group-label {
-      margin-bottom: 10px;
-      color: var(--muted);
-      font: 700 0.68rem var(--mono);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .tree {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .tree-btn {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid transparent;
-      border-radius: 12px;
-      background: transparent;
-      color: var(--text);
-      text-align: left;
-      cursor: pointer;
-    }
-
-    .tree-btn:hover {
-      background: var(--surface-muted);
-      border-color: var(--border);
-    }
-
-    .tree-btn.active {
-      background: var(--accent-soft);
-      border-color: #bfdbfe;
-      color: var(--accent);
-    }
-
-    .tree-btn strong {
-      display: block;
-      font-size: 0.92rem;
-      margin-bottom: 4px;
-    }
-
-    .tree-btn span {
-      color: var(--muted);
-      font-size: 0.77rem;
-    }
-
-    .tree-empty {
-      padding: 10px 12px;
-      color: var(--muted);
-      font-size: 0.88rem;
-      line-height: 1.6;
-      border: 1px dashed var(--border);
-      border-radius: 12px;
-    }
-
-    .stack {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      min-height: 42px;
-      padding: 0 15px;
-      border: 1px solid var(--border-strong);
-      border-radius: 12px;
-      background: var(--surface);
-      color: var(--text);
-      cursor: pointer;
-      text-decoration: none;
-      font-weight: 700;
-    }
-
-    .btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .btn.primary {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #ffffff;
-    }
-
-    .btn.primary:hover {
-      color: #ffffff;
-      opacity: 0.94;
-    }
-
-    .btn.bad {
-      color: var(--bad);
-    }
-
-    .btn:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      border-color: var(--border);
-      color: var(--muted);
-    }
-
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 42px;
-      padding: 0 14px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--muted);
-      font: 700 0.72rem var(--mono);
-    }
-
-    .status::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: currentColor;
-    }
-
-    .status.good { color: var(--good); }
-    .status.warn { color: var(--warn); }
-    .status.bad { color: var(--bad); }
-
-    .crumbs {
-      margin-bottom: 18px;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .crumbs strong {
-      color: var(--text);
-    }
-
-    .detail-pane {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    .detail-section + .detail-section {
-      padding-top: 22px;
-      border-top: 1px solid var(--border);
-    }
-
-    .detail-section h2 {
-      font-size: 1.05rem;
-      margin-bottom: 12px;
-    }
-
-    .detail-copy {
-      color: var(--muted);
-      font-size: 0.92rem;
-      line-height: 1.65;
-    }
-
-    .field-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .field-full {
-      grid-column: 1 / -1;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .field label {
-      color: var(--muted);
-      font: 700 0.68rem var(--mono);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .input,
-    .select {
-      width: 100%;
-      min-height: 44px;
-      padding: 0 13px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: #ffffff;
-      color: var(--text);
-      outline: none;
-    }
-
-    .input:focus,
-    .select:focus {
-      border-color: var(--accent);
-    }
-
-    .hint {
-      color: var(--muted);
-      font-size: 0.82rem;
-      line-height: 1.55;
-    }
-
-    .error {
-      display: none;
-      color: var(--bad);
-      font: 700 0.72rem var(--mono);
-    }
-
-    .release-layout {
-      display: grid;
-      grid-template-columns: 260px minmax(0, 1fr);
-      gap: 16px;
-      align-items: start;
-    }
-
-    .release-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      max-height: 420px;
-      overflow: auto;
-      padding-right: 4px;
-    }
-
-    .release-btn {
-      width: 100%;
-      padding: 11px 12px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: #ffffff;
-      text-align: left;
-      cursor: pointer;
-    }
-
-    .release-btn:hover {
-      border-color: var(--border-strong);
-      background: var(--surface-muted);
-    }
-
-    .release-btn.active {
-      border-color: #bfdbfe;
-      background: var(--accent-soft);
-    }
-
-    .release-btn strong {
-      display: block;
-      font-size: 0.9rem;
-      margin-bottom: 4px;
-    }
-
-    .release-btn span {
-      color: var(--muted);
-      font-size: 0.76rem;
-    }
-
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      min-height: 44px;
-      padding: 0 14px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: var(--surface-muted);
-    }
-
-    .toggle-row strong {
-      font-size: 0.9rem;
-    }
-
-    .toggle-row span {
-      display: block;
-      color: var(--muted);
-      font-size: 0.8rem;
-      margin-top: 2px;
-    }
-
-    .toggle {
-      position: relative;
-      width: 50px;
-      height: 28px;
-      flex-shrink: 0;
-    }
-
-    .toggle input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .toggle-ui {
-      position: absolute;
-      inset: 0;
-      border-radius: 999px;
-      background: #cbd5e1;
-      transition: 0.16s ease;
-    }
-
-    .toggle-ui::after {
-      content: "";
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 22px;
-      height: 22px;
-      border-radius: 999px;
-      background: #ffffff;
-      transition: 0.16s ease;
-    }
-
-    .toggle input:checked + .toggle-ui {
-      background: var(--accent);
-    }
-
-    .toggle input:checked + .toggle-ui::after {
-      transform: translateX(22px);
-    }
-
-    .empty-state {
-      padding: 18px;
-      border: 1px dashed var(--border);
-      border-radius: 14px;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    #toast {
-      position: fixed;
-      right: 16px;
-      bottom: 16px;
-      z-index: 40;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .toast {
-      min-width: 220px;
-      padding: 12px 14px;
-      border: 1px solid;
-      border-radius: 12px;
-      background: #ffffff;
-      font: 700 0.72rem var(--mono);
-    }
-
-    .toast.info {
-      color: var(--accent);
-      border-color: #bfdbfe;
-    }
-
-    .toast.good {
-      color: var(--good);
-      border-color: #bbf7d0;
-    }
-
-    .toast.bad {
-      color: var(--bad);
-      border-color: #fecaca;
-    }
-
-    @media (max-width: 1100px) {
-      .shell {
-        grid-template-columns: 1fr;
-      }
-
-      .release-layout {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 760px) {
-      .page {
-        padding: 16px;
-      }
-
-      .toolbar {
-        width: 100%;
-      }
-
-      .field-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>rutwokLabz — Admin Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg:          #020b18;
+    --bg2:         #051525;
+    --glass:       rgba(6, 28, 56, 0.55);
+    --glass-hover: rgba(10, 45, 85, 0.7);
+    --border:      rgba(0, 180, 255, 0.12);
+    --border-hi:   rgba(0, 220, 255, 0.35);
+    --glow:        rgba(0, 210, 255, 0.08);
+    --blue:        #0084ff;
+    --cyan:        #00d4ff;
+    --cyan-dim:    rgba(0, 212, 255, 0.18);
+    --cyan-soft:   rgba(0, 212, 255, 0.08);
+    --danger:      rgba(255, 60, 80, 0.85);
+    --danger-dim:  rgba(255, 60, 80, 0.15);
+    --success:     rgba(74, 222, 128, 0.9);
+    --success-dim: rgba(74, 222, 128, 0.12);
+    --text:        #e0f4ff;
+    --muted:       rgba(160, 210, 240, 0.55);
+    --mono:        "JetBrains Mono", monospace;
+    --sans:        "Syne", sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 55% 45% at 10% 15%, rgba(0,80,200,0.14) 0%, transparent 70%),
+      radial-gradient(ellipse 45% 50% at 90% 80%, rgba(0,190,255,0.1) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 35% at 60% 10%, rgba(0,140,255,0.07) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: "";
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,180,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,180,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; max-width: 1300px; margin: 0 auto; padding: 28px 24px; }
+
+  /* ─── HEADER ─── */
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; margin-bottom: 28px; flex-wrap: wrap;
+    padding: 18px 24px;
+    background: var(--glass);
+    border: 1px solid var(--border-hi);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 40px rgba(0,180,255,0.07), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  .brand { display: flex; align-items: center; gap: 16px; }
+  .brand-mark {
+    width: 50px; height: 50px; border-radius: 14px;
+    background: linear-gradient(135deg, rgba(255,60,80,0.3), rgba(255,140,0,0.2));
+    border: 1px solid rgba(255,100,80,0.4);
+    display: grid; place-items: center;
+    font: 700 0.85rem var(--mono); color: #ff6b6b;
+    box-shadow: 0 0 20px rgba(255,80,80,0.15), inset 0 0 12px rgba(255,60,60,0.1);
+    animation: pulse-admin 3s ease-in-out infinite;
+  }
+  @keyframes pulse-admin {
+    0%,100% { box-shadow: 0 0 20px rgba(255,80,80,0.15); }
+    50%      { box-shadow: 0 0 35px rgba(255,80,80,0.3); }
+  }
+  .brand h1 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; }
+  .brand h1 span { color: #ff6b6b; }
+  .brand .tag {
+    display: inline-flex; align-items: center;
+    padding: 2px 10px; border-radius: 999px;
+    background: rgba(255,80,80,0.12); border: 1px solid rgba(255,80,80,0.3);
+    color: #ff6b6b; font: 700 0.6rem var(--mono); letter-spacing: 0.1em;
+    margin-left: 10px;
+  }
+  .brand p { color: var(--muted); font-size: 0.78rem; margin-top: 2px; font-family: var(--mono); }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    min-height: 40px; padding: 0 18px;
+    background: var(--glass);
+    border: 1px solid var(--border-hi);
+    border-radius: 12px; color: var(--cyan);
+    font: 700 0.8rem var(--mono); cursor: pointer;
+    text-decoration: none; transition: all 0.2s;
+    backdrop-filter: blur(10px); letter-spacing: 0.04em;
+  }
+  .btn:hover { background: var(--cyan-dim); box-shadow: 0 0 20px rgba(0,212,255,0.2); color: #fff; }
+  .btn-primary {
+    background: linear-gradient(135deg, rgba(0,132,255,0.4), rgba(0,212,255,0.3));
+    color: #fff;
+  }
+  .btn-primary:hover { background: linear-gradient(135deg, rgba(0,132,255,0.6), rgba(0,212,255,0.5)); box-shadow: 0 0 30px rgba(0,180,255,0.4); }
+  .btn-danger { color: #ff6b6b; border-color: rgba(255,80,80,0.4); }
+  .btn-danger:hover { background: var(--danger-dim); box-shadow: 0 0 20px rgba(255,80,80,0.2); color: #fff; border-color: #ff6b6b; }
+  .btn-success { color: #4ade80; border-color: rgba(74,222,128,0.4); }
+  .btn-success:hover { background: var(--success-dim); color: #fff; border-color: #4ade80; }
+
+  /* ─── TABS ─── */
+  .tabs {
+    display: flex; gap: 6px;
+    margin-bottom: 24px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 6px;
+    backdrop-filter: blur(10px);
+    width: fit-content;
+  }
+  .tab {
+    padding: 8px 20px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted);
+    font: 700 0.8rem var(--mono);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .tab:hover { color: var(--text); background: var(--glass-hover); }
+  .tab.active {
+    background: var(--cyan-dim);
+    border-color: var(--border-hi);
+    color: var(--cyan);
+    box-shadow: 0 0 12px rgba(0,212,255,0.15);
+  }
+
+  /* ─── SECTION CARDS ─── */
+  .section { display: none; }
+  .section.visible { display: block; }
+
+  /* ─── CARD ─── */
+  .card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    backdrop-filter: blur(20px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    margin-bottom: 18px;
+  }
+  .card-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+  }
+  .card-head h2 {
+    font-size: 1.15rem; font-weight: 800;
+    letter-spacing: -0.01em; display: flex; align-items: center; gap: 10px;
+  }
+  .card-head h2 .tag {
+    padding: 2px 10px; border-radius: 999px;
+    background: var(--cyan-soft); border: 1px solid var(--border-hi);
+    color: var(--cyan); font: 700 0.6rem var(--mono); letter-spacing: 0.1em;
+  }
+
+  /* ─── FORM ELEMENTS ─── */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .form-row.single { grid-template-columns: 1fr; }
+  .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+  label {
+    display: block; color: var(--muted);
+    font: 700 0.65rem var(--mono); letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  input, select, textarea {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(5,20,45,0.7);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font: 500 0.88rem var(--mono);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+  }
+  input::placeholder, textarea::placeholder { color: var(--muted); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--border-hi);
+    box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
+  }
+  textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
+  select option { background: #051525; }
+
+  .field-group { margin-bottom: 6px; }
+
+  /* ─── TABLE ─── */
+  .table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  thead tr { border-bottom: 1px solid var(--border); background: rgba(0,20,50,0.5); }
+  thead th {
+    padding: 12px 16px; text-align: left;
+    color: var(--cyan); font: 700 0.65rem var(--mono);
+    letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap;
+  }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--glass-hover); }
+  td { padding: 12px 16px; color: var(--text); font-family: var(--mono); vertical-align: middle; }
+  .td-actions { display: flex; gap: 8px; }
+  .action-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 12px; border-radius: 8px; border: 1px solid;
+    font: 700 0.67rem var(--mono); cursor: pointer;
+    transition: all 0.15s; background: transparent; letter-spacing: 0.06em;
+  }
+  .action-btn.edit { color: var(--cyan); border-color: var(--border-hi); }
+  .action-btn.edit:hover { background: var(--cyan-dim); }
+  .action-btn.del { color: #ff6b6b; border-color: rgba(255,80,80,0.3); }
+  .action-btn.del:hover { background: var(--danger-dim); }
+
+  /* ─── BADGE ─── */
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 2px 10px; border-radius: 999px;
+    font: 700 0.62rem var(--mono); letter-spacing: 0.06em; border: 1px solid;
+  }
+  .badge.latest { color: var(--cyan); border-color: var(--border-hi); background: var(--cyan-soft); }
+  .badge.stable { color: #4ade80; border-color: rgba(74,222,128,0.35); background: rgba(74,222,128,0.08); }
+  .badge.beta { color: #fbbf24; border-color: rgba(251,191,36,0.35); background: rgba(251,191,36,0.08); }
+
+  /* ─── JSON EDITOR ─── */
+  .json-editor {
+    background: rgba(2,10,20,0.8);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    min-height: 300px;
+    color: var(--text);
+    outline: none;
+    resize: vertical;
+    width: 100%;
+    line-height: 1.7;
+    tab-size: 2;
+    transition: border-color 0.2s;
+  }
+  .json-editor:focus { border-color: var(--border-hi); box-shadow: 0 0 0 3px rgba(0,212,255,0.06); }
+
+  /* ─── ALERT ─── */
+  .alert {
+    display: none; padding: 12px 16px; border-radius: 10px;
+    font: 600 0.82rem var(--mono); margin-bottom: 14px;
+    border: 1px solid; animation: fade-in 0.2s ease;
+  }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+  .alert.success { color: #4ade80; border-color: rgba(74,222,128,0.35); background: rgba(74,222,128,0.08); display: block; }
+  .alert.error { color: #ff6b6b; border-color: rgba(255,80,80,0.35); background: rgba(255,80,80,0.08); display: block; }
+
+  /* ─── STATS ─── */
+  .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-card {
+    padding: 18px; background: var(--glass); border: 1px solid var(--border);
+    border-radius: 14px; backdrop-filter: blur(10px);
+  }
+  .stat-card .label { color: var(--muted); font: 600 0.62rem var(--mono); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+  .stat-card .value { font: 800 1.8rem var(--sans); color: var(--cyan); letter-spacing: -0.02em; }
+  .stat-card .sub { color: var(--muted); font: 500 0.68rem var(--mono); margin-top: 2px; }
+
+  /* ─── MODAL ─── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(2, 8, 20, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 100; place-items: center;
+  }
+  .modal-overlay.open { display: grid; }
+  .modal {
+    background: #061528;
+    border: 1px solid var(--border-hi);
+    border-radius: 22px;
+    padding: 30px;
+    width: min(560px, 95vw);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(0,180,255,0.08);
+    animation: modal-in 0.25s ease;
+  }
+  @keyframes modal-in { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: none; } }
+  .modal-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 22px;
+  }
+  .modal-head h3 { font-size: 1.2rem; font-weight: 800; color: var(--cyan); }
+  .modal-close {
+    background: none; border: none; color: var(--muted);
+    font-size: 1.4rem; cursor: pointer; line-height: 1;
+    transition: color 0.15s;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-foot { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
+
+  /* ─── DIVIDER ─── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,180,255,0.25); border-radius: 99px; }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed; bottom: 28px; right: 28px;
+    background: #061528; border: 1px solid var(--border-hi);
+    border-radius: 14px; padding: 14px 20px;
+    color: var(--cyan); font: 700 0.82rem var(--mono);
+    box-shadow: 0 0 40px rgba(0,180,255,0.2);
+    z-index: 999; transform: translateY(80px); opacity: 0;
+    transition: all 0.3s cubic-bezier(.34,1.56,.64,1);
+    pointer-events: none;
+  }
+  .toast.show { transform: none; opacity: 1; }
+
+  @media (max-width: 900px) { .stats-row { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } .form-row.triple { grid-template-columns: 1fr; } .page { padding: 16px 12px; } }
+</style>
 </head>
 <body>
-  <div id="authGate" class="auth-backdrop">
-    <div class="auth-card">
-      <strong>Verified Admin Access</strong>
-      <h2>Unlock the editor</h2>
-      <p>Manage Core plugins, Addons sections, and release files from one clean panel.</p>
-      <input id="authInput" class="input" type="password" placeholder="Enter admin token" autocomplete="current-password" />
-      <div class="stack">
-        <button id="authBtn" class="btn primary" type="button">Unlock Panel</button>
-        <a href="index.html" class="btn">Open Public Page</a>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✓ Saved successfully</div>
+
+<!-- MODAL: Add/Edit Release -->
+<div class="modal-overlay" id="releaseModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">Add Release</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modalAlert" class="alert"></div>
+    <div class="form-row">
+      <div class="field-group">
+        <label>Plugin Name</label>
+        <input type="text" id="mPlugin" placeholder="e.g. PluginCore" />
       </div>
-      <div id="authError" class="error" style="margin-top: 12px;"></div>
+      <div class="field-group">
+        <label>Version</label>
+        <input type="text" id="mVersion" placeholder="v1.0.0" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field-group">
+        <label>Release Date</label>
+        <input type="date" id="mDate" />
+      </div>
+      <div class="field-group">
+        <label>Status</label>
+        <select id="mStable">
+          <option value="true">Stable</option>
+          <option value="false">Beta</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Release Notes</label>
+      <textarea id="mNotes" placeholder="Describe what changed in this release..."></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveRelease()">Save Release</button>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <div class="brand-mark">⚙</div>
+      <div>
+        <h1>Admin<span> Panel</span> <span class="tag">RESTRICTED</span></h1>
+        <p>rutwokLabz · Manage plugins, releases & configuration</p>
+      </div>
+    </div>
+    <div class="toolbar" style="display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="index.html" class="btn">← Dashboard</a>
+      <button class="btn btn-success" onclick="exportData()">↑ Export JSON</button>
+    </div>
+  </header>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="label">Core Plugins</div>
+      <div class="value" id="aStatCore">0</div>
+      <div class="sub">packages</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Addon Sections</div>
+      <div class="value" id="aStatSections">0</div>
+      <div class="sub">categories</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Total Releases</div>
+      <div class="value" id="aStatReleases">0</div>
+      <div class="sub">builds published</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Data Size</div>
+      <div class="value" id="aStatSize">0 B</div>
+      <div class="sub">json payload</div>
     </div>
   </div>
 
-  <div class="page">
-    <header class="header">
-      <div class="brand">
-        <div class="brand-mark">SB</div>
-        <div>
-          <h1 id="pageTitle">Plugin Builds</h1>
-          <p>Core and Addons release manager.</p>
-        </div>
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('releases')">Releases</button>
+    <button class="tab" onclick="switchTab('plugins')">Plugins</button>
+    <button class="tab" onclick="switchTab('json')">Raw JSON</button>
+    <button class="tab" onclick="switchTab('settings')">Settings</button>
+  </div>
+
+  <!-- TAB: RELEASES -->
+  <div class="section visible" id="tab-releases">
+    <div class="card">
+      <div class="card-head">
+        <h2>All Releases <span class="tag">CORE</span></h2>
+        <button class="btn btn-primary" onclick="openAddModal('core')">+ Add Release</button>
       </div>
-      <div class="toolbar">
-        <div id="saveState" class="status">Ready</div>
-        <button id="saveAllBtn" class="btn primary" type="button">Save All</button>
-        <button id="discardBtn" class="btn" type="button">Discard</button>
-        <button id="reloadBtn" class="btn" type="button">Reload</button>
+      <div id="alertReleases" class="alert"></div>
+      <div class="table-wrap">
+        <table id="tableCore">
+          <thead>
+            <tr>
+              <th>Plugin</th>
+              <th>Version</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyCore"></tbody>
+        </table>
       </div>
-    </header>
+    </div>
 
-    <div class="shell">
-      <aside class="sidebar">
-        <div class="sidebar-head">
-          <h2>Explorer</h2>
-          <p>Choose Core or Addons, then drill into sections, plugins, and releases.</p>
-        </div>
-
-        <div class="group">
-          <div class="group-label">Type</div>
-          <div class="tree">
-            <button id="rootCoreBtn" class="tree-btn" type="button">
-              <strong>Core</strong>
-              <span id="coreCount">0 plugins</span>
-            </button>
-            <button id="rootAddonsBtn" class="tree-btn" type="button">
-              <strong>Addons</strong>
-              <span id="addonsCount">0 sections</span>
-            </button>
-          </div>
-        </div>
-
-        <div id="sectionGroup" class="group">
-          <div class="group-label">Plugin Sections</div>
-          <div id="sectionList" class="tree"></div>
-          <div class="stack">
-            <button id="newSectionBtn" class="btn" type="button">+ Section</button>
-          </div>
-        </div>
-
-        <div class="group">
-          <div class="group-label">Plugins</div>
-          <div id="pluginList" class="tree"></div>
-          <div class="stack">
-            <button id="newPluginBtn" class="btn" type="button">+ Plugin</button>
-          </div>
-        </div>
-      </aside>
-
-      <main class="detail">
-        <div id="crumbs" class="crumbs"></div>
-        <div id="detailPane" class="detail-pane"></div>
-      </main>
+    <div class="card">
+      <div class="card-head">
+        <h2>All Releases <span class="tag" style="background:rgba(251,191,36,0.1);border-color:rgba(251,191,36,0.3);color:#fbbf24;">ADDONS</span></h2>
+        <button class="btn btn-primary" onclick="openAddModal('addon')">+ Add Addon Release</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Section</th>
+              <th>Plugin</th>
+              <th>Version</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyAddons"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <div id="toast"></div>
+  <!-- TAB: PLUGINS -->
+  <div class="section" id="tab-plugins">
+    <div class="card">
+      <div class="card-head">
+        <h2>Core Plugin Registry</h2>
+        <button class="btn btn-primary" onclick="addCorePlugin()">+ New Core Plugin</button>
+      </div>
+      <div id="corePluginList" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+    <div class="card" style="margin-top:0;">
+      <div class="card-head">
+        <h2>Addon Sections &amp; Plugins</h2>
+        <button class="btn btn-primary" onclick="addAddonSection()">+ New Section</button>
+      </div>
+      <div id="addonPluginList" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+  </div>
 
-  <script>
-    const ADMIN_TOKEN_KEY = "pluginAdminToken";
-    const UPDATE_ENDPOINT = "/.netlify/functions/update";
-    const API_ENDPOINT = "/.netlify/functions/api";
+  <!-- TAB: JSON -->
+  <div class="section" id="tab-json">
+    <div class="card">
+      <div class="card-head">
+        <h2>Raw JSON Editor</h2>
+        <div style="display:flex;gap:10px;">
+          <button class="btn" onclick="formatJSON()">Format</button>
+          <button class="btn btn-primary" onclick="saveJSON()">Save Changes</button>
+        </div>
+      </div>
+      <div id="jsonAlert" class="alert"></div>
+      <textarea class="json-editor" id="jsonEditor" spellcheck="false"></textarea>
+      <p style="color:var(--muted);font:500 0.72rem var(--mono);margin-top:10px;">⚠ Edit with care. Invalid JSON will be rejected on save.</p>
+    </div>
+  </div>
 
-    let adminToken = "";
-    let currentData = createEmptyCatalog();
-    let draftData = createEmptyCatalog();
-    let selectedRoot = "core";
-    let selectedSectionIndex = -1;
-    let selectedPluginIndex = -1;
-    let selectedReleaseIndex = -1;
-    let dirty = false;
+  <!-- TAB: SETTINGS -->
+  <div class="section" id="tab-settings">
+    <div class="card">
+      <div class="card-head"><h2>Data Source</h2></div>
+      <div class="form-row single">
+        <div class="field-group">
+          <label>Data JSON URL</label>
+          <input type="url" id="dataUrl" value="https://rutwok-labs.netlify.app/data.json" />
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="showToast('Data source saved')">Save URL</button>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>Display Options</h2></div>
+      <div class="form-row">
+        <div class="field-group">
+          <label>Dashboard Title</label>
+          <input type="text" id="dashTitle" value="Plugin Builds" />
+        </div>
+        <div class="field-group">
+          <label>Brand Name</label>
+          <input type="text" id="brandName" value="rutwokLabz" />
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="showToast('Settings saved')">Save Settings</button>
+    </div>
+    <div class="card" style="border-color:rgba(255,80,80,0.2);">
+      <div class="card-head"><h2>Danger Zone</h2></div>
+      <p style="color:var(--muted);font:500 0.82rem var(--mono);margin-bottom:16px;">These actions are irreversible. Proceed with extreme caution.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-danger" onclick="if(confirm('Clear all core releases?')){clearSection('core');}">Clear Core Releases</button>
+        <button class="btn btn-danger" onclick="if(confirm('Clear all addon releases?')){clearSection('addons');}">Clear Addon Releases</button>
+        <button class="btn btn-danger" onclick="if(confirm('RESET ALL DATA? Cannot be undone.')){resetAll();}">⚠ Reset All Data</button>
+      </div>
+    </div>
+  </div>
 
-    const authGate = document.getElementById("authGate");
-    const authInput = document.getElementById("authInput");
-    const authBtn = document.getElementById("authBtn");
-    const authError = document.getElementById("authError");
-    const saveState = document.getElementById("saveState");
+</div>
 
-    document.getElementById("rootCoreBtn").addEventListener("click", () => selectRoot("core"));
-    document.getElementById("rootAddonsBtn").addEventListener("click", () => selectRoot("addons"));
-    document.getElementById("newSectionBtn").addEventListener("click", createSection);
-    document.getElementById("newPluginBtn").addEventListener("click", createPlugin);
-    document.getElementById("saveAllBtn").addEventListener("click", saveAll);
-    document.getElementById("discardBtn").addEventListener("click", discardDraft);
-    document.getElementById("reloadBtn").addEventListener("click", loadData);
-    authBtn.addEventListener("click", authenticate);
-    authInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") authenticate();
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+let data = {
+  core: {
+    "PluginCore": [
+      { version: "v2.1.0", date: "2025-04-10", notes: "Major refactor, performance improvements", stable: true },
+      { version: "v2.0.3", date: "2025-03-01", notes: "Hotfix: memory leak patch", stable: true },
+      { version: "v2.0.0", date: "2025-01-15", notes: "Initial v2 release", stable: false },
+    ],
+    "PluginAuth": [
+      { version: "v1.3.1", date: "2025-04-05", notes: "JWT refresh token fix", stable: true },
+      { version: "v1.3.0", date: "2025-02-20", notes: "OAuth2 support added", stable: true },
+    ]
+  },
+  addons: {
+    "Analytics": {
+      "TrackPro": [{ version: "v1.0.0", date: "2025-03-15", notes: "Initial release", stable: true }]
+    },
+    "Payments": {
+      "StripeBridge": [
+        { version: "v2.2.0", date: "2025-04-01", notes: "Webhook signature verification", stable: true },
+        { version: "v2.1.0", date: "2025-02-10", notes: "Refund API support", stable: true },
+      ]
+    }
+  }
+};
+
+let modalContext = { type: null, editPlugin: null, editIdx: null };
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const r = await fetch("https://rutwok-labs.netlify.app/data.json");
+    if (r.ok) data = await r.json();
+  } catch {}
+  renderAll();
+}
+
+function renderAll() {
+  updateStats();
+  renderCoreTable();
+  renderAddonsTable();
+  renderPluginLists();
+  document.getElementById("jsonEditor").value = JSON.stringify(data, null, 2);
+}
+
+// ─── STATS ───────────────────────────────────────────────────────────────────
+function updateStats() {
+  const coreP = Object.keys(data.core || {}).length;
+  const secs = Object.keys(data.addons || {}).length;
+  let total = 0;
+  Object.values(data.core || {}).forEach(r => total += r.length);
+  Object.values(data.addons || {}).forEach(s => Object.values(s).forEach(r => total += r.length));
+  const bytes = new TextEncoder().encode(JSON.stringify(data)).length;
+  document.getElementById("aStatCore").textContent = coreP;
+  document.getElementById("aStatSections").textContent = secs;
+  document.getElementById("aStatReleases").textContent = total;
+  document.getElementById("aStatSize").textContent = bytes > 1024 ? (bytes/1024).toFixed(1)+"KB" : bytes+"B";
+}
+
+// ─── TABLES ──────────────────────────────────────────────────────────────────
+function renderCoreTable() {
+  const tbody = document.getElementById("tbodyCore");
+  tbody.innerHTML = "";
+  Object.entries(data.core || {}).forEach(([plugin, releases]) => {
+    const sorted = [...releases].sort((a,b) => new Date(b.date)-new Date(a.date));
+    sorted.forEach((r, i) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><strong>${plugin}</strong></td>
+        <td><span class="badge ${i===0?'latest':'stable'}">${r.version}</span></td>
+        <td>${r.date}</td>
+        <td><span class="badge ${r.stable?'stable':'beta'}">${r.stable?'Stable':'Beta'}</span></td>
+        <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)">${r.notes||'—'}</td>
+        <td><div class="td-actions">
+          <button class="action-btn edit" onclick="openEditModal('core','${plugin}',${releases.indexOf(r)})">Edit</button>
+          <button class="action-btn del" onclick="deleteRelease('core','${plugin}',${releases.indexOf(r)})">Delete</button>
+        </div></td>`;
+      tbody.appendChild(tr);
     });
+  });
+  if (!tbody.children.length) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted);font-family:var(--mono)">No core releases. Add one above.</td></tr>`;
+}
 
-    restoreSession();
-
-    function createEmptyCatalog() {
-      return {
-        catalog: {
-          title: "Plugin Catalog",
-          core: { plugins: [] },
-          addons: { sections: [] },
-        },
-      };
-    }
-
-    function clone(value) {
-      return JSON.parse(JSON.stringify(value));
-    }
-
-    function stringValue(value) {
-      return typeof value === "string" ? value.trim() : "";
-    }
-
-    function isHttpsUrl(value) {
-      try {
-        const url = new URL(value);
-        return url.protocol === "https:";
-      } catch {
-        return false;
-      }
-    }
-
-    function normalizeRelease(release) {
-      return {
-        name: stringValue(release.name),
-        version: stringValue(release.version),
-        type: stringValue(release.type) || "stable",
-        latest: Boolean(release.latest),
-        status: stringValue(release.status) || "success",
-        loader: stringValue(release.loader) || "PaperMC",
-        download: stringValue(release.download),
-      };
-    }
-
-    function normalizePlugin(plugin) {
-      return {
-        name: stringValue(plugin.name),
-        releases: Array.isArray(plugin.releases) ? plugin.releases.map(normalizeRelease) : [],
-      };
-    }
-
-    function normalizeCatalog(input) {
-      const catalog = input?.catalog || {};
-      return {
-        catalog: {
-          title: stringValue(catalog.title) || "Plugin Catalog",
-          core: {
-            plugins: Array.isArray(catalog.core?.plugins) ? catalog.core.plugins.map(normalizePlugin) : [],
-          },
-          addons: {
-            sections: Array.isArray(catalog.addons?.sections) ? catalog.addons.sections.map((section) => ({
-              name: stringValue(section.name),
-              plugins: Array.isArray(section.plugins) ? section.plugins.map(normalizePlugin) : [],
-            })) : [],
-          },
-        },
-      };
-    }
-
-    function currentSection() {
-      if (selectedRoot !== "addons" || selectedSectionIndex < 0) return null;
-      return draftData.catalog.addons.sections[selectedSectionIndex] || null;
-    }
-
-    function currentPlugins() {
-      if (selectedRoot === "core") return draftData.catalog.core.plugins;
-      return currentSection()?.plugins || [];
-    }
-
-    function currentPlugin() {
-      if (selectedPluginIndex < 0) return null;
-      return currentPlugins()[selectedPluginIndex] || null;
-    }
-
-    function currentRelease() {
-      if (selectedReleaseIndex < 0) return null;
-      return currentPlugin()?.releases?.[selectedReleaseIndex] || null;
-    }
-
-    function rootLabel() {
-      return selectedRoot === "core" ? "Core" : "Addons";
-    }
-
-    function clampSelection() {
-      if (selectedRoot === "core") {
-        selectedSectionIndex = -1;
-        const plugins = draftData.catalog.core.plugins;
-        if (plugins.length === 0) {
-          selectedPluginIndex = -1;
-          selectedReleaseIndex = -1;
-          return;
-        }
-        if (selectedPluginIndex >= plugins.length) selectedPluginIndex = plugins.length - 1;
-        const releases = currentPlugin()?.releases || [];
-        if (selectedPluginIndex === -1 || releases.length === 0) {
-          selectedReleaseIndex = -1;
-          return;
-        }
-        if (selectedReleaseIndex >= releases.length) selectedReleaseIndex = releases.length - 1;
-        return;
-      }
-
-      const sections = draftData.catalog.addons.sections;
-      if (sections.length === 0) {
-        selectedSectionIndex = -1;
-        selectedPluginIndex = -1;
-        selectedReleaseIndex = -1;
-        return;
-      }
-      if (selectedSectionIndex < 0) selectedSectionIndex = 0;
-      if (selectedSectionIndex >= sections.length) selectedSectionIndex = sections.length - 1;
-
-      const plugins = currentPlugins();
-      if (plugins.length === 0) {
-        selectedPluginIndex = -1;
-        selectedReleaseIndex = -1;
-        return;
-      }
-      if (selectedPluginIndex >= plugins.length) selectedPluginIndex = plugins.length - 1;
-      const releases = currentPlugin()?.releases || [];
-      if (selectedPluginIndex === -1 || releases.length === 0) {
-        selectedReleaseIndex = -1;
-        return;
-      }
-      if (selectedReleaseIndex >= releases.length) selectedReleaseIndex = releases.length - 1;
-    }
-
-    function setStatus(kind, text) {
-      saveState.className = `status ${kind || ""}`.trim();
-      saveState.textContent = text;
-    }
-
-    function markDirty(value = true) {
-      dirty = value;
-      setStatus(value ? "warn" : "", value ? "Draft changed" : "Ready");
-    }
-
-    function toast(message, type = "info") {
-      const node = document.createElement("div");
-      node.className = `toast ${type}`;
-      node.textContent = message;
-      document.getElementById("toast").appendChild(node);
-      setTimeout(() => node.remove(), 3200);
-    }
-
-    function escapeHtml(value) {
-      return String(value || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
-    }
-
-    async function validateToken(token) {
-      const response = await fetch(UPDATE_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Admin-Token": token,
-        },
-        body: JSON.stringify({ action: "validate" }),
+function renderAddonsTable() {
+  const tbody = document.getElementById("tbodyAddons");
+  tbody.innerHTML = "";
+  Object.entries(data.addons || {}).forEach(([section, plugins]) => {
+    Object.entries(plugins).forEach(([plugin, releases]) => {
+      const sorted = [...releases].sort((a,b) => new Date(b.date)-new Date(a.date));
+      sorted.forEach((r, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td style="color:var(--muted)">${section}</td>
+          <td><strong>${plugin}</strong></td>
+          <td><span class="badge ${i===0?'latest':'stable'}">${r.version}</span></td>
+          <td>${r.date}</td>
+          <td><span class="badge ${r.stable?'stable':'beta'}">${r.stable?'Stable':'Beta'}</span></td>
+          <td><div class="td-actions">
+            <button class="action-btn del" onclick="deleteAddonRelease('${section}','${plugin}',${releases.indexOf(r)})">Delete</button>
+          </div></td>`;
+        tbody.appendChild(tr);
       });
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        throw new Error(result.error || `HTTP ${response.status}`);
-      }
-      return result;
+    });
+  });
+  if (!tbody.children.length) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted);font-family:var(--mono)">No addon releases.</td></tr>`;
+}
+
+// ─── PLUGIN LISTS ─────────────────────────────────────────────────────────────
+function renderPluginLists() {
+  const cl = document.getElementById("corePluginList");
+  cl.innerHTML = "";
+  Object.entries(data.core || {}).forEach(([name]) => {
+    const d = document.createElement("div");
+    d.style.cssText = "display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(5,20,45,0.5);border:1px solid var(--border);border-radius:12px;";
+    d.innerHTML = `<div><strong style="font-family:var(--mono)">${name}</strong><span style="color:var(--muted);font:500 0.72rem var(--mono);margin-left:12px">${(data.core[name]||[]).length} releases</span></div>
+      <button class="action-btn del" onclick="if(confirm('Delete plugin ${name}?')){delete data.core['${name}'];renderAll();}">Delete</button>`;
+    cl.appendChild(d);
+  });
+  if (!cl.children.length) cl.innerHTML = `<div style="color:var(--muted);font-family:var(--mono);font-size:0.82rem;padding:16px">No core plugins yet.</div>`;
+
+  const al = document.getElementById("addonPluginList");
+  al.innerHTML = "";
+  Object.entries(data.addons || {}).forEach(([section, plugins]) => {
+    const d = document.createElement("div");
+    d.style.cssText = "padding:14px 16px;background:rgba(5,20,45,0.5);border:1px solid var(--border);border-radius:12px;";
+    const pluginItems = Object.keys(plugins).map(p =>
+      `<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid var(--border);border-radius:999px;font:500 0.72rem var(--mono);color:var(--cyan);margin:2px;">${p}</span>`
+    ).join('');
+    d.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <strong style="font-family:var(--mono);color:var(--cyan)">${section}</strong>
+        <button class="action-btn del" onclick="if(confirm('Delete section ${section}?')){delete data.addons['${section}'];renderAll();}">Delete</button>
+      </div>
+      <div>${pluginItems || '<span style="color:var(--muted);font-size:0.8rem;font-family:var(--mono)">No plugins</span>'}</div>`;
+    al.appendChild(d);
+  });
+  if (!al.children.length) al.innerHTML = `<div style="color:var(--muted);font-family:var(--mono);font-size:0.82rem;padding:16px">No addon sections yet.</div>`;
+}
+
+// ─── MODAL ───────────────────────────────────────────────────────────────────
+function openAddModal(type) {
+  modalContext = { type, editPlugin: null, editIdx: null };
+  document.getElementById("modalTitle").textContent = type === 'core' ? 'Add Core Release' : 'Add Addon Release';
+  document.getElementById("mPlugin").value = "";
+  document.getElementById("mVersion").value = "";
+  document.getElementById("mDate").value = new Date().toISOString().slice(0,10);
+  document.getElementById("mStable").value = "true";
+  document.getElementById("mNotes").value = "";
+  clearAlert("modalAlert");
+  document.getElementById("releaseModal").classList.add("open");
+}
+
+function openEditModal(type, plugin, idx) {
+  modalContext = { type, editPlugin: plugin, editIdx: idx };
+  const r = data.core[plugin][idx];
+  document.getElementById("modalTitle").textContent = `Edit: ${plugin} ${r.version}`;
+  document.getElementById("mPlugin").value = plugin;
+  document.getElementById("mVersion").value = r.version;
+  document.getElementById("mDate").value = r.date;
+  document.getElementById("mStable").value = String(r.stable);
+  document.getElementById("mNotes").value = r.notes || "";
+  clearAlert("modalAlert");
+  document.getElementById("releaseModal").classList.add("open");
+}
+
+function closeModal() { document.getElementById("releaseModal").classList.remove("open"); }
+
+function saveRelease() {
+  const plugin = document.getElementById("mPlugin").value.trim();
+  const version = document.getElementById("mVersion").value.trim();
+  const date = document.getElementById("mDate").value;
+  const stable = document.getElementById("mStable").value === "true";
+  const notes = document.getElementById("mNotes").value.trim();
+  if (!plugin || !version || !date) { showAlert("modalAlert","error","Plugin, version and date are required."); return; }
+  const entry = { version, date, notes, stable };
+  if (modalContext.type === 'core') {
+    if (!data.core) data.core = {};
+    if (modalContext.editPlugin !== null && modalContext.editIdx !== null) {
+      data.core[modalContext.editPlugin][modalContext.editIdx] = entry;
+    } else {
+      if (!data.core[plugin]) data.core[plugin] = [];
+      data.core[plugin].push(entry);
     }
-
-    async function authenticate() {
-      const token = authInput.value.trim();
-      authError.style.display = "none";
-
-      if (!token) {
-        authError.textContent = "Enter your admin token first.";
-        authError.style.display = "block";
-        return;
-      }
-
-      authBtn.disabled = true;
-      try {
-        await validateToken(token);
-        adminToken = token;
-        sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
-        authGate.style.display = "none";
-        await loadData();
-      } catch (error) {
-        authError.textContent = error.message;
-        authError.style.display = "block";
-      } finally {
-        authBtn.disabled = false;
-      }
-    }
-
-    async function restoreSession() {
-      const stored = sessionStorage.getItem(ADMIN_TOKEN_KEY);
-      if (!stored) return;
-      try {
-        await validateToken(stored);
-        adminToken = stored;
-        authGate.style.display = "none";
-        await loadData();
-      } catch {
-        sessionStorage.removeItem(ADMIN_TOKEN_KEY);
-      }
-    }
-
-    async function loadData() {
-      try {
-        setStatus("warn", "Loading...");
-        const response = await fetch(API_ENDPOINT);
-        if (!response.ok) throw new Error(`API error: ${response.status}`);
-        currentData = normalizeCatalog(await response.json());
-        draftData = clone(currentData);
-        if (selectedRoot === "addons" && draftData.catalog.addons.sections.length === 0) {
-          selectedSectionIndex = -1;
-          selectedPluginIndex = -1;
-          selectedReleaseIndex = -1;
-        }
-        clampSelection();
-        markDirty(false);
-        renderAll();
-      } catch (error) {
-        setStatus("bad", "Load failed");
-        document.getElementById("detailPane").innerHTML = `<div class="empty-state">Failed to load catalog: ${escapeHtml(error.message)}</div>`;
-      }
-    }
-
-    function selectRoot(root) {
-      selectedRoot = root;
-      selectedPluginIndex = -1;
-      selectedReleaseIndex = -1;
-      if (root === "core") {
-        selectedSectionIndex = -1;
-      } else if (draftData.catalog.addons.sections.length > 0) {
-        selectedSectionIndex = Math.max(0, Math.min(selectedSectionIndex, draftData.catalog.addons.sections.length - 1));
-      }
-      renderAll();
-    }
-
-    function selectSection(index) {
-      selectedRoot = "addons";
-      selectedSectionIndex = index;
-      selectedPluginIndex = -1;
-      selectedReleaseIndex = -1;
-      renderAll();
-    }
-
-    function selectPlugin(index) {
-      selectedPluginIndex = index;
-      const releases = currentPlugins()[index]?.releases || [];
-      selectedReleaseIndex = releases.length ? 0 : -1;
-      renderAll();
-    }
-
-    function selectRelease(index) {
-      selectedReleaseIndex = index;
-      renderDetail();
-    }
-
-    function renderAll() {
-      clampSelection();
-      document.getElementById("pageTitle").textContent = draftData.catalog.title;
-      document.getElementById("coreCount").textContent = `${draftData.catalog.core.plugins.length} plugins`;
-      document.getElementById("addonsCount").textContent = `${draftData.catalog.addons.sections.length} sections`;
-      document.getElementById("rootCoreBtn").classList.toggle("active", selectedRoot === "core");
-      document.getElementById("rootAddonsBtn").classList.toggle("active", selectedRoot === "addons");
-      renderSections();
-      renderPlugins();
-      renderCrumbs();
-      renderDetail();
-      document.getElementById("newSectionBtn").disabled = selectedRoot !== "addons";
-      document.getElementById("newPluginBtn").disabled = selectedRoot === "addons" && !currentSection();
-    }
-
-    function renderSections() {
-      const group = document.getElementById("sectionGroup");
-      const list = document.getElementById("sectionList");
-
-      if (selectedRoot !== "addons") {
-        group.style.display = "none";
-        return;
-      }
-
-      group.style.display = "block";
-      const sections = draftData.catalog.addons.sections;
-      if (!sections.length) {
-        list.innerHTML = '<div class="tree-empty">No plugin sections yet.</div>';
-        return;
-      }
-
-      list.innerHTML = sections.map((section, index) => `
-        <button class="tree-btn ${index === selectedSectionIndex ? "active" : ""}" type="button" data-index="${index}">
-          <strong>${escapeHtml(section.name)}</strong>
-          <span>${section.plugins.length} plugins</span>
-        </button>
-      `).join("");
-
-      list.querySelectorAll("[data-index]").forEach((button) => {
-        button.addEventListener("click", () => selectSection(Number(button.dataset.index)));
-      });
-    }
-
-    function renderPlugins() {
-      const list = document.getElementById("pluginList");
-      const plugins = currentPlugins();
-
-      if (selectedRoot === "addons" && !currentSection()) {
-        list.innerHTML = '<div class="tree-empty">Select a plugin section first.</div>';
-        return;
-      }
-
-      if (!plugins.length) {
-        list.innerHTML = '<div class="tree-empty">No plugins here yet.</div>';
-        return;
-      }
-
-      list.innerHTML = plugins.map((plugin, index) => {
-        const latest = plugin.releases.find((release) => release.latest) || plugin.releases[0];
-        const suffix = latest ? ` · latest ${escapeHtml(latest.version)}` : "";
-        return `
-          <button class="tree-btn ${index === selectedPluginIndex ? "active" : ""}" type="button" data-index="${index}">
-            <strong>${escapeHtml(plugin.name)}</strong>
-            <span>${plugin.releases.length} releases${suffix}</span>
-          </button>
-        `;
-      }).join("");
-
-      list.querySelectorAll("[data-index]").forEach((button) => {
-        button.addEventListener("click", () => selectPlugin(Number(button.dataset.index)));
-      });
-    }
-
-    function renderCrumbs() {
-      const section = currentSection();
-      const plugin = currentPlugin();
-      const parts = [`Type: <strong>${rootLabel()}</strong>`];
-      if (selectedRoot === "addons") {
-        parts.push(`Section: <strong>${escapeHtml(section?.name || "-")}</strong>`);
-      }
-      parts.push(`Plugin: <strong>${escapeHtml(plugin?.name || "-")}</strong>`);
-      document.getElementById("crumbs").innerHTML = parts.join(" &nbsp;/&nbsp; ");
-    }
-
-    function renderDetail() {
-      const pane = document.getElementById("detailPane");
-      const section = currentSection();
-      const plugin = currentPlugin();
-
-      if (selectedRoot === "addons" && !section) {
-        pane.innerHTML = `
-          <section class="detail-section">
-            <span class="meta-label">Addons</span>
-            <h2>Create your first plugin section</h2>
-            <div class="empty-state">
-              Addons only contain plugin sections. Create one from the left sidebar, then add plugins and releases inside it.
-            </div>
-          </section>
-        `;
-        return;
-      }
-
-      if (!plugin) {
-      pane.innerHTML = `
-        ${selectedRoot === "addons" ? renderSectionEditor(section) : renderCoreOverview()}
-        ${renderPluginEmptyState()}
-      `;
-      bindDetailEvents();
-      return;
-    }
-
-      pane.innerHTML = `
-        ${renderPluginEditor(plugin)}
-        ${renderReleaseEditor(plugin)}
-      `;
-      bindDetailEvents();
-    }
-
-    function renderCoreOverview() {
-      return `
-        <section class="detail-section">
-          <span class="meta-label">Core</span>
-          <h2>Core plugins</h2>
-          <div class="empty-state">
-            Core contains plugins directly. Create a plugin from the left sidebar, then add release files inside it.
-          </div>
-        </section>
-      `;
-    }
-
-    function renderPluginEmptyState() {
-      const noun = selectedRoot === "core" ? "Core" : escapeHtml(currentSection()?.name || "this section");
-      return `
-        <section class="detail-section">
-          <span class="meta-label">Plugins</span>
-          <h2>No plugin selected</h2>
-          <div class="empty-state">
-            Select a plugin from the left or create a new plugin inside ${noun}.
-          </div>
-        </section>
-      `;
-    }
-
-    function renderSectionEditor(section) {
-      if (!section) return "";
-      return `
-        <section class="detail-section">
-          <span class="meta-label">Plugin Section</span>
-          <h2>Edit section</h2>
-          <div class="field-grid">
-            <div class="field field-full">
-              <label for="sectionNameInput">Section Name</label>
-              <input id="sectionNameInput" class="input" type="text" value="${escapeHtml(section.name)}" />
-              <div id="sectionNameError" class="error">Section name is required and must be unique.</div>
-            </div>
-          </div>
-          <div class="stack">
-            <button id="applySectionBtn" class="btn" type="button">Apply Section</button>
-            <button id="deleteSectionBtn" class="btn bad" type="button">Delete Section</button>
-          </div>
-        </section>
-      `;
-    }
-
-    function renderPluginEditor(plugin) {
-      return `
-        <section class="detail-section">
-          <span class="meta-label">Plugin</span>
-          <h2>Edit plugin</h2>
-          <div class="field-grid">
-            <div class="field field-full">
-              <label for="pluginNameInput">Plugin Name</label>
-              <input id="pluginNameInput" class="input" type="text" value="${escapeHtml(plugin.name)}" />
-              <div id="pluginNameError" class="error">Plugin name is required and must be unique here.</div>
-            </div>
-          </div>
-          <div class="stack">
-            <button id="applyPluginBtn" class="btn" type="button">Apply Plugin</button>
-            <button id="deletePluginBtn" class="btn bad" type="button">Delete Plugin</button>
-          </div>
-        </section>
-      `;
-    }
-
-    function renderReleaseEditor(plugin) {
-      const release = currentRelease();
-      return `
-        <section class="detail-section">
-          <span class="meta-label">Releases</span>
-          <h2>Release list</h2>
-          <div class="release-layout">
-            <div>
-              <div id="releaseList" class="release-list">
-                ${plugin.releases.length ? plugin.releases.map((item, index) => `
-                  <button class="release-btn ${index === selectedReleaseIndex ? "active" : ""}" type="button" data-release-index="${index}">
-                    <strong>${escapeHtml(item.name || item.version || "Untitled release")}</strong>
-                    <span>${escapeHtml(item.version || "No version")} · ${escapeHtml(item.type)}${item.latest ? " · latest" : ""}</span>
-                  </button>
-                `).join("") : '<div class="tree-empty">No releases yet.</div>'}
-              </div>
-              <div class="stack">
-                <button id="newReleaseBtn" class="btn" type="button">+ Release</button>
-                <button id="deleteReleaseBtn" class="btn bad" type="button"${release ? "" : " disabled"}>Delete Release</button>
-              </div>
-            </div>
-            <div class="field-grid">
-              <div class="field">
-                <label for="releaseNameInput">Release Name</label>
-                <input id="releaseNameInput" class="input" type="text" value="${escapeHtml(release?.name || "")}" />
-                <div id="releaseNameError" class="error">Release name is required.</div>
-              </div>
-              <div class="field">
-                <label for="releaseVersionInput">Version</label>
-                <input id="releaseVersionInput" class="input" type="text" value="${escapeHtml(release?.version || "")}" />
-                <div id="releaseVersionError" class="error">Version is required and must be unique.</div>
-              </div>
-              <div class="field">
-                <label for="releaseTypeInput">Release Type</label>
-                <select id="releaseTypeInput" class="select">
-                  <option value="stable"${release?.type === "stable" || !release ? " selected" : ""}>Stable</option>
-                  <option value="pre-release"${release?.type === "pre-release" ? " selected" : ""}>Pre-Release</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="releaseLoaderInput">Loader</label>
-                <select id="releaseLoaderInput" class="select">
-                  <option value="PaperMC"${release?.loader === "PaperMC" || !release ? " selected" : ""}>PaperMC</option>
-                  <option value="Bukkit"${release?.loader === "Bukkit" ? " selected" : ""}>Bukkit</option>
-                  <option value="Purpur"${release?.loader === "Purpur" ? " selected" : ""}>Purpur</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="releaseStatusInput">Status</label>
-                <select id="releaseStatusInput" class="select">
-                  <option value="success"${release?.status === "success" || !release ? " selected" : ""}>Success</option>
-                  <option value="maintenance"${release?.status === "maintenance" ? " selected" : ""}>Maintenance</option>
-                  <option value="fail"${release?.status === "fail" ? " selected" : ""}>Fail</option>
-                </select>
-              </div>
-              <div class="field field-full">
-                <label for="releaseDownloadInput">Download URL</label>
-                <input id="releaseDownloadInput" class="input" type="url" placeholder="https://..." value="${escapeHtml(release?.download || "")}" />
-                <div id="releaseDownloadError" class="error">Download URL must be valid https.</div>
-              </div>
-              <div class="field field-full">
-                <div class="toggle-row">
-                  <div>
-                    <strong>Latest build</strong>
-                    <span>Only one release per plugin can be latest.</span>
-                  </div>
-                  <label class="toggle">
-                    <input id="releaseLatestInput" type="checkbox"${release?.latest ? " checked" : ""} />
-                    <span class="toggle-ui"></span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="stack">
-            <button id="applyReleaseBtn" class="btn primary" type="button">Apply Release</button>
-          </div>
-        </section>
-      `;
-    }
-
-    function bindDetailEvents() {
-      document.querySelectorAll("[data-release-index]").forEach((button) => {
-        button.addEventListener("click", () => selectRelease(Number(button.dataset.releaseIndex)));
-      });
-
-      const applySectionBtn = document.getElementById("applySectionBtn");
-      const deleteSectionBtn = document.getElementById("deleteSectionBtn");
-      const applyPluginBtn = document.getElementById("applyPluginBtn");
-      const deletePluginBtn = document.getElementById("deletePluginBtn");
-      const newReleaseBtn = document.getElementById("newReleaseBtn");
-      const deleteReleaseBtn = document.getElementById("deleteReleaseBtn");
-      const applyReleaseBtn = document.getElementById("applyReleaseBtn");
-
-      if (applySectionBtn) applySectionBtn.addEventListener("click", applySection);
-      if (deleteSectionBtn) deleteSectionBtn.addEventListener("click", deleteSection);
-      if (applyPluginBtn) applyPluginBtn.addEventListener("click", applyPlugin);
-      if (deletePluginBtn) deletePluginBtn.addEventListener("click", deletePlugin);
-      if (newReleaseBtn) newReleaseBtn.addEventListener("click", createRelease);
-      if (deleteReleaseBtn) deleteReleaseBtn.addEventListener("click", deleteRelease);
-      if (applyReleaseBtn) applyReleaseBtn.addEventListener("click", applyRelease);
-    }
-
-    function createSection() {
-      if (selectedRoot !== "addons") return;
-      draftData.catalog.addons.sections.push({
-        name: `New Section ${draftData.catalog.addons.sections.length + 1}`,
-        plugins: [],
-      });
-      selectedSectionIndex = draftData.catalog.addons.sections.length - 1;
-      selectedPluginIndex = -1;
-      selectedReleaseIndex = -1;
-      markDirty(true);
-      renderAll();
-    }
-
-    function deleteSection() {
-      const section = currentSection();
-      if (!section) return;
-      if (!confirm(`Delete section "${section.name}" and everything inside it?`)) return;
-      draftData.catalog.addons.sections.splice(selectedSectionIndex, 1);
-      selectedPluginIndex = -1;
-      selectedReleaseIndex = -1;
-      markDirty(true);
-      renderAll();
-    }
-
-    function applySection() {
-      const section = currentSection();
-      const input = document.getElementById("sectionNameInput");
-      const error = document.getElementById("sectionNameError");
-      if (!section || !input || !error) return;
-
-      const nextName = stringValue(input.value);
-      error.style.display = "none";
-
-      if (!nextName) {
-        error.style.display = "block";
-        return;
-      }
-
-      const duplicate = draftData.catalog.addons.sections.findIndex((item, index) => index !== selectedSectionIndex && item.name.toLowerCase() === nextName.toLowerCase());
-      if (duplicate !== -1) {
-        error.style.display = "block";
-        return;
-      }
-
-      section.name = nextName;
-      markDirty(true);
-      renderAll();
-      toast("Section updated.", "good");
-    }
-
-    function pluginCollection() {
-      if (selectedRoot === "core") return draftData.catalog.core.plugins;
-      return currentSection()?.plugins || null;
-    }
-
-    function createPlugin() {
-      const collection = pluginCollection();
-      if (!collection) {
-        toast("Select an Addons section first.", "bad");
-        return;
-      }
-      collection.push({
-        name: `New Plugin ${collection.length + 1}`,
-        releases: [],
-      });
-      selectedPluginIndex = collection.length - 1;
-      selectedReleaseIndex = -1;
-      markDirty(true);
-      renderAll();
-    }
-
-    function deletePlugin() {
-      const plugin = currentPlugin();
-      if (!plugin) return;
-      if (!confirm(`Delete plugin "${plugin.name}" and every release inside it?`)) return;
-      currentPlugins().splice(selectedPluginIndex, 1);
-      selectedReleaseIndex = -1;
-      markDirty(true);
-      renderAll();
-    }
-
-    function applyPlugin() {
-      const plugin = currentPlugin();
-      const input = document.getElementById("pluginNameInput");
-      const error = document.getElementById("pluginNameError");
-      if (!plugin || !input || !error) return;
-
-      const nextName = stringValue(input.value);
-      error.style.display = "none";
-
-      if (!nextName) {
-        error.style.display = "block";
-        return;
-      }
-
-      const collection = currentPlugins();
-      const duplicate = collection.findIndex((item, index) => index !== selectedPluginIndex && item.name.toLowerCase() === nextName.toLowerCase());
-      if (duplicate !== -1) {
-        error.style.display = "block";
-        return;
-      }
-
-      plugin.name = nextName;
-      markDirty(true);
-      renderAll();
-      toast("Plugin updated.", "good");
-    }
-
-    function createRelease() {
-      const plugin = currentPlugin();
-      if (!plugin) {
-        toast("Create or select a plugin first.", "bad");
-        return;
-      }
-      plugin.releases.push({
-        name: `Build ${plugin.releases.length + 1}`,
-        version: "",
-        type: "stable",
-        latest: plugin.releases.length === 0,
-        status: "success",
-        loader: "PaperMC",
-        download: "",
-      });
-      selectedReleaseIndex = plugin.releases.length - 1;
-      markDirty(true);
-      renderAll();
-    }
-
-    function deleteRelease() {
-      const plugin = currentPlugin();
-      const release = currentRelease();
-      if (!plugin || !release) return;
-      if (!confirm(`Delete release "${release.name || release.version}"?`)) return;
-      plugin.releases.splice(selectedReleaseIndex, 1);
-      markDirty(true);
-      renderAll();
-    }
-
-    function readReleaseForm() {
-      return {
-        name: stringValue(document.getElementById("releaseNameInput")?.value),
-        version: stringValue(document.getElementById("releaseVersionInput")?.value),
-        type: document.getElementById("releaseTypeInput")?.value || "stable",
-        latest: Boolean(document.getElementById("releaseLatestInput")?.checked),
-        status: document.getElementById("releaseStatusInput")?.value || "success",
-        loader: document.getElementById("releaseLoaderInput")?.value || "PaperMC",
-        download: stringValue(document.getElementById("releaseDownloadInput")?.value),
-      };
-    }
-
-    function validateReleaseCandidate(candidate, releases, editingIndex) {
-      const nameError = document.getElementById("releaseNameError");
-      const versionError = document.getElementById("releaseVersionError");
-      const downloadError = document.getElementById("releaseDownloadError");
-      if (nameError) nameError.style.display = "none";
-      if (versionError) versionError.style.display = "none";
-      if (downloadError) downloadError.style.display = "none";
-
-      let valid = true;
-      if (!candidate.name) {
-        if (nameError) nameError.style.display = "block";
-        valid = false;
-      }
-      if (!candidate.version) {
-        if (versionError) versionError.style.display = "block";
-        valid = false;
-      }
-      const duplicate = releases.findIndex((item, index) => index !== editingIndex && item.version.toLowerCase() === candidate.version.toLowerCase());
-      if (candidate.version && duplicate !== -1) {
-        if (versionError) versionError.style.display = "block";
-        valid = false;
-      }
-      if (!isHttpsUrl(candidate.download)) {
-        if (downloadError) downloadError.style.display = "block";
-        valid = false;
-      }
-      return valid;
-    }
-
-    function applyRelease() {
-      const plugin = currentPlugin();
-      const release = currentRelease();
-      if (!plugin || !release) {
-        toast("Create or select a release first.", "bad");
-        return;
-      }
-
-      const candidate = readReleaseForm();
-      if (!validateReleaseCandidate(candidate, plugin.releases, selectedReleaseIndex)) return;
-
-      if (candidate.latest) {
-        plugin.releases.forEach((item, index) => {
-          item.latest = index === selectedReleaseIndex;
-        });
-      }
-
-      Object.assign(release, candidate);
-      if (!candidate.latest) {
-        release.latest = false;
-      }
-
-      markDirty(true);
-      renderAll();
-      toast("Release updated.", "good");
-    }
-
-    function validatePluginReleases(plugin) {
-      const versions = new Set();
-      let latestCount = 0;
-
-      for (const release of plugin.releases) {
-        if (!stringValue(release.name)) return `Every release in ${plugin.name} needs a name.`;
-        if (!stringValue(release.version)) return `Every release in ${plugin.name} needs a version.`;
-        if (!isHttpsUrl(release.download)) return `Release download must use https in ${plugin.name}.`;
-        const versionKey = release.version.toLowerCase();
-        if (versions.has(versionKey)) return `Duplicate release version in ${plugin.name}: ${release.version}`;
-        versions.add(versionKey);
-        if (release.latest) latestCount += 1;
-      }
-
-      if (latestCount > 1) return `Only one release can be latest in ${plugin.name}.`;
-      return "";
-    }
-
-    function validateDraftBeforeSave() {
-      const coreNames = new Set();
-      for (const plugin of draftData.catalog.core.plugins) {
-        if (!stringValue(plugin.name)) return "Every Core plugin needs a name.";
-        const key = plugin.name.toLowerCase();
-        if (coreNames.has(key)) return `Duplicate Core plugin: ${plugin.name}`;
-        coreNames.add(key);
-        const releaseError = validatePluginReleases(plugin);
-        if (releaseError) return releaseError;
-      }
-
-      const sectionNames = new Set();
-      for (const section of draftData.catalog.addons.sections) {
-        if (!stringValue(section.name)) return "Every Addons section needs a name.";
-        const sectionKey = section.name.toLowerCase();
-        if (sectionNames.has(sectionKey)) return `Duplicate Addons section: ${section.name}`;
-        sectionNames.add(sectionKey);
-
-        const pluginNames = new Set();
-        for (const plugin of section.plugins) {
-          if (!stringValue(plugin.name)) return `Every plugin in ${section.name} needs a name.`;
-          const pluginKey = plugin.name.toLowerCase();
-          if (pluginNames.has(pluginKey)) return `Duplicate plugin in ${section.name}: ${plugin.name}`;
-          pluginNames.add(pluginKey);
-          const releaseError = validatePluginReleases(plugin);
-          if (releaseError) return releaseError;
-        }
-      }
-
-      return "";
-    }
-
-    async function saveAll() {
-      const validationError = validateDraftBeforeSave();
-      if (validationError) {
-        setStatus("bad", "Validation failed");
-        toast(validationError, "bad");
-        return;
-      }
-
-      document.getElementById("saveAllBtn").disabled = true;
-      setStatus("warn", "Saving...");
-
-      try {
-        const response = await fetch(UPDATE_ENDPOINT, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Admin-Token": adminToken,
-          },
-          body: JSON.stringify(draftData),
-        });
-        const result = await response.json().catch(() => ({}));
-        if (!response.ok) {
-          const details = Array.isArray(result.details) && result.details.length ? ` ${result.details[0]}` : "";
-          throw new Error((result.error || `HTTP ${response.status}`) + details);
-        }
-
-        currentData = clone(normalizeCatalog(result.data || draftData));
-        draftData = clone(currentData);
-        markDirty(false);
-        clampSelection();
-        renderAll();
-        setStatus("good", "Saved");
-        toast("Catalog saved successfully.", "good");
-      } catch (error) {
-        setStatus("bad", "Save failed");
-        toast(`Save failed: ${error.message}`, "bad");
-      } finally {
-        document.getElementById("saveAllBtn").disabled = false;
-      }
-    }
-
-    function discardDraft() {
-      draftData = clone(currentData);
-      markDirty(false);
-      clampSelection();
-      renderAll();
-      toast("Draft reset to last saved state.", "info");
-    }
-  </script>
+  }
+  renderAll(); closeModal(); showToast("✓ Release saved");
+}
+
+// ─── DELETE ──────────────────────────────────────────────────────────────────
+function deleteRelease(type, plugin, idx) {
+  if (!confirm(`Delete release ${data.core[plugin][idx].version}?`)) return;
+  data.core[plugin].splice(idx, 1);
+  renderAll(); showToast("Release deleted");
+}
+function deleteAddonRelease(section, plugin, idx) {
+  if (!confirm("Delete this addon release?")) return;
+  data.addons[section][plugin].splice(idx, 1);
+  renderAll(); showToast("Release deleted");
+}
+
+// ─── JSON TAB ────────────────────────────────────────────────────────────────
+function formatJSON() {
+  try {
+    const parsed = JSON.parse(document.getElementById("jsonEditor").value);
+    document.getElementById("jsonEditor").value = JSON.stringify(parsed, null, 2);
+    clearAlert("jsonAlert");
+  } catch(e) { showAlert("jsonAlert","error","Invalid JSON: " + e.message); }
+}
+function saveJSON() {
+  try {
+    data = JSON.parse(document.getElementById("jsonEditor").value);
+    renderAll(); showToast("✓ JSON saved & applied");
+    clearAlert("jsonAlert");
+  } catch(e) { showAlert("jsonAlert","error","Cannot save — invalid JSON: " + e.message); }
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+function addCorePlugin() {
+  const name = prompt("New core plugin name:");
+  if (name && name.trim()) { if (!data.core) data.core = {}; data.core[name.trim()] = []; renderAll(); showToast("Plugin added"); }
+}
+function addAddonSection() {
+  const name = prompt("New addon section name:");
+  if (name && name.trim()) { if (!data.addons) data.addons = {}; data.addons[name.trim()] = {}; renderAll(); showToast("Section added"); }
+}
+function clearSection(type) {
+  if (type === 'core') Object.keys(data.core||{}).forEach(k => data.core[k] = []);
+  else Object.keys(data.addons||{}).forEach(s => Object.keys(data.addons[s]).forEach(p => data.addons[s][p] = []));
+  renderAll(); showToast("Cleared");
+}
+function resetAll() { data = { core: {}, addons: {} }; renderAll(); showToast("Data reset"); }
+function exportData() {
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  a.download = "data.json"; a.click(); showToast("Exported data.json");
+}
+
+function switchTab(name) {
+  document.querySelectorAll(".tab").forEach((t,i) => {
+    const tabs = ["releases","plugins","json","settings"];
+    t.classList.toggle("active", tabs[i] === name);
+  });
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("visible"));
+  document.getElementById("tab-"+name).classList.add("visible");
+  if (name === "json") document.getElementById("jsonEditor").value = JSON.stringify(data, null, 2);
+}
+
+function showAlert(id, type, msg) {
+  const el = document.getElementById(id);
+  el.className = "alert " + type;
+  el.textContent = msg;
+}
+function clearAlert(id) {
+  const el = document.getElementById(id);
+  if (el) el.className = "alert";
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2500);
+}
+
+document.getElementById("releaseModal").addEventListener("click", e => {
+  if (e.target === document.getElementById("releaseModal")) closeModal();
+});
+
+init();
+</script>
 </body>
 </html>
