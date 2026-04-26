@@ -2095,6 +2095,12 @@ async function loadRemoteData() {
     const response = await fetch(state.dataUrl, { cache: "no-store" });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
+      if (payload && payload.missing) {
+        const missingKeys = Object.keys(payload.missing).filter((key) => payload.missing[key]);
+        if (missingKeys.length) {
+          throw new Error((payload.error || "Server misconfiguration") + " -> " + missingKeys.join(", "));
+        }
+      }
       throw new Error(payload.error || ("Remote fetch failed with status " + response.status + "."));
     }
     state.catalog = normalizeCatalog(payload);

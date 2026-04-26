@@ -54,12 +54,14 @@ async function handleApi(request, env, url) {
 }
 
 async function handleGetCatalog(env, headers) {
-  if (!env.GITHUB_TOKEN || !env.REPO) {
+  const githubToken = readBinding(env, "GITHUB_TOKEN");
+  const repo = readBinding(env, "REPO");
+  if (!githubToken || !repo) {
     return json({
       error: "Server misconfiguration: missing GITHUB_TOKEN or REPO",
       missing: {
-        GITHUB_TOKEN: !env.GITHUB_TOKEN,
-        REPO: !env.REPO,
+        GITHUB_TOKEN: !githubToken,
+        REPO: !repo,
       },
     }, 500, headers);
   }
@@ -75,7 +77,7 @@ async function handleGetCatalog(env, headers) {
 
 async function handleAdminAuth(request, env, headers) {
   const token = await readAdminToken(request);
-  if (!safeEqual(token, env.ADMIN_TOKEN || "")) {
+  if (!safeEqual(token, readBinding(env, "ADMIN_TOKEN"))) {
     return json({ success: false, error: "Unauthorized" }, 401, headers);
   }
 
@@ -84,17 +86,19 @@ async function handleAdminAuth(request, env, headers) {
 
 async function handleAdminSave(request, env, headers) {
   const token = await readAdminToken(request);
-  if (!safeEqual(token, env.ADMIN_TOKEN || "")) {
+  if (!safeEqual(token, readBinding(env, "ADMIN_TOKEN"))) {
     return json({ success: false, error: "Unauthorized" }, 401, headers);
   }
 
-  if (!env.GITHUB_TOKEN || !env.REPO) {
+  const githubToken = readBinding(env, "GITHUB_TOKEN");
+  const repo = readBinding(env, "REPO");
+  if (!githubToken || !repo) {
     return json({
       success: false,
       error: "Server misconfiguration: missing GITHUB_TOKEN or REPO",
       missing: {
-        GITHUB_TOKEN: !env.GITHUB_TOKEN,
-        REPO: !env.REPO,
+        GITHUB_TOKEN: !githubToken,
+        REPO: !repo,
       },
     }, 500, headers);
   }
@@ -298,13 +302,14 @@ async function fetchGithubFile(env, allowMissing = false) {
 }
 
 function buildGithubContentsUrl(env) {
-  const filePath = env.FILE_PATH || "data.json";
-  return `https://api.github.com/repos/${env.REPO}/contents/${filePath}`;
+  const filePath = readBinding(env, "FILE_PATH") || "data.json";
+  const repo = readBinding(env, "REPO");
+  return `https://api.github.com/repos/${repo}/contents/${filePath}`;
 }
 
 function githubHeaders(env, extra = {}) {
   return {
-    Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+    Authorization: `Bearer ${readBinding(env, "GITHUB_TOKEN")}`,
     Accept: "application/vnd.github+json",
     "User-Agent": "rutwokLabz-worker",
     ...extra,
@@ -349,6 +354,17 @@ function str(value) {
 
 function arrayOf(value) {
   return Array.isArray(value) ? value : [];
+}
+
+function readBinding(env, key) {
+  const direct = env && typeof env[key] === "string" ? env[key] : "";
+  if (direct) return direct;
+
+  if (typeof process !== "undefined" && process && process.env && typeof process.env[key] === "string") {
+    return process.env[key];
+  }
+
+  return "";
 }
 
 function toBase64(value) {
