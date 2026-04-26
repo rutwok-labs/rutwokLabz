@@ -29,6 +29,25 @@
               "releases": []
             }
           ]
+        },
+        {
+          "name": "FluffyMachines",
+          "plugins": [
+            {
+              "name": "FluffyMachines",
+              "releases": [
+                {
+                  "name": "1.0.0v",
+                  "version": "1.21.11",
+                  "type": "stable",
+                  "latest": true,
+                  "status": "success",
+                  "loader": "PaperMC",
+                  "download": "https://github.com/rutwok-labs/SF4-Addons/raw/refs/heads/main/Addons/FluffyMachines/releases/FluffyMachines%20v1.0.0.jar"
+                }
+              ]
+            }
+          ]
         }
       ]
     }
