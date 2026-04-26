@@ -37,6 +37,10 @@
                   "download": "https://github.com/rutwok-labs/SF4-Addons/blob/main/Addons/FluffyMachines/releases/FluffyMachines%20v1.0.0.jar"
                 }
               ]
+            },
+            {
+              "name": "ElectricSpawners",
+              "releases": []
             }
           ]
         }
