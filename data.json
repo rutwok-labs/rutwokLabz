@@ -22,15 +22,6 @@
     "addons": {
       "sections": [
         {
-          "name": "General",
-          "plugins": [
-            {
-              "name": "New Plugin 1",
-              "releases": []
-            }
-          ]
-        },
-        {
           "name": "FluffyMachines",
           "plugins": [
             {
