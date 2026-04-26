@@ -3,37 +3,45 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>rutwokLabz — Admin Panel</title>
+<title>rutwokLabz Control Room</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg:          #020b18;
-    --bg2:         #051525;
-    --glass:       rgba(6, 28, 56, 0.55);
-    --glass-hover: rgba(10, 45, 85, 0.7);
-    --border:      rgba(0, 180, 255, 0.12);
-    --border-hi:   rgba(0, 220, 255, 0.35);
-    --glow:        rgba(0, 210, 255, 0.08);
-    --blue:        #0084ff;
-    --cyan:        #00d4ff;
-    --cyan-dim:    rgba(0, 212, 255, 0.18);
-    --cyan-soft:   rgba(0, 212, 255, 0.08);
-    --danger:      rgba(255, 60, 80, 0.85);
-    --danger-dim:  rgba(255, 60, 80, 0.15);
-    --success:     rgba(74, 222, 128, 0.9);
-    --success-dim: rgba(74, 222, 128, 0.12);
-    --text:        #e0f4ff;
-    --muted:       rgba(160, 210, 240, 0.55);
-    --mono:        "JetBrains Mono", monospace;
-    --sans:        "Syne", sans-serif;
+    --bg: #0f1117;
+    --bg-soft: #171a23;
+    --panel: rgba(19, 23, 34, 0.9);
+    --panel-strong: rgba(13, 16, 25, 0.96);
+    --panel-alt: rgba(31, 36, 51, 0.72);
+    --line: rgba(189, 255, 0, 0.16);
+    --line-strong: rgba(189, 255, 0, 0.32);
+    --text: #f3f5ef;
+    --muted: #9ea79a;
+    --accent: #bdff00;
+    --accent-ink: #192100;
+    --accent-soft: rgba(189, 255, 0, 0.12);
+    --warn: #ffb703;
+    --danger: #ff5c75;
+    --success: #60d394;
+    --mono: "IBM Plex Mono", monospace;
+    --sans: "Bricolage Grotesque", sans-serif;
+    --shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+    --radius: 26px;
   }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    min-height: 100%;
+  }
 
   body {
-    min-height: 100vh;
-    background: var(--bg);
+    background:
+      radial-gradient(circle at top left, rgba(189, 255, 0, 0.1), transparent 28%),
+      radial-gradient(circle at 85% 12%, rgba(255, 183, 3, 0.08), transparent 18%),
+      linear-gradient(180deg, #0b0d13 0%, #10131b 100%);
     color: var(--text);
     font-family: var(--sans);
     overflow-x: hidden;
@@ -41,791 +49,2330 @@
 
   body::before {
     content: "";
-    position: fixed; inset: 0;
-    background:
-      radial-gradient(ellipse 55% 45% at 10% 15%, rgba(0,80,200,0.14) 0%, transparent 70%),
-      radial-gradient(ellipse 45% 50% at 90% 80%, rgba(0,190,255,0.1) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 35% at 60% 10%, rgba(0,140,255,0.07) 0%, transparent 60%);
-    pointer-events: none; z-index: 0;
-  }
-  body::after {
-    content: "";
-    position: fixed; inset: 0;
+    position: fixed;
+    inset: 0;
     background-image:
-      linear-gradient(rgba(0,180,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,180,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none; z-index: 0;
+      linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent 92%);
+    pointer-events: none;
+    z-index: 0;
   }
 
-  .page { position: relative; z-index: 1; max-width: 1300px; margin: 0 auto; padding: 28px 24px; }
-
-  /* ─── HEADER ─── */
-  header {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 16px; margin-bottom: 28px; flex-wrap: wrap;
-    padding: 18px 24px;
-    background: var(--glass);
-    border: 1px solid var(--border-hi);
-    border-radius: 20px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 0 40px rgba(0,180,255,0.07), inset 0 1px 0 rgba(255,255,255,0.04);
-  }
-  .brand { display: flex; align-items: center; gap: 16px; }
-  .brand-mark {
-    width: 50px; height: 50px; border-radius: 14px;
-    background: linear-gradient(135deg, rgba(255,60,80,0.3), rgba(255,140,0,0.2));
-    border: 1px solid rgba(255,100,80,0.4);
-    display: grid; place-items: center;
-    font: 700 0.85rem var(--mono); color: #ff6b6b;
-    box-shadow: 0 0 20px rgba(255,80,80,0.15), inset 0 0 12px rgba(255,60,60,0.1);
-    animation: pulse-admin 3s ease-in-out infinite;
-  }
-  @keyframes pulse-admin {
-    0%,100% { box-shadow: 0 0 20px rgba(255,80,80,0.15); }
-    50%      { box-shadow: 0 0 35px rgba(255,80,80,0.3); }
-  }
-  .brand h1 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; }
-  .brand h1 span { color: #ff6b6b; }
-  .brand .tag {
-    display: inline-flex; align-items: center;
-    padding: 2px 10px; border-radius: 999px;
-    background: rgba(255,80,80,0.12); border: 1px solid rgba(255,80,80,0.3);
-    color: #ff6b6b; font: 700 0.6rem var(--mono); letter-spacing: 0.1em;
-    margin-left: 10px;
-  }
-  .brand p { color: var(--muted); font-size: 0.78rem; margin-top: 2px; font-family: var(--mono); }
-
-  .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    min-height: 40px; padding: 0 18px;
-    background: var(--glass);
-    border: 1px solid var(--border-hi);
-    border-radius: 12px; color: var(--cyan);
-    font: 700 0.8rem var(--mono); cursor: pointer;
-    text-decoration: none; transition: all 0.2s;
-    backdrop-filter: blur(10px); letter-spacing: 0.04em;
-  }
-  .btn:hover { background: var(--cyan-dim); box-shadow: 0 0 20px rgba(0,212,255,0.2); color: #fff; }
-  .btn-primary {
-    background: linear-gradient(135deg, rgba(0,132,255,0.4), rgba(0,212,255,0.3));
-    color: #fff;
-  }
-  .btn-primary:hover { background: linear-gradient(135deg, rgba(0,132,255,0.6), rgba(0,212,255,0.5)); box-shadow: 0 0 30px rgba(0,180,255,0.4); }
-  .btn-danger { color: #ff6b6b; border-color: rgba(255,80,80,0.4); }
-  .btn-danger:hover { background: var(--danger-dim); box-shadow: 0 0 20px rgba(255,80,80,0.2); color: #fff; border-color: #ff6b6b; }
-  .btn-success { color: #4ade80; border-color: rgba(74,222,128,0.4); }
-  .btn-success:hover { background: var(--success-dim); color: #fff; border-color: #4ade80; }
-
-  /* ─── TABS ─── */
-  .tabs {
-    display: flex; gap: 6px;
-    margin-bottom: 24px;
-    background: var(--glass);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 6px;
-    backdrop-filter: blur(10px);
-    width: fit-content;
-  }
-  .tab {
-    padding: 8px 20px;
-    border: 1px solid transparent;
-    border-radius: 10px;
-    background: transparent;
-    color: var(--muted);
-    font: 700 0.8rem var(--mono);
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-  .tab:hover { color: var(--text); background: var(--glass-hover); }
-  .tab.active {
-    background: var(--cyan-dim);
-    border-color: var(--border-hi);
-    color: var(--cyan);
-    box-shadow: 0 0 12px rgba(0,212,255,0.15);
+  a {
+    color: inherit;
   }
 
-  /* ─── SECTION CARDS ─── */
-  .section { display: none; }
-  .section.visible { display: block; }
-
-  /* ─── CARD ─── */
-  .card {
-    background: var(--glass);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 24px;
-    backdrop-filter: blur(20px);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
-    margin-bottom: 18px;
-  }
-  .card-head {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
-  }
-  .card-head h2 {
-    font-size: 1.15rem; font-weight: 800;
-    letter-spacing: -0.01em; display: flex; align-items: center; gap: 10px;
-  }
-  .card-head h2 .tag {
-    padding: 2px 10px; border-radius: 999px;
-    background: var(--cyan-soft); border: 1px solid var(--border-hi);
-    color: var(--cyan); font: 700 0.6rem var(--mono); letter-spacing: 0.1em;
+  .shell {
+    position: relative;
+    z-index: 1;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 28px 20px 40px;
   }
 
-  /* ─── FORM ELEMENTS ─── */
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-  .form-row.single { grid-template-columns: 1fr; }
-  .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) auto;
+    gap: 18px;
+    align-items: stretch;
+    margin-bottom: 20px;
+  }
 
-  label {
-    display: block; color: var(--muted);
-    font: 700 0.65rem var(--mono); letter-spacing: 0.1em;
-    text-transform: uppercase; margin-bottom: 6px;
-  }
-  input, select, textarea {
-    width: 100%;
-    padding: 10px 14px;
-    background: rgba(5,20,45,0.7);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    font: 500 0.88rem var(--mono);
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    appearance: none;
-  }
-  input::placeholder, textarea::placeholder { color: var(--muted); }
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--border-hi);
-    box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
-  }
-  textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
-  select option { background: #051525; }
-
-  .field-group { margin-bottom: 6px; }
-
-  /* ─── TABLE ─── */
-  .table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid var(--border); }
-  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  thead tr { border-bottom: 1px solid var(--border); background: rgba(0,20,50,0.5); }
-  thead th {
-    padding: 12px 16px; text-align: left;
-    color: var(--cyan); font: 700 0.65rem var(--mono);
-    letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap;
-  }
-  tbody tr {
-    border-bottom: 1px solid var(--border);
-    transition: background 0.15s;
-  }
-  tbody tr:last-child { border-bottom: none; }
-  tbody tr:hover { background: var(--glass-hover); }
-  td { padding: 12px 16px; color: var(--text); font-family: var(--mono); vertical-align: middle; }
-  .td-actions { display: flex; gap: 8px; }
-  .action-btn {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 5px 12px; border-radius: 8px; border: 1px solid;
-    font: 700 0.67rem var(--mono); cursor: pointer;
-    transition: all 0.15s; background: transparent; letter-spacing: 0.06em;
-  }
-  .action-btn.edit { color: var(--cyan); border-color: var(--border-hi); }
-  .action-btn.edit:hover { background: var(--cyan-dim); }
-  .action-btn.del { color: #ff6b6b; border-color: rgba(255,80,80,0.3); }
-  .action-btn.del:hover { background: var(--danger-dim); }
-
-  /* ─── BADGE ─── */
-  .badge {
-    display: inline-flex; align-items: center;
-    padding: 2px 10px; border-radius: 999px;
-    font: 700 0.62rem var(--mono); letter-spacing: 0.06em; border: 1px solid;
-  }
-  .badge.latest { color: var(--cyan); border-color: var(--border-hi); background: var(--cyan-soft); }
-  .badge.stable { color: #4ade80; border-color: rgba(74,222,128,0.35); background: rgba(74,222,128,0.08); }
-  .badge.beta { color: #fbbf24; border-color: rgba(251,191,36,0.35); background: rgba(251,191,36,0.08); }
-
-  /* ─── JSON EDITOR ─── */
-  .json-editor {
-    background: rgba(2,10,20,0.8);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-    font-family: var(--mono);
-    font-size: 0.8rem;
-    min-height: 300px;
-    color: var(--text);
-    outline: none;
-    resize: vertical;
-    width: 100%;
-    line-height: 1.7;
-    tab-size: 2;
-    transition: border-color 0.2s;
-  }
-  .json-editor:focus { border-color: var(--border-hi); box-shadow: 0 0 0 3px rgba(0,212,255,0.06); }
-
-  /* ─── ALERT ─── */
-  .alert {
-    display: none; padding: 12px 16px; border-radius: 10px;
-    font: 600 0.82rem var(--mono); margin-bottom: 14px;
-    border: 1px solid; animation: fade-in 0.2s ease;
-  }
-  @keyframes fade-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
-  .alert.success { color: #4ade80; border-color: rgba(74,222,128,0.35); background: rgba(74,222,128,0.08); display: block; }
-  .alert.error { color: #ff6b6b; border-color: rgba(255,80,80,0.35); background: rgba(255,80,80,0.08); display: block; }
-
-  /* ─── STATS ─── */
-  .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
-  .stat-card {
-    padding: 18px; background: var(--glass); border: 1px solid var(--border);
-    border-radius: 14px; backdrop-filter: blur(10px);
-  }
-  .stat-card .label { color: var(--muted); font: 600 0.62rem var(--mono); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
-  .stat-card .value { font: 800 1.8rem var(--sans); color: var(--cyan); letter-spacing: -0.02em; }
-  .stat-card .sub { color: var(--muted); font: 500 0.68rem var(--mono); margin-top: 2px; }
-
-  /* ─── MODAL ─── */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(2, 8, 20, 0.85);
-    backdrop-filter: blur(8px);
-    z-index: 100; place-items: center;
-  }
-  .modal-overlay.open { display: grid; }
-  .modal {
-    background: #061528;
-    border: 1px solid var(--border-hi);
-    border-radius: 22px;
-    padding: 30px;
-    width: min(560px, 95vw);
-    box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(0,180,255,0.08);
-    animation: modal-in 0.25s ease;
-  }
-  @keyframes modal-in { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: none; } }
-  .modal-head {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 22px;
-  }
-  .modal-head h3 { font-size: 1.2rem; font-weight: 800; color: var(--cyan); }
-  .modal-close {
-    background: none; border: none; color: var(--muted);
-    font-size: 1.4rem; cursor: pointer; line-height: 1;
-    transition: color 0.15s;
-  }
-  .modal-close:hover { color: var(--text); }
-  .modal-foot { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
-
-  /* ─── DIVIDER ─── */
-  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
-
-  /* ─── SCROLLBAR ─── */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(0,180,255,0.25); border-radius: 99px; }
-
-  /* ─── TOAST ─── */
+  .hero-card,
+  .hero-actions,
+  .panel,
+  .modal-card,
   .toast {
-    position: fixed; bottom: 28px; right: 28px;
-    background: #061528; border: 1px solid var(--border-hi);
-    border-radius: 14px; padding: 14px 20px;
-    color: var(--cyan); font: 700 0.82rem var(--mono);
-    box-shadow: 0 0 40px rgba(0,180,255,0.2);
-    z-index: 999; transform: translateY(80px); opacity: 0;
-    transition: all 0.3s cubic-bezier(.34,1.56,.64,1);
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(25, 29, 40, 0.96), rgba(14, 17, 25, 0.94));
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(18px);
+  }
+
+  .hero-card {
+    border-radius: 34px;
+    padding: 28px 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-card::after {
+    content: "";
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    right: -120px;
+    top: -160px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(189, 255, 0, 0.2), transparent 68%);
     pointer-events: none;
   }
-  .toast.show { transform: none; opacity: 1; }
 
-  @media (max-width: 900px) { .stats-row { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } .form-row.triple { grid-template-columns: 1fr; } .page { padding: 16px 12px; } }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    color: var(--accent);
+    background: rgba(189, 255, 0, 0.08);
+    font: 600 0.68rem var(--mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .hero-title {
+    margin: 16px 0 12px;
+    font-size: clamp(2rem, 4vw, 3.75rem);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    max-width: 10ch;
+  }
+
+  .hero-copy {
+    max-width: 62ch;
+    color: var(--muted);
+    font-size: 0.98rem;
+    line-height: 1.7;
+  }
+
+  .hero-actions {
+    border-radius: 30px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 260px;
+  }
+
+  .hero-actions .stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .hero-actions .meta {
+    margin-top: auto;
+    color: var(--muted);
+    font: 500 0.72rem var(--mono);
+    line-height: 1.7;
+  }
+
+  .auth-panel {
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .auth-panel .helper {
+    margin-top: 10px;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stat {
+    padding: 18px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: linear-gradient(180deg, rgba(25, 29, 40, 0.94), rgba(16, 19, 28, 0.96));
+    box-shadow: var(--shadow);
+  }
+
+  .stat .label {
+    color: var(--muted);
+    font: 600 0.66rem var(--mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .stat .value {
+    margin: 12px 0 4px;
+    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .stat .sub {
+    color: var(--muted);
+    font: 500 0.74rem var(--mono);
+  }
+
+  .workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.78fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .main-column,
+  .side-column {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .panel {
+    border-radius: var(--radius);
+    padding: 22px;
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .panel-title {
+    margin: 0;
+    font-size: 1.25rem;
+    letter-spacing: -0.03em;
+  }
+
+  .panel-copy {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font: 500 0.82rem var(--mono);
+    line-height: 1.7;
+  }
+
+  .action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .btn {
+    appearance: none;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text);
+    border-radius: 16px;
+    min-height: 44px;
+    padding: 0 16px;
+    font: 600 0.8rem var(--mono);
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+    border-color: rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .btn:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .btn-primary {
+    border-color: rgba(189, 255, 0, 0.34);
+    background: linear-gradient(135deg, rgba(189, 255, 0, 0.9), rgba(136, 201, 0, 0.95));
+    color: #101506;
+  }
+
+  .btn-primary:hover {
+    border-color: rgba(189, 255, 0, 0.48);
+    background: linear-gradient(135deg, rgba(201, 255, 46, 0.98), rgba(143, 214, 0, 1));
+  }
+
+  .btn-secondary {
+    border-color: rgba(189, 255, 0, 0.24);
+    color: var(--accent);
+  }
+
+  .btn-danger {
+    border-color: rgba(255, 92, 117, 0.24);
+    color: var(--danger);
+  }
+
+  .btn-inline {
+    min-height: 34px;
+    padding: 0 10px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+  }
+
+  .alert {
+    display: none;
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    font: 500 0.78rem var(--mono);
+    line-height: 1.6;
+  }
+
+  .alert.show {
+    display: block;
+  }
+
+  .alert.success {
+    color: var(--success);
+    border: 1px solid rgba(96, 211, 148, 0.2);
+    background: rgba(96, 211, 148, 0.08);
+  }
+
+  .alert.error {
+    color: var(--danger);
+    border: 1px solid rgba(255, 92, 117, 0.18);
+    background: rgba(255, 92, 117, 0.08);
+  }
+
+  .alert.info {
+    color: var(--accent);
+    border: 1px solid rgba(189, 255, 0, 0.18);
+    background: rgba(189, 255, 0, 0.08);
+  }
+
+  .table-wrap {
+    overflow: auto;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 24px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1080px;
+  }
+
+  th,
+  td {
+    padding: 14px 16px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--muted);
+    font: 600 0.66rem var(--mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  td {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font: 500 0.8rem var(--mono);
+    color: #dde2d7;
+  }
+
+  tbody tr {
+    background: rgba(255, 255, 255, 0.01);
+    transition: background 160ms ease, transform 160ms ease;
+  }
+
+  tbody tr:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  tbody tr.is-selected {
+    background: rgba(189, 255, 0, 0.08);
+  }
+
+  .row-trigger {
+    cursor: pointer;
+  }
+
+  .muted {
+    color: var(--muted);
+  }
+
+  .mono {
+    font-family: var(--mono);
+  }
+
+  .cluster {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    font: 600 0.68rem var(--mono);
+    color: #dde2d7;
+  }
+
+  .pill.accent {
+    border-color: rgba(189, 255, 0, 0.3);
+    background: rgba(189, 255, 0, 0.1);
+    color: var(--accent);
+  }
+
+  .pill.success {
+    border-color: rgba(96, 211, 148, 0.3);
+    background: rgba(96, 211, 148, 0.1);
+    color: var(--success);
+  }
+
+  .pill.warn {
+    border-color: rgba(255, 183, 3, 0.3);
+    background: rgba(255, 183, 3, 0.1);
+    color: var(--warn);
+  }
+
+  .pill.danger {
+    border-color: rgba(255, 92, 117, 0.3);
+    background: rgba(255, 92, 117, 0.08);
+    color: var(--danger);
+  }
+
+  .status-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--danger);
+    box-shadow: 0 0 0 5px rgba(255, 92, 117, 0.08);
+  }
+
+  .status-dot.ready {
+    background: var(--success);
+    box-shadow: 0 0 0 5px rgba(96, 211, 148, 0.08);
+  }
+
+  .split {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .field-grid.triple {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .field.full {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    color: var(--muted);
+    font: 600 0.66rem var(--mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text);
+    border-radius: 16px;
+    padding: 12px 14px;
+    font: 500 0.88rem var(--mono);
+    transition: border-color 160ms ease, background 160ms ease;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #757d79;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: rgba(189, 255, 0, 0.34);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  textarea {
+    min-height: 280px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    padding: 12px 14px;
+  }
+
+  .checkbox-row input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    margin: 0;
+  }
+
+  .checkbox-copy {
+    color: #dde2d7;
+    font: 500 0.84rem var(--mono);
+  }
+
+  .registry-list,
+  .section-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .registry-item,
+  .section-item {
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 14px;
+  }
+
+  .registry-head,
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .registry-head strong,
+  .section-head strong {
+    font: 600 0.92rem var(--mono);
+  }
+
+  .plugin-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .plugin-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    font: 500 0.72rem var(--mono);
+  }
+
+  .plugin-chip button {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--danger);
+    cursor: pointer;
+    font: inherit;
+    padding: 0;
+  }
+
+  .empty {
+    padding: 18px;
+    border-radius: 18px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--muted);
+    font: 500 0.8rem var(--mono);
+    line-height: 1.7;
+  }
+
+  .inspector-card {
+    min-height: 280px;
+  }
+
+  .inspector-title {
+    margin: 0 0 10px;
+    font-size: 1.3rem;
+    letter-spacing: -0.03em;
+  }
+
+  .detail-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .detail {
+    padding: 12px 14px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .detail .k {
+    color: var(--muted);
+    font: 600 0.65rem var(--mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .detail .v {
+    margin-top: 8px;
+    font: 500 0.84rem var(--mono);
+    line-height: 1.6;
+    word-break: break-word;
+  }
+
+  .source-note {
+    margin-top: 12px;
+    color: var(--muted);
+    font: 500 0.72rem var(--mono);
+    line-height: 1.7;
+  }
+
+  .modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    place-items: center;
+    padding: 20px;
+    background: rgba(6, 8, 12, 0.72);
+    backdrop-filter: blur(10px);
+    z-index: 50;
+  }
+
+  .modal.open {
+    display: grid;
+  }
+
+  .modal-card {
+    width: min(760px, 100%);
+    border-radius: 30px;
+    padding: 22px;
+    max-height: calc(100vh - 40px);
+    overflow: auto;
+  }
+
+  .modal-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .modal-title {
+    margin: 0;
+    font-size: 1.3rem;
+    letter-spacing: -0.03em;
+  }
+
+  .modal-copy {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font: 500 0.78rem var(--mono);
+    line-height: 1.7;
+  }
+
+  .modal-close {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font: 500 1.3rem var(--mono);
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .modal-actions .right {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .toast {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    min-width: 220px;
+    border-radius: 18px;
+    padding: 14px 16px;
+    color: var(--text);
+    font: 500 0.8rem var(--mono);
+    opacity: 0;
+    transform: translateY(18px);
+    pointer-events: none;
+    transition: opacity 180ms ease, transform 180ms ease;
+    z-index: 60;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .helper {
+    color: var(--muted);
+    font: 500 0.72rem var(--mono);
+    line-height: 1.7;
+  }
+
+  @media (max-width: 1180px) {
+    .workspace,
+    .hero {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-actions {
+      min-width: 0;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .stats,
+    .split,
+    .field-grid,
+    .field-grid.triple {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .shell {
+      padding: 16px 12px 32px;
+    }
+
+    .stats,
+    .split,
+    .field-grid,
+    .field-grid.triple {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-card,
+    .panel,
+    .hero-actions,
+    .modal-card {
+      border-radius: 24px;
+      padding: 18px;
+    }
+
+    .action-row,
+    .modal-actions .right {
+      width: 100%;
+    }
+
+    .action-row .btn,
+    .modal-actions .right .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 </style>
 </head>
 <body>
+<div class="shell">
+  <section class="hero">
+    <div class="hero-card">
+      <div class="eyebrow">Catalog Control Surface</div>
+      <h1 class="hero-title">Admin built around the real release schema.</h1>
+      <p class="hero-copy">
+        This editor now works with your actual <span class="mono">catalog.core.plugins</span> and
+        <span class="mono">catalog.addons.sections</span> structure, including the exact
+        <span class="mono">download</span> field that the public release page uses.
+      </p>
+    </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast">✓ Saved successfully</div>
+    <aside class="hero-actions">
+      <div class="stack">
+        <a class="btn btn-secondary" href="index.html">Open public dashboard</a>
+        <button class="btn btn-primary" id="loadRemoteBtn" type="button">Load remote data</button>
+        <button class="btn btn-primary" id="saveRemoteBtn" type="button">Save to GitHub</button>
+        <button class="btn" id="exportBtn" type="button">Export data.json</button>
+        <button class="btn" id="openAuthBtn" type="button">Admin login</button>
+        <button class="btn btn-danger" id="logoutAuthBtn" type="button">Logout</button>
+      </div>
+      <div class="meta">
+        Release downloads come directly from each release object's <span class="mono">download</span> URL.
+        Select a release and use the inspector download button to trigger the file request instantly.
+        <div class="auth-panel">
+          <span class="pill danger" id="authStatusPill">Locked</span>
+          <div class="helper" id="authStatusCopy">Login with your admin token before creating, deleting, or saving changes.</div>
+        </div>
+      </div>
+    </aside>
+  </section>
 
-<!-- MODAL: Add/Edit Release -->
-<div class="modal-overlay" id="releaseModal">
-  <div class="modal">
+  <section class="stats">
+    <article class="stat">
+      <div class="label">Core Plugins</div>
+      <div class="value" id="statCore">0</div>
+      <div class="sub">registered under core</div>
+    </article>
+    <article class="stat">
+      <div class="label">Addon Sections</div>
+      <div class="value" id="statSections">0</div>
+      <div class="sub">release groupings</div>
+    </article>
+    <article class="stat">
+      <div class="label">Total Releases</div>
+      <div class="value" id="statReleases">0</div>
+      <div class="sub">across the full catalog</div>
+    </article>
+    <article class="stat">
+      <div class="label">Missing URLs</div>
+      <div class="value" id="statMissingUrls">0</div>
+      <div class="sub">releases that need download links</div>
+    </article>
+  </section>
+
+  <section class="workspace">
+    <main class="main-column">
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Release Registry</h2>
+            <p class="panel-copy">
+              Edit the exact fields used by the public site: release name, version, type, latest flag,
+              status, loader, and download URL.
+            </p>
+          </div>
+          <div class="action-row">
+            <button class="btn btn-primary" id="addCoreReleaseBtn" type="button">Add core release</button>
+            <button class="btn" id="addAddonReleaseBtn" type="button">Add addon release</button>
+          </div>
+        </div>
+
+        <div class="alert" id="releaseAlert"></div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Scope</th>
+                <th>Section</th>
+                <th>Plugin</th>
+                <th>Release</th>
+                <th>Version</th>
+                <th>Flags</th>
+                <th>Loader</th>
+                <th>Download</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="releaseTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Catalog Structure</h2>
+            <p class="panel-copy">
+              Add core plugins, addon sections, and addon plugins without dropping into raw JSON.
+            </p>
+          </div>
+        </div>
+
+        <div class="split">
+          <div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="newCorePluginName">New core plugin</label>
+                <input id="newCorePluginName" type="text" placeholder="SlimeFunCore" />
+              </div>
+              <div class="field" style="justify-content:flex-end;">
+                <label>&nbsp;</label>
+                <button class="btn btn-primary" id="addCorePluginBtn" type="button">Create core plugin</button>
+              </div>
+            </div>
+            <div class="registry-list" id="corePluginList"></div>
+          </div>
+
+          <div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="newSectionName">New addon section</label>
+                <input id="newSectionName" type="text" placeholder="General" />
+              </div>
+              <div class="field" style="justify-content:flex-end;">
+                <label>&nbsp;</label>
+                <button class="btn btn-primary" id="addSectionBtn" type="button">Create section</button>
+              </div>
+            </div>
+
+            <div class="field-grid">
+              <div class="field">
+                <label for="addonSectionSelect">Target section</label>
+                <select id="addonSectionSelect"></select>
+              </div>
+              <div class="field">
+                <label for="newAddonPluginName">New addon plugin</label>
+                <input id="newAddonPluginName" type="text" placeholder="New Plugin 1" />
+              </div>
+            </div>
+            <div style="margin-top:12px;">
+              <button class="btn btn-primary" id="addAddonPluginBtn" type="button">Create addon plugin</button>
+            </div>
+
+            <div class="section-list" id="addonSectionList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Raw JSON</h2>
+            <p class="panel-copy">
+              Apply structured edits directly to the live working catalog state. The editor will normalize
+              the payload back to the expected schema.
+            </p>
+          </div>
+          <div class="action-row">
+            <button class="btn" id="formatJsonBtn" type="button">Format</button>
+            <button class="btn btn-primary" id="applyJsonBtn" type="button">Apply JSON</button>
+          </div>
+        </div>
+        <div class="alert" id="jsonAlert"></div>
+        <textarea id="jsonEditor" spellcheck="false"></textarea>
+      </section>
+    </main>
+
+    <aside class="side-column">
+      <section class="panel inspector-card">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Release Inspector</h2>
+            <p class="panel-copy">
+              Select a release from the table to inspect its download URL and trigger the browser download flow.
+            </p>
+          </div>
+        </div>
+        <div id="inspectorBody" class="empty">
+          No release selected yet. Choose a row from the registry to inspect or edit it.
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Catalog Settings</h2>
+            <p class="panel-copy">
+              Update the catalog title and remote JSON source used by this admin page.
+            </p>
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field full">
+            <label for="catalogTitleInput">Catalog title</label>
+            <input id="catalogTitleInput" type="text" placeholder="rutwokLabz Plugin Catalog" />
+          </div>
+          <div class="field full">
+            <label for="dataUrlInput">Data JSON URL</label>
+            <input id="dataUrlInput" type="url" placeholder="https://example.com/data.json" />
+          </div>
+        </div>
+
+        <div class="action-row" style="margin-top:12px;">
+          <button class="btn btn-primary" id="saveSettingsBtn" type="button">Apply settings</button>
+          <button class="btn" id="copyJsonBtn" type="button">Copy JSON</button>
+        </div>
+
+        <p class="source-note">
+          This page stores the source URL in local browser storage. Exported JSON uses the current in-memory catalog.
+        </p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Safety Checks</h2>
+            <p class="panel-copy">
+              Use these controls to reset local editor state. They do not push changes anywhere on their own.
+            </p>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button class="btn" id="resetSampleBtn" type="button">Load sample catalog</button>
+          <button class="btn btn-danger" id="resetBlankBtn" type="button">Start blank catalog</button>
+        </div>
+        <p class="helper" style="margin-top:12px;">
+          Download buttons in both this admin page and the public page rely on a valid
+          <span class="mono">https://</span> release URL.
+        </p>
+      </section>
+    </aside>
+  </section>
+</div>
+
+<div class="modal" id="releaseModal" aria-hidden="true">
+  <div class="modal-card">
     <div class="modal-head">
-      <h3 id="modalTitle">Add Release</h3>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div>
+        <h3 class="modal-title" id="modalTitle">Add release</h3>
+        <p class="modal-copy" id="modalCopy">
+          Create a release entry that is immediately compatible with the public dashboard.
+        </p>
+      </div>
+      <button class="modal-close" id="closeModalBtn" type="button" aria-label="Close modal">x</button>
     </div>
-    <div id="modalAlert" class="alert"></div>
-    <div class="form-row">
-      <div class="field-group">
-        <label>Plugin Name</label>
-        <input type="text" id="mPlugin" placeholder="e.g. PluginCore" />
+
+    <div class="alert" id="modalAlert"></div>
+
+    <div class="field-grid triple">
+      <div class="field">
+        <label for="releaseScopeInput">Scope</label>
+        <select id="releaseScopeInput">
+          <option value="core">Core</option>
+          <option value="addon">Addon</option>
+        </select>
       </div>
-      <div class="field-group">
-        <label>Version</label>
-        <input type="text" id="mVersion" placeholder="v1.0.0" />
+      <div class="field" id="releaseSectionField">
+        <label for="releaseSectionInput">Addon section</label>
+        <input id="releaseSectionInput" type="text" placeholder="General" />
+      </div>
+      <div class="field">
+        <label for="releasePluginInput">Plugin</label>
+        <input id="releasePluginInput" type="text" placeholder="Plugin name" />
       </div>
     </div>
-    <div class="form-row">
-      <div class="field-group">
-        <label>Release Date</label>
-        <input type="date" id="mDate" />
+
+    <div class="field-grid">
+      <div class="field">
+        <label for="releaseNameInput">Release name</label>
+        <input id="releaseNameInput" type="text" placeholder="Build 2614" />
       </div>
-      <div class="field-group">
-        <label>Status</label>
-        <select id="mStable">
-          <option value="true">Stable</option>
-          <option value="false">Beta</option>
+      <div class="field">
+        <label for="releaseVersionInput">Version</label>
+        <input id="releaseVersionInput" type="text" placeholder="1.21.11" />
+      </div>
+    </div>
+
+    <div class="field-grid triple">
+      <div class="field">
+        <label for="releaseTypeInput">Type</label>
+        <select id="releaseTypeInput">
+          <option value="stable">stable</option>
+          <option value="pre-release">pre-release</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="releaseStatusInput">Status</label>
+        <select id="releaseStatusInput">
+          <option value="success">success</option>
+          <option value="fail">fail</option>
+          <option value="maintenance">maintenance</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="releaseLoaderInput">Loader</label>
+        <select id="releaseLoaderInput">
+          <option value="PaperMC">PaperMC</option>
+          <option value="Bukkit">Bukkit</option>
+          <option value="Purpur">Purpur</option>
         </select>
       </div>
     </div>
-    <div class="field-group">
-      <label>Release Notes</label>
-      <textarea id="mNotes" placeholder="Describe what changed in this release..."></textarea>
+
+    <div class="field-grid">
+      <div class="field full">
+        <label for="releaseDownloadInput">Download URL</label>
+        <input id="releaseDownloadInput" type="url" placeholder="https://cdn.example.com/plugin.jar" />
+      </div>
+      <div class="field full">
+        <label>Latest release flag</label>
+        <div class="checkbox-row">
+          <input id="releaseLatestInput" type="checkbox" />
+          <div class="checkbox-copy">Mark this release as the current latest build for its plugin.</div>
+        </div>
+      </div>
     </div>
-    <div class="modal-foot">
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveRelease()">Save Release</button>
+
+    <div class="modal-actions">
+      <button class="btn" id="testDownloadBtn" type="button">Test download URL</button>
+      <div class="right">
+        <button class="btn" id="cancelModalBtn" type="button">Cancel</button>
+        <button class="btn btn-primary" id="saveReleaseBtn" type="button">Save release</button>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="page">
-
-  <!-- HEADER -->
-  <header>
-    <div class="brand">
-      <div class="brand-mark">⚙</div>
+<div class="modal" id="authModal" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-head">
       <div>
-        <h1>Admin<span> Panel</span> <span class="tag">RESTRICTED</span></h1>
-        <p>rutwokLabz · Manage plugins, releases & configuration</p>
+        <h3 class="modal-title">Admin authentication</h3>
+        <p class="modal-copy">
+          Validate your <span class="mono">ADMIN_TOKEN</span> with the Worker before changing or publishing the catalog.
+        </p>
       </div>
+      <button class="modal-close" id="closeAuthModalBtn" type="button" aria-label="Close auth modal">x</button>
     </div>
-    <div class="toolbar" style="display:flex;gap:10px;flex-wrap:wrap;">
-      <a href="index.html" class="btn">← Dashboard</a>
-      <button class="btn btn-success" onclick="exportData()">↑ Export JSON</button>
-    </div>
-  </header>
 
-  <!-- STATS -->
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="label">Core Plugins</div>
-      <div class="value" id="aStatCore">0</div>
-      <div class="sub">packages</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Addon Sections</div>
-      <div class="value" id="aStatSections">0</div>
-      <div class="sub">categories</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Total Releases</div>
-      <div class="value" id="aStatReleases">0</div>
-      <div class="sub">builds published</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Data Size</div>
-      <div class="value" id="aStatSize">0 B</div>
-      <div class="sub">json payload</div>
-    </div>
-  </div>
+    <div class="alert" id="authAlert"></div>
 
-  <!-- TABS -->
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('releases')">Releases</button>
-    <button class="tab" onclick="switchTab('plugins')">Plugins</button>
-    <button class="tab" onclick="switchTab('json')">Raw JSON</button>
-    <button class="tab" onclick="switchTab('settings')">Settings</button>
-  </div>
-
-  <!-- TAB: RELEASES -->
-  <div class="section visible" id="tab-releases">
-    <div class="card">
-      <div class="card-head">
-        <h2>All Releases <span class="tag">CORE</span></h2>
-        <button class="btn btn-primary" onclick="openAddModal('core')">+ Add Release</button>
-      </div>
-      <div id="alertReleases" class="alert"></div>
-      <div class="table-wrap">
-        <table id="tableCore">
-          <thead>
-            <tr>
-              <th>Plugin</th>
-              <th>Version</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Notes</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyCore"></tbody>
-        </table>
+    <div class="field-grid">
+      <div class="field full">
+        <label for="authTokenInput">Admin token</label>
+        <input id="authTokenInput" type="password" placeholder="Paste your ADMIN_TOKEN" autocomplete="current-password" />
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-head">
-        <h2>All Releases <span class="tag" style="background:rgba(251,191,36,0.1);border-color:rgba(251,191,36,0.3);color:#fbbf24;">ADDONS</span></h2>
-        <button class="btn btn-primary" onclick="openAddModal('addon')">+ Add Addon Release</button>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Section</th>
-              <th>Plugin</th>
-              <th>Version</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyAddons"></tbody>
-        </table>
+    <div class="modal-actions">
+      <div class="helper">This token stays in browser session storage and is sent only to your Worker auth/save routes.</div>
+      <div class="right">
+        <button class="btn" id="cancelAuthBtn" type="button">Cancel</button>
+        <button class="btn btn-primary" id="submitAuthBtn" type="button">Unlock admin</button>
       </div>
     </div>
   </div>
-
-  <!-- TAB: PLUGINS -->
-  <div class="section" id="tab-plugins">
-    <div class="card">
-      <div class="card-head">
-        <h2>Core Plugin Registry</h2>
-        <button class="btn btn-primary" onclick="addCorePlugin()">+ New Core Plugin</button>
-      </div>
-      <div id="corePluginList" style="display:flex;flex-direction:column;gap:10px;"></div>
-    </div>
-    <div class="card" style="margin-top:0;">
-      <div class="card-head">
-        <h2>Addon Sections &amp; Plugins</h2>
-        <button class="btn btn-primary" onclick="addAddonSection()">+ New Section</button>
-      </div>
-      <div id="addonPluginList" style="display:flex;flex-direction:column;gap:10px;"></div>
-    </div>
-  </div>
-
-  <!-- TAB: JSON -->
-  <div class="section" id="tab-json">
-    <div class="card">
-      <div class="card-head">
-        <h2>Raw JSON Editor</h2>
-        <div style="display:flex;gap:10px;">
-          <button class="btn" onclick="formatJSON()">Format</button>
-          <button class="btn btn-primary" onclick="saveJSON()">Save Changes</button>
-        </div>
-      </div>
-      <div id="jsonAlert" class="alert"></div>
-      <textarea class="json-editor" id="jsonEditor" spellcheck="false"></textarea>
-      <p style="color:var(--muted);font:500 0.72rem var(--mono);margin-top:10px;">⚠ Edit with care. Invalid JSON will be rejected on save.</p>
-    </div>
-  </div>
-
-  <!-- TAB: SETTINGS -->
-  <div class="section" id="tab-settings">
-    <div class="card">
-      <div class="card-head"><h2>Data Source</h2></div>
-      <div class="form-row single">
-        <div class="field-group">
-          <label>Data JSON URL</label>
-          <input type="url" id="dataUrl" value="https://rutwok-labs.netlify.app/data.json" />
-        </div>
-      </div>
-      <button class="btn btn-primary" onclick="showToast('Data source saved')">Save URL</button>
-    </div>
-    <div class="card">
-      <div class="card-head"><h2>Display Options</h2></div>
-      <div class="form-row">
-        <div class="field-group">
-          <label>Dashboard Title</label>
-          <input type="text" id="dashTitle" value="Plugin Builds" />
-        </div>
-        <div class="field-group">
-          <label>Brand Name</label>
-          <input type="text" id="brandName" value="rutwokLabz" />
-        </div>
-      </div>
-      <button class="btn btn-primary" onclick="showToast('Settings saved')">Save Settings</button>
-    </div>
-    <div class="card" style="border-color:rgba(255,80,80,0.2);">
-      <div class="card-head"><h2>Danger Zone</h2></div>
-      <p style="color:var(--muted);font:500 0.82rem var(--mono);margin-bottom:16px;">These actions are irreversible. Proceed with extreme caution.</p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button class="btn btn-danger" onclick="if(confirm('Clear all core releases?')){clearSection('core');}">Clear Core Releases</button>
-        <button class="btn btn-danger" onclick="if(confirm('Clear all addon releases?')){clearSection('addons');}">Clear Addon Releases</button>
-        <button class="btn btn-danger" onclick="if(confirm('RESET ALL DATA? Cannot be undone.')){resetAll();}">⚠ Reset All Data</button>
-      </div>
-    </div>
-  </div>
-
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-// ─── DATA ───────────────────────────────────────────────────────────────────
-let data = {
-  core: {
-    "PluginCore": [
-      { version: "v2.1.0", date: "2025-04-10", notes: "Major refactor, performance improvements", stable: true },
-      { version: "v2.0.3", date: "2025-03-01", notes: "Hotfix: memory leak patch", stable: true },
-      { version: "v2.0.0", date: "2025-01-15", notes: "Initial v2 release", stable: false },
-    ],
-    "PluginAuth": [
-      { version: "v1.3.1", date: "2025-04-05", notes: "JWT refresh token fix", stable: true },
-      { version: "v1.3.0", date: "2025-02-20", notes: "OAuth2 support added", stable: true },
-    ]
-  },
-  addons: {
-    "Analytics": {
-      "TrackPro": [{ version: "v1.0.0", date: "2025-03-15", notes: "Initial release", stable: true }]
-    },
-    "Payments": {
-      "StripeBridge": [
-        { version: "v2.2.0", date: "2025-04-01", notes: "Webhook signature verification", stable: true },
-        { version: "v2.1.0", date: "2025-02-10", notes: "Refund API support", stable: true },
-      ]
-    }
-  }
+const STORAGE_KEY = "rutwokLabz.admin.dataUrl";
+const ADMIN_TOKEN_STORAGE_KEY = "rutwokLabz.admin.token";
+const DEFAULT_DATA_URL = "/api/catalog";
+const API_AUTH_URL = "/api/admin/auth";
+const API_SAVE_URL = "/api/admin/save";
+const RELEASE_TYPES = ["stable", "pre-release"];
+const RELEASE_STATUSES = ["success", "fail", "maintenance"];
+const RELEASE_LOADERS = ["PaperMC", "Bukkit", "Purpur"];
+
+const state = {
+  catalog: createSampleCatalog(),
+  selectedSignature: "",
+  modalMode: "create",
+  editingLocation: null,
+  dataUrl: localStorage.getItem(STORAGE_KEY) || DEFAULT_DATA_URL,
+  adminToken: sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY) || "",
+  authVerified: false,
+  lastSavedSha: "",
 };
 
-let modalContext = { type: null, editPlugin: null, editIdx: null };
+function createSampleCatalog() {
+  return {
+    catalog: {
+      title: "rutwokLabz Plugin Catalog",
+      core: {
+        plugins: [
+          {
+            name: "SlimeFunCore",
+            releases: [
+              {
+                name: "Build 2614",
+                version: "1.21.11",
+                type: "stable",
+                latest: true,
+                status: "success",
+                loader: "PaperMC",
+                download: "https://cdn.modrinth.com/data/Fz9hstnG/versions/1fCkq2KW/SlimefunCore4-2614.jar"
+              }
+            ]
+          }
+        ]
+      },
+      addons: {
+        sections: [
+          {
+            name: "General",
+            plugins: [
+              {
+                name: "New Plugin 1",
+                releases: []
+              }
+            ]
+          }
+        ]
+      }
+    }
+  };
+}
 
-// ─── INIT ────────────────────────────────────────────────────────────────────
-async function init() {
+function normalizeCatalog(raw) {
+  if (raw && typeof raw === "object" && (raw.core || raw.addons) && !raw.catalog) {
+    return convertLegacyCatalog(raw);
+  }
+
+  const catalog = raw && typeof raw === "object" ? (raw.catalog || raw) : {};
+  return {
+    catalog: {
+      title: asText(catalog.title) || "rutwokLabz Plugin Catalog",
+      core: {
+        plugins: arrayOf(catalog.core && catalog.core.plugins).map(normalizePlugin).filter((plugin) => plugin.name),
+      },
+      addons: {
+        sections: arrayOf(catalog.addons && catalog.addons.sections).map(normalizeSection).filter((section) => section.name),
+      }
+    }
+  };
+}
+
+function convertLegacyCatalog(raw) {
+  const corePlugins = Object.entries(raw.core || {}).map(([name, releases]) => ({
+    name,
+    releases: arrayOf(releases).map((release, index) => ({
+      name: asText(release.name) || asText(release.version) || "Release " + String(index + 1),
+      version: asText(release.version) || "0.0.0",
+      type: release.stable === false ? "pre-release" : "stable",
+      latest: index === 0,
+      status: "success",
+      loader: "PaperMC",
+      download: asText(release.download),
+    }))
+  }));
+
+  const addonSections = Object.entries(raw.addons || {}).map(([sectionName, plugins]) => ({
+    name: sectionName,
+    plugins: Object.entries(plugins || {}).map(([pluginName, releases]) => ({
+      name: pluginName,
+      releases: arrayOf(releases).map((release, index) => ({
+        name: asText(release.name) || asText(release.version) || "Release " + String(index + 1),
+        version: asText(release.version) || "0.0.0",
+        type: release.stable === false ? "pre-release" : "stable",
+        latest: index === 0,
+        status: "success",
+        loader: "PaperMC",
+        download: asText(release.download),
+      }))
+    }))
+  }));
+
+  return {
+    catalog: {
+      title: "rutwokLabz Plugin Catalog",
+      core: { plugins: corePlugins },
+      addons: { sections: addonSections }
+    }
+  };
+}
+
+function normalizePlugin(plugin) {
+  return {
+    name: asText(plugin && plugin.name),
+    releases: arrayOf(plugin && plugin.releases).map(normalizeRelease).filter((release) => release.name || release.version),
+  };
+}
+
+function normalizeSection(section) {
+  return {
+    name: asText(section && section.name),
+    plugins: arrayOf(section && section.plugins).map(normalizePlugin).filter((plugin) => plugin.name),
+  };
+}
+
+function normalizeRelease(release) {
+  const type = RELEASE_TYPES.includes(asText(release && release.type)) ? asText(release.type) : "stable";
+  const status = RELEASE_STATUSES.includes(asText(release && release.status)) ? asText(release.status) : "success";
+  const loader = RELEASE_LOADERS.includes(asText(release && release.loader)) ? asText(release.loader) : "PaperMC";
+
+  return {
+    name: asText(release && release.name),
+    version: asText(release && release.version),
+    type,
+    latest: release && release.latest === true,
+    status,
+    loader,
+    download: asText(release && release.download),
+  };
+}
+
+function arrayOf(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+function asText(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function isHttpsUrl(value) {
+  if (!value) return false;
   try {
-    const r = await fetch("https://rutwok-labs.netlify.app/data.json");
-    if (r.ok) data = await r.json();
-  } catch {}
-  renderAll();
+    const parsed = new URL(value);
+    return parsed.protocol === "https:";
+  } catch (error) {
+    return false;
+  }
 }
 
-function renderAll() {
-  updateStats();
-  renderCoreTable();
-  renderAddonsTable();
-  renderPluginLists();
-  document.getElementById("jsonEditor").value = JSON.stringify(data, null, 2);
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
-// ─── STATS ───────────────────────────────────────────────────────────────────
-function updateStats() {
-  const coreP = Object.keys(data.core || {}).length;
-  const secs = Object.keys(data.addons || {}).length;
-  let total = 0;
-  Object.values(data.core || {}).forEach(r => total += r.length);
-  Object.values(data.addons || {}).forEach(s => Object.values(s).forEach(r => total += r.length));
-  const bytes = new TextEncoder().encode(JSON.stringify(data)).length;
-  document.getElementById("aStatCore").textContent = coreP;
-  document.getElementById("aStatSections").textContent = secs;
-  document.getElementById("aStatReleases").textContent = total;
-  document.getElementById("aStatSize").textContent = bytes > 1024 ? (bytes/1024).toFixed(1)+"KB" : bytes+"B";
+function pluginSignature(scope, section, pluginName, release) {
+  return [
+    scope,
+    section || "",
+    pluginName || "",
+    release && release.version ? release.version : "",
+    release && release.name ? release.name : ""
+  ].join("|");
 }
 
-// ─── TABLES ──────────────────────────────────────────────────────────────────
-function renderCoreTable() {
-  const tbody = document.getElementById("tbodyCore");
-  tbody.innerHTML = "";
-  Object.entries(data.core || {}).forEach(([plugin, releases]) => {
-    const sorted = [...releases].sort((a,b) => new Date(b.date)-new Date(a.date));
-    sorted.forEach((r, i) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td><strong>${plugin}</strong></td>
-        <td><span class="badge ${i===0?'latest':'stable'}">${r.version}</span></td>
-        <td>${r.date}</td>
-        <td><span class="badge ${r.stable?'stable':'beta'}">${r.stable?'Stable':'Beta'}</span></td>
-        <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)">${r.notes||'—'}</td>
-        <td><div class="td-actions">
-          <button class="action-btn edit" onclick="openEditModal('core','${plugin}',${releases.indexOf(r)})">Edit</button>
-          <button class="action-btn del" onclick="deleteRelease('core','${plugin}',${releases.indexOf(r)})">Delete</button>
-        </div></td>`;
-      tbody.appendChild(tr);
-    });
-  });
-  if (!tbody.children.length) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted);font-family:var(--mono)">No core releases. Add one above.</td></tr>`;
-}
+function flattenReleases() {
+  const entries = [];
 
-function renderAddonsTable() {
-  const tbody = document.getElementById("tbodyAddons");
-  tbody.innerHTML = "";
-  Object.entries(data.addons || {}).forEach(([section, plugins]) => {
-    Object.entries(plugins).forEach(([plugin, releases]) => {
-      const sorted = [...releases].sort((a,b) => new Date(b.date)-new Date(a.date));
-      sorted.forEach((r, i) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td style="color:var(--muted)">${section}</td>
-          <td><strong>${plugin}</strong></td>
-          <td><span class="badge ${i===0?'latest':'stable'}">${r.version}</span></td>
-          <td>${r.date}</td>
-          <td><span class="badge ${r.stable?'stable':'beta'}">${r.stable?'Stable':'Beta'}</span></td>
-          <td><div class="td-actions">
-            <button class="action-btn del" onclick="deleteAddonRelease('${section}','${plugin}',${releases.indexOf(r)})">Delete</button>
-          </div></td>`;
-        tbody.appendChild(tr);
+  arrayOf(state.catalog.catalog.core.plugins).forEach((plugin, pluginIndex) => {
+    arrayOf(plugin.releases).forEach((release, releaseIndex) => {
+      entries.push({
+        scope: "core",
+        section: "",
+        pluginName: plugin.name,
+        release,
+        pluginIndex,
+        releaseIndex,
+        signature: pluginSignature("core", "", plugin.name, release),
       });
     });
   });
-  if (!tbody.children.length) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted);font-family:var(--mono)">No addon releases.</td></tr>`;
-}
 
-// ─── PLUGIN LISTS ─────────────────────────────────────────────────────────────
-function renderPluginLists() {
-  const cl = document.getElementById("corePluginList");
-  cl.innerHTML = "";
-  Object.entries(data.core || {}).forEach(([name]) => {
-    const d = document.createElement("div");
-    d.style.cssText = "display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(5,20,45,0.5);border:1px solid var(--border);border-radius:12px;";
-    d.innerHTML = `<div><strong style="font-family:var(--mono)">${name}</strong><span style="color:var(--muted);font:500 0.72rem var(--mono);margin-left:12px">${(data.core[name]||[]).length} releases</span></div>
-      <button class="action-btn del" onclick="if(confirm('Delete plugin ${name}?')){delete data.core['${name}'];renderAll();}">Delete</button>`;
-    cl.appendChild(d);
+  arrayOf(state.catalog.catalog.addons.sections).forEach((section, sectionIndex) => {
+    arrayOf(section.plugins).forEach((plugin, pluginIndex) => {
+      arrayOf(plugin.releases).forEach((release, releaseIndex) => {
+        entries.push({
+          scope: "addon",
+          section: section.name,
+          pluginName: plugin.name,
+          release,
+          sectionIndex,
+          pluginIndex,
+          releaseIndex,
+          signature: pluginSignature("addon", section.name, plugin.name, release),
+        });
+      });
+    });
   });
-  if (!cl.children.length) cl.innerHTML = `<div style="color:var(--muted);font-family:var(--mono);font-size:0.82rem;padding:16px">No core plugins yet.</div>`;
 
-  const al = document.getElementById("addonPluginList");
-  al.innerHTML = "";
-  Object.entries(data.addons || {}).forEach(([section, plugins]) => {
-    const d = document.createElement("div");
-    d.style.cssText = "padding:14px 16px;background:rgba(5,20,45,0.5);border:1px solid var(--border);border-radius:12px;";
-    const pluginItems = Object.keys(plugins).map(p =>
-      `<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid var(--border);border-radius:999px;font:500 0.72rem var(--mono);color:var(--cyan);margin:2px;">${p}</span>`
-    ).join('');
-    d.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <strong style="font-family:var(--mono);color:var(--cyan)">${section}</strong>
-        <button class="action-btn del" onclick="if(confirm('Delete section ${section}?')){delete data.addons['${section}'];renderAll();}">Delete</button>
-      </div>
-      <div>${pluginItems || '<span style="color:var(--muted);font-size:0.8rem;font-family:var(--mono)">No plugins</span>'}</div>`;
-    al.appendChild(d);
+  return entries.sort((left, right) => {
+    if (left.release.latest !== right.release.latest) return left.release.latest ? -1 : 1;
+    if (left.scope !== right.scope) return left.scope === "core" ? -1 : 1;
+    if (left.section !== right.section) return left.section.localeCompare(right.section);
+    if (left.pluginName !== right.pluginName) return left.pluginName.localeCompare(right.pluginName);
+    return left.release.name.localeCompare(right.release.name);
   });
-  if (!al.children.length) al.innerHTML = `<div style="color:var(--muted);font-family:var(--mono);font-size:0.82rem;padding:16px">No addon sections yet.</div>`;
 }
 
-// ─── MODAL ───────────────────────────────────────────────────────────────────
-function openAddModal(type) {
-  modalContext = { type, editPlugin: null, editIdx: null };
-  document.getElementById("modalTitle").textContent = type === 'core' ? 'Add Core Release' : 'Add Addon Release';
-  document.getElementById("mPlugin").value = "";
-  document.getElementById("mVersion").value = "";
-  document.getElementById("mDate").value = new Date().toISOString().slice(0,10);
-  document.getElementById("mStable").value = "true";
-  document.getElementById("mNotes").value = "";
-  clearAlert("modalAlert");
-  document.getElementById("releaseModal").classList.add("open");
+function findCorePlugin(name) {
+  return arrayOf(state.catalog.catalog.core.plugins).find((plugin) => plugin.name.toLowerCase() === name.toLowerCase()) || null;
 }
 
-function openEditModal(type, plugin, idx) {
-  modalContext = { type, editPlugin: plugin, editIdx: idx };
-  const r = data.core[plugin][idx];
-  document.getElementById("modalTitle").textContent = `Edit: ${plugin} ${r.version}`;
-  document.getElementById("mPlugin").value = plugin;
-  document.getElementById("mVersion").value = r.version;
-  document.getElementById("mDate").value = r.date;
-  document.getElementById("mStable").value = String(r.stable);
-  document.getElementById("mNotes").value = r.notes || "";
-  clearAlert("modalAlert");
-  document.getElementById("releaseModal").classList.add("open");
-}
-
-function closeModal() { document.getElementById("releaseModal").classList.remove("open"); }
-
-function saveRelease() {
-  const plugin = document.getElementById("mPlugin").value.trim();
-  const version = document.getElementById("mVersion").value.trim();
-  const date = document.getElementById("mDate").value;
-  const stable = document.getElementById("mStable").value === "true";
-  const notes = document.getElementById("mNotes").value.trim();
-  if (!plugin || !version || !date) { showAlert("modalAlert","error","Plugin, version and date are required."); return; }
-  const entry = { version, date, notes, stable };
-  if (modalContext.type === 'core') {
-    if (!data.core) data.core = {};
-    if (modalContext.editPlugin !== null && modalContext.editIdx !== null) {
-      data.core[modalContext.editPlugin][modalContext.editIdx] = entry;
-    } else {
-      if (!data.core[plugin]) data.core[plugin] = [];
-      data.core[plugin].push(entry);
-    }
+function ensureCorePlugin(name) {
+  const normalizedName = asText(name);
+  if (!normalizedName) return null;
+  let plugin = findCorePlugin(normalizedName);
+  if (!plugin) {
+    plugin = { name: normalizedName, releases: [] };
+    state.catalog.catalog.core.plugins.push(plugin);
   }
-  renderAll(); closeModal(); showToast("✓ Release saved");
+  return plugin;
 }
 
-// ─── DELETE ──────────────────────────────────────────────────────────────────
-function deleteRelease(type, plugin, idx) {
-  if (!confirm(`Delete release ${data.core[plugin][idx].version}?`)) return;
-  data.core[plugin].splice(idx, 1);
-  renderAll(); showToast("Release deleted");
-}
-function deleteAddonRelease(section, plugin, idx) {
-  if (!confirm("Delete this addon release?")) return;
-  data.addons[section][plugin].splice(idx, 1);
-  renderAll(); showToast("Release deleted");
+function findAddonSection(name) {
+  return arrayOf(state.catalog.catalog.addons.sections).find((section) => section.name.toLowerCase() === name.toLowerCase()) || null;
 }
 
-// ─── JSON TAB ────────────────────────────────────────────────────────────────
-function formatJSON() {
+function ensureAddonSection(name) {
+  const normalizedName = asText(name);
+  if (!normalizedName) return null;
+  let section = findAddonSection(normalizedName);
+  if (!section) {
+    section = { name: normalizedName, plugins: [] };
+    state.catalog.catalog.addons.sections.push(section);
+  }
+  return section;
+}
+
+function ensureAddonPlugin(sectionName, pluginName) {
+  const section = ensureAddonSection(sectionName);
+  const normalizedPluginName = asText(pluginName);
+  if (!section || !normalizedPluginName) return null;
+
+  let plugin = arrayOf(section.plugins).find((item) => item.name.toLowerCase() === normalizedPluginName.toLowerCase()) || null;
+  if (!plugin) {
+    plugin = { name: normalizedPluginName, releases: [] };
+    section.plugins.push(plugin);
+  }
+  return plugin;
+}
+
+function getPluginForScope(scope, sectionName, pluginName, createIfMissing) {
+  if (scope === "core") {
+    return createIfMissing ? ensureCorePlugin(pluginName) : findCorePlugin(pluginName);
+  }
+  if (scope === "addon") {
+    return createIfMissing ? ensureAddonPlugin(sectionName, pluginName) : findAddonPlugin(sectionName, pluginName);
+  }
+  return null;
+}
+
+function findAddonPlugin(sectionName, pluginName) {
+  const section = findAddonSection(sectionName);
+  if (!section) return null;
+  return arrayOf(section.plugins).find((plugin) => plugin.name.toLowerCase() === pluginName.toLowerCase()) || null;
+}
+
+function normalizeLatestFlags(releases, preferredIndex) {
+  const items = arrayOf(releases);
+  if (!items.length) return;
+
+  const latestIndices = [];
+  items.forEach((release, index) => {
+    if (release.latest) latestIndices.push(index);
+  });
+
+  let finalIndex = typeof preferredIndex === "number" && preferredIndex >= 0 && preferredIndex < items.length ? preferredIndex : 0;
+  if (latestIndices.length === 1) {
+    return;
+  }
+
+  if (latestIndices.length === 0) {
+    items[finalIndex].latest = true;
+    return;
+  }
+
+  items.forEach((release, index) => {
+    release.latest = index === finalIndex;
+  });
+}
+
+function removeReleaseAtLocation(location) {
+  if (!location) return null;
+
+  if (location.scope === "core") {
+    const plugin = state.catalog.catalog.core.plugins[location.pluginIndex];
+    if (!plugin) return null;
+    const removed = plugin.releases.splice(location.releaseIndex, 1)[0] || null;
+    normalizeLatestFlags(plugin.releases, 0);
+    return removed;
+  }
+
+  const section = state.catalog.catalog.addons.sections[location.sectionIndex];
+  const plugin = section && section.plugins[location.pluginIndex];
+  if (!plugin) return null;
+  const removed = plugin.releases.splice(location.releaseIndex, 1)[0] || null;
+  normalizeLatestFlags(plugin.releases, 0);
+  return removed;
+}
+
+function releaseExistsWithVersion(releases, version, ignoreIndex) {
+  return arrayOf(releases).some((release, index) => index !== ignoreIndex && release.version.toLowerCase() === version.toLowerCase());
+}
+
+function setSelectedSignature(signature) {
+  state.selectedSignature = signature || "";
+}
+
+function currentSelectedRelease() {
+  const match = flattenReleases().find((entry) => entry.signature === state.selectedSignature);
+  return match || null;
+}
+
+function bytesForCatalog() {
+  return new TextEncoder().encode(JSON.stringify(state.catalog)).length;
+}
+
+function renderAll() {
+  renderStats();
+  renderReleaseTable();
+  renderStructure();
+  renderInspector();
+  renderJsonEditor();
+  renderSettings();
+  renderAuthState();
+}
+
+function renderStats() {
+  const corePlugins = arrayOf(state.catalog.catalog.core.plugins).length;
+  const addonSections = arrayOf(state.catalog.catalog.addons.sections).length;
+  const releases = flattenReleases();
+  const missingUrls = releases.filter((item) => !isHttpsUrl(item.release.download)).length;
+
+  document.getElementById("statCore").textContent = String(corePlugins);
+  document.getElementById("statSections").textContent = String(addonSections);
+  document.getElementById("statReleases").textContent = String(releases.length);
+  document.getElementById("statMissingUrls").textContent = String(missingUrls);
+}
+
+function renderReleaseTable() {
+  const releases = flattenReleases();
+  const tbody = document.getElementById("releaseTableBody");
+  tbody.innerHTML = "";
+
+  if (!releases.length) {
+    const row = document.createElement("tr");
+    row.innerHTML = '<td colspan="9"><div class="empty">No releases yet. Use "Add core release" or "Add addon release" to create the first build entry.</div></td>';
+    tbody.appendChild(row);
+    return;
+  }
+
+  if (!releases.some((entry) => entry.signature === state.selectedSignature)) {
+    state.selectedSignature = releases[0].signature;
+  }
+
+  releases.forEach((entry) => {
+    const tr = document.createElement("tr");
+    tr.className = "row-trigger" + (entry.signature === state.selectedSignature ? " is-selected" : "");
+    tr.addEventListener("click", () => {
+      setSelectedSignature(entry.signature);
+      renderReleaseTable();
+      renderInspector();
+    });
+
+    const flags = [];
+    if (entry.release.latest) flags.push('<span class="pill accent">Latest</span>');
+    flags.push('<span class="pill ' + (entry.release.type === "stable" ? "success" : "warn") + '">' + escapeHtml(entry.release.type) + "</span>");
+    flags.push('<span class="pill ' + releaseStatusClass(entry.release.status) + '">' + escapeHtml(entry.release.status) + "</span>");
+
+    tr.innerHTML = [
+      "<td>" + escapeHtml(entry.scope === "core" ? "Core" : "Addon") + "</td>",
+      "<td>" + (entry.section ? escapeHtml(entry.section) : '<span class="muted">-</span>') + "</td>",
+      "<td><strong>" + escapeHtml(entry.pluginName) + "</strong></td>",
+      "<td>" + escapeHtml(entry.release.name || "-") + "</td>",
+      "<td>" + escapeHtml(entry.release.version || "-") + "</td>",
+      '<td><div class="cluster">' + flags.join("") + "</div></td>",
+      "<td>" + escapeHtml(entry.release.loader || "-") + "</td>",
+      '<td><span class="status-link"><span class="status-dot' + (isHttpsUrl(entry.release.download) ? " ready" : "") + '"></span>' + escapeHtml(isHttpsUrl(entry.release.download) ? "Ready" : "Missing") + "</span></td>",
+      '<td><div class="cluster" data-actions="' + escapeHtml(entry.signature) + '"></div></td>'
+    ].join("");
+
+    const actionCell = tr.querySelector("[data-actions]");
+
+    const editBtn = buildActionButton("Edit", "btn-inline", () => {
+      openReleaseModal("edit", entry);
+    });
+
+    const downloadBtn = buildActionButton("Download", "btn-inline", () => {
+      triggerDownload(entry.release.download);
+    });
+
+    const deleteBtn = buildActionButton("Delete", "btn-inline btn-danger", () => {
+      deleteRelease(entry);
+    });
+
+    actionCell.append(editBtn, downloadBtn, deleteBtn);
+    tbody.appendChild(tr);
+  });
+}
+
+function buildActionButton(label, className, handler) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "btn " + className;
+  button.textContent = label;
+  button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    handler();
+  });
+  return button;
+}
+
+function releaseStatusClass(status) {
+  if (status === "success") return "success";
+  if (status === "maintenance") return "warn";
+  return "danger";
+}
+
+function renderStructure() {
+  renderCoreRegistry();
+  renderAddonRegistry();
+  renderAddonSectionSelect();
+}
+
+function renderCoreRegistry() {
+  const target = document.getElementById("corePluginList");
+  target.innerHTML = "";
+
+  const plugins = arrayOf(state.catalog.catalog.core.plugins);
+  if (!plugins.length) {
+    target.innerHTML = '<div class="empty">No core plugins yet.</div>';
+    return;
+  }
+
+  plugins.forEach((plugin) => {
+    const item = document.createElement("div");
+    item.className = "registry-item";
+
+    const releaseCount = arrayOf(plugin.releases).length;
+    item.innerHTML = [
+      '<div class="registry-head">',
+      '<div><strong>' + escapeHtml(plugin.name) + '</strong><div class="helper">' + String(releaseCount) + ' release' + (releaseCount === 1 ? "" : "s") + "</div></div>",
+      "</div>"
+    ].join("");
+
+    const head = item.querySelector(".registry-head");
+    const actions = document.createElement("div");
+    actions.className = "cluster";
+    actions.append(
+      buildActionButton("Add release", "btn-inline", () => openReleaseModal("create", { scope: "core", section: "", pluginName: plugin.name })),
+      buildActionButton("Delete", "btn-inline btn-danger", () => deleteCorePlugin(plugin.name))
+    );
+    head.appendChild(actions);
+    target.appendChild(item);
+  });
+}
+
+function renderAddonRegistry() {
+  const target = document.getElementById("addonSectionList");
+  target.innerHTML = "";
+
+  const sections = arrayOf(state.catalog.catalog.addons.sections);
+  if (!sections.length) {
+    target.innerHTML = '<div class="empty">No addon sections yet.</div>';
+    return;
+  }
+
+  sections.forEach((section) => {
+    const item = document.createElement("div");
+    item.className = "section-item";
+
+    item.innerHTML = [
+      '<div class="section-head">',
+      '<div><strong>' + escapeHtml(section.name) + '</strong><div class="helper">' + String(arrayOf(section.plugins).length) + ' plugin' + (arrayOf(section.plugins).length === 1 ? "" : "s") + "</div></div>",
+      "</div>"
+    ].join("");
+
+    const head = item.querySelector(".section-head");
+    const headActions = document.createElement("div");
+    headActions.className = "cluster";
+    headActions.append(
+      buildActionButton("Add release", "btn-inline", () => openReleaseModal("create", { scope: "addon", section: section.name, pluginName: "" })),
+      buildActionButton("Delete section", "btn-inline btn-danger", () => deleteAddonSection(section.name))
+    );
+    head.appendChild(headActions);
+
+    const pluginList = document.createElement("div");
+    pluginList.className = "plugin-chip-list";
+
+    if (!arrayOf(section.plugins).length) {
+      pluginList.innerHTML = '<div class="empty" style="width:100%;">This section does not have any addon plugins yet.</div>';
+    } else {
+      section.plugins.forEach((plugin) => {
+        const chip = document.createElement("div");
+        chip.className = "plugin-chip";
+
+        const label = document.createElement("span");
+        label.textContent = plugin.name + " (" + String(arrayOf(plugin.releases).length) + ")";
+
+        const removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.textContent = "remove";
+        removeButton.addEventListener("click", () => deleteAddonPlugin(section.name, plugin.name));
+
+        chip.append(label, removeButton);
+        pluginList.appendChild(chip);
+      });
+    }
+
+    item.appendChild(pluginList);
+    target.appendChild(item);
+  });
+}
+
+function renderAddonSectionSelect() {
+  const select = document.getElementById("addonSectionSelect");
+  const sections = arrayOf(state.catalog.catalog.addons.sections);
+  select.innerHTML = "";
+
+  if (!sections.length) {
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = "Create a section first";
+    select.appendChild(option);
+    return;
+  }
+
+  sections.forEach((section) => {
+    const option = document.createElement("option");
+    option.value = section.name;
+    option.textContent = section.name;
+    select.appendChild(option);
+  });
+}
+
+function renderInspector() {
+  const target = document.getElementById("inspectorBody");
+  const entry = currentSelectedRelease();
+
+  if (!entry) {
+    target.className = "empty";
+    target.innerHTML = "No release selected yet. Choose a row from the registry to inspect or edit it.";
+    return;
+  }
+
+  target.className = "";
+
+  const ready = isHttpsUrl(entry.release.download);
+  target.innerHTML = [
+    '<h3 class="inspector-title">' + escapeHtml(entry.release.name || entry.release.version || "Unnamed release") + "</h3>",
+    '<div class="cluster">',
+    '<span class="pill accent">' + escapeHtml(entry.scope === "core" ? "Core" : "Addon") + "</span>",
+    '<span class="pill ' + (entry.release.type === "stable" ? "success" : "warn") + '">' + escapeHtml(entry.release.type) + "</span>",
+    '<span class="pill ' + releaseStatusClass(entry.release.status) + '">' + escapeHtml(entry.release.status) + "</span>",
+    entry.release.latest ? '<span class="pill accent">Latest</span>' : "",
+    "</div>",
+    '<div class="detail-list">',
+    buildDetailHtml("Plugin", entry.pluginName),
+    buildDetailHtml("Section", entry.section || "Core release"),
+    buildDetailHtml("Version", entry.release.version || "-"),
+    buildDetailHtml("Loader", entry.release.loader || "-"),
+    buildDetailHtml("Download URL", entry.release.download || "Missing"),
+    buildDetailHtml("Download health", ready ? "Ready for browser fetch" : "Missing or invalid https URL"),
+    "</div>"
+  ].join("");
+
+  const actions = document.createElement("div");
+  actions.className = "action-row";
+  actions.style.marginTop = "16px";
+  actions.append(
+    buildActionButton("Edit release", "btn-inline", () => openReleaseModal("edit", entry)),
+    buildActionButton("Copy URL", "btn-inline", () => copyText(entry.release.download, "Copied release download URL.")),
+    buildActionButton("Download build", "btn-inline btn-primary", () => triggerDownload(entry.release.download))
+  );
+
+  target.appendChild(actions);
+}
+
+function buildDetailHtml(key, value) {
+  return [
+    '<div class="detail">',
+    '<div class="k">' + escapeHtml(key) + "</div>",
+    '<div class="v">' + escapeHtml(value) + "</div>",
+    "</div>"
+  ].join("");
+}
+
+function renderJsonEditor() {
+  document.getElementById("jsonEditor").value = JSON.stringify(state.catalog, null, 2);
+}
+
+function renderSettings() {
+  document.getElementById("catalogTitleInput").value = state.catalog.catalog.title;
+  document.getElementById("dataUrlInput").value = state.dataUrl;
+}
+
+function renderAuthState() {
+  const pill = document.getElementById("authStatusPill");
+  const copy = document.getElementById("authStatusCopy");
+  const unlocked = state.authVerified && !!state.adminToken;
+
+  pill.className = "pill " + (unlocked ? "success" : "danger");
+  pill.textContent = unlocked ? "Unlocked" : "Locked";
+
+  if (unlocked) {
+    copy.textContent = state.lastSavedSha
+      ? "Authenticated. Latest saved commit sha: " + state.lastSavedSha.slice(0, 12)
+      : "Authenticated. You can now create, delete, and save catalog changes to GitHub.";
+  } else {
+    copy.textContent = "Login with your admin token before creating, deleting, or saving changes.";
+  }
+}
+
+function openReleaseModal(mode, payload) {
+  if (!ensureAuthenticated()) return;
+  state.modalMode = mode;
+  state.editingLocation = null;
+
+  const modalTitle = document.getElementById("modalTitle");
+  const modalCopy = document.getElementById("modalCopy");
+
+  if (mode === "edit") {
+    modalTitle.textContent = "Edit release";
+    modalCopy.textContent = "Update the selected release fields, including the exact download URL used by the public page.";
+
+    const entry = payload;
+    state.editingLocation = {
+      scope: entry.scope,
+      section: entry.section,
+      pluginName: entry.pluginName,
+      signature: entry.signature,
+      sectionIndex: entry.sectionIndex,
+      pluginIndex: entry.pluginIndex,
+      releaseIndex: entry.releaseIndex,
+    };
+
+    document.getElementById("releaseScopeInput").value = entry.scope;
+    document.getElementById("releaseSectionInput").value = entry.section || "";
+    document.getElementById("releasePluginInput").value = entry.pluginName;
+    document.getElementById("releaseNameInput").value = entry.release.name;
+    document.getElementById("releaseVersionInput").value = entry.release.version;
+    document.getElementById("releaseTypeInput").value = entry.release.type;
+    document.getElementById("releaseStatusInput").value = entry.release.status;
+    document.getElementById("releaseLoaderInput").value = entry.release.loader;
+    document.getElementById("releaseDownloadInput").value = entry.release.download;
+    document.getElementById("releaseLatestInput").checked = entry.release.latest;
+  } else {
+    modalTitle.textContent = "Add release";
+    modalCopy.textContent = "Create a release entry that is immediately compatible with the public dashboard.";
+
+    const scope = payload && payload.scope ? payload.scope : "core";
+    document.getElementById("releaseScopeInput").value = scope;
+    document.getElementById("releaseSectionInput").value = payload && payload.section ? payload.section : "";
+    document.getElementById("releasePluginInput").value = payload && payload.pluginName ? payload.pluginName : "";
+    document.getElementById("releaseNameInput").value = "";
+    document.getElementById("releaseVersionInput").value = "";
+    document.getElementById("releaseTypeInput").value = "stable";
+    document.getElementById("releaseStatusInput").value = "success";
+    document.getElementById("releaseLoaderInput").value = "PaperMC";
+    document.getElementById("releaseDownloadInput").value = "";
+    document.getElementById("releaseLatestInput").checked = true;
+  }
+
+  updateReleaseScopeField();
+  hideAlert("modalAlert");
+  document.getElementById("releaseModal").classList.add("open");
+  document.getElementById("releaseModal").setAttribute("aria-hidden", "false");
+}
+
+function closeReleaseModal() {
+  document.getElementById("releaseModal").classList.remove("open");
+  document.getElementById("releaseModal").setAttribute("aria-hidden", "true");
+}
+
+function updateReleaseScopeField() {
+  const scope = document.getElementById("releaseScopeInput").value;
+  const field = document.getElementById("releaseSectionField");
+  field.style.display = scope === "addon" ? "flex" : "none";
+}
+
+function readModalRelease() {
+  const scope = document.getElementById("releaseScopeInput").value;
+  const section = asText(document.getElementById("releaseSectionInput").value);
+  const pluginName = asText(document.getElementById("releasePluginInput").value);
+  const name = asText(document.getElementById("releaseNameInput").value);
+  const version = asText(document.getElementById("releaseVersionInput").value);
+  const type = document.getElementById("releaseTypeInput").value;
+  const status = document.getElementById("releaseStatusInput").value;
+  const loader = document.getElementById("releaseLoaderInput").value;
+  const download = asText(document.getElementById("releaseDownloadInput").value);
+  const latest = document.getElementById("releaseLatestInput").checked;
+
+  if (!pluginName || !name || !version) {
+    throw new Error("Plugin, release name, and version are required.");
+  }
+
+  if (scope === "addon" && !section) {
+    throw new Error("Addon releases require a section name.");
+  }
+
+  if (!isHttpsUrl(download)) {
+    throw new Error("Download URL must be a valid https:// address.");
+  }
+
+  return {
+    scope,
+    section,
+    pluginName,
+    release: {
+      name,
+      version,
+      type,
+      latest,
+      status,
+      loader,
+      download,
+    }
+  };
+}
+
+function saveReleaseFromModal() {
+  if (!ensureAuthenticated()) return;
+  try {
+    const payload = readModalRelease();
+    let targetPlugin = getPluginForScope(payload.scope, payload.section, payload.pluginName, true);
+    if (!targetPlugin) {
+      throw new Error("Could not resolve the target plugin.");
+    }
+
+    if (state.modalMode === "edit" && state.editingLocation) {
+      removeReleaseAtLocation(state.editingLocation);
+      targetPlugin = getPluginForScope(payload.scope, payload.section, payload.pluginName, true);
+    }
+
+    if (releaseExistsWithVersion(targetPlugin.releases, payload.release.version, -1)) {
+      throw new Error("A release with the same version already exists for this plugin.");
+    }
+
+    targetPlugin.releases.push(payload.release);
+    const savedIndex = targetPlugin.releases.length - 1;
+    normalizeLatestFlags(targetPlugin.releases, payload.release.latest ? savedIndex : findLatestIndex(targetPlugin.releases));
+
+    state.selectedSignature = pluginSignature(payload.scope, payload.section, payload.pluginName, payload.release);
+    closeReleaseModal();
+    renderAll();
+    showToast("Release saved.");
+  } catch (error) {
+    showAlert("modalAlert", "error", error.message);
+  }
+}
+
+function findLatestIndex(releases) {
+  const index = arrayOf(releases).findIndex((release) => release.latest);
+  return index >= 0 ? index : 0;
+}
+
+function deleteRelease(entry) {
+  if (!ensureAuthenticated()) return;
+  const label = entry.release.version || entry.release.name || "this release";
+  if (!window.confirm("Delete " + label + "?")) return;
+
+  removeReleaseAtLocation(entry);
+  if (state.selectedSignature === entry.signature) {
+    state.selectedSignature = "";
+  }
+  renderAll();
+  showToast("Release deleted.");
+}
+
+function deleteCorePlugin(pluginName) {
+  if (!ensureAuthenticated()) return;
+  if (!window.confirm("Delete core plugin " + pluginName + "?")) return;
+  state.catalog.catalog.core.plugins = arrayOf(state.catalog.catalog.core.plugins).filter((plugin) => plugin.name !== pluginName);
+  renderAll();
+  showToast("Core plugin deleted.");
+}
+
+function deleteAddonSection(sectionName) {
+  if (!ensureAuthenticated()) return;
+  if (!window.confirm("Delete addon section " + sectionName + "?")) return;
+  state.catalog.catalog.addons.sections = arrayOf(state.catalog.catalog.addons.sections).filter((section) => section.name !== sectionName);
+  renderAll();
+  showToast("Addon section deleted.");
+}
+
+function deleteAddonPlugin(sectionName, pluginName) {
+  if (!ensureAuthenticated()) return;
+  if (!window.confirm("Delete addon plugin " + pluginName + "?")) return;
+  const section = findAddonSection(sectionName);
+  if (!section) return;
+  section.plugins = arrayOf(section.plugins).filter((plugin) => plugin.name !== pluginName);
+  renderAll();
+  showToast("Addon plugin deleted.");
+}
+
+function addCorePluginFromInput() {
+  if (!ensureAuthenticated()) return;
+  const input = document.getElementById("newCorePluginName");
+  const name = asText(input.value);
+  if (!name) {
+    showAlert("releaseAlert", "error", "Enter a core plugin name first.");
+    return;
+  }
+  ensureCorePlugin(name);
+  input.value = "";
+  hideAlert("releaseAlert");
+  renderAll();
+  showToast("Core plugin created.");
+}
+
+function addSectionFromInput() {
+  if (!ensureAuthenticated()) return;
+  const input = document.getElementById("newSectionName");
+  const name = asText(input.value);
+  if (!name) {
+    showAlert("releaseAlert", "error", "Enter an addon section name first.");
+    return;
+  }
+  ensureAddonSection(name);
+  input.value = "";
+  hideAlert("releaseAlert");
+  renderAll();
+  showToast("Addon section created.");
+}
+
+function addAddonPluginFromInput() {
+  if (!ensureAuthenticated()) return;
+  const sectionName = asText(document.getElementById("addonSectionSelect").value);
+  const pluginName = asText(document.getElementById("newAddonPluginName").value);
+  if (!sectionName) {
+    showAlert("releaseAlert", "error", "Create an addon section first.");
+    return;
+  }
+  if (!pluginName) {
+    showAlert("releaseAlert", "error", "Enter an addon plugin name first.");
+    return;
+  }
+  ensureAddonPlugin(sectionName, pluginName);
+  document.getElementById("newAddonPluginName").value = "";
+  hideAlert("releaseAlert");
+  renderAll();
+  showToast("Addon plugin created.");
+}
+
+function applyJsonEditor() {
+  if (!ensureAuthenticated()) return;
   try {
     const parsed = JSON.parse(document.getElementById("jsonEditor").value);
-    document.getElementById("jsonEditor").value = JSON.stringify(parsed, null, 2);
-    clearAlert("jsonAlert");
-  } catch(e) { showAlert("jsonAlert","error","Invalid JSON: " + e.message); }
+    state.catalog = normalizeCatalog(parsed);
+    hideAlert("jsonAlert");
+    renderAll();
+    showToast("JSON applied.");
+  } catch (error) {
+    showAlert("jsonAlert", "error", "Invalid JSON: " + error.message);
+  }
 }
-function saveJSON() {
+
+function formatJsonEditor() {
   try {
-    data = JSON.parse(document.getElementById("jsonEditor").value);
-    renderAll(); showToast("✓ JSON saved & applied");
-    clearAlert("jsonAlert");
-  } catch(e) { showAlert("jsonAlert","error","Cannot save — invalid JSON: " + e.message); }
+    const parsed = JSON.parse(document.getElementById("jsonEditor").value);
+    document.getElementById("jsonEditor").value = JSON.stringify(normalizeCatalog(parsed), null, 2);
+    hideAlert("jsonAlert");
+  } catch (error) {
+    showAlert("jsonAlert", "error", "Invalid JSON: " + error.message);
+  }
 }
 
-// ─── UTILS ───────────────────────────────────────────────────────────────────
-function addCorePlugin() {
-  const name = prompt("New core plugin name:");
-  if (name && name.trim()) { if (!data.core) data.core = {}; data.core[name.trim()] = []; renderAll(); showToast("Plugin added"); }
-}
-function addAddonSection() {
-  const name = prompt("New addon section name:");
-  if (name && name.trim()) { if (!data.addons) data.addons = {}; data.addons[name.trim()] = {}; renderAll(); showToast("Section added"); }
-}
-function clearSection(type) {
-  if (type === 'core') Object.keys(data.core||{}).forEach(k => data.core[k] = []);
-  else Object.keys(data.addons||{}).forEach(s => Object.keys(data.addons[s]).forEach(p => data.addons[s][p] = []));
-  renderAll(); showToast("Cleared");
-}
-function resetAll() { data = { core: {}, addons: {} }; renderAll(); showToast("Data reset"); }
-function exportData() {
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-  a.download = "data.json"; a.click(); showToast("Exported data.json");
+function applySettings() {
+  const title = asText(document.getElementById("catalogTitleInput").value);
+  const dataUrl = asText(document.getElementById("dataUrlInput").value);
+
+  if (!title) {
+    showToast("Catalog title cannot be empty.");
+    return;
+  }
+
+  if (!dataUrl) {
+    showToast("Data URL cannot be empty.");
+    return;
+  }
+
+  state.catalog.catalog.title = title;
+  state.dataUrl = dataUrl;
+  localStorage.setItem(STORAGE_KEY, dataUrl);
+  renderAll();
+  showToast("Settings applied.");
 }
 
-function switchTab(name) {
-  document.querySelectorAll(".tab").forEach((t,i) => {
-    const tabs = ["releases","plugins","json","settings"];
-    t.classList.toggle("active", tabs[i] === name);
+async function loadRemoteData() {
+  try {
+    const response = await fetch(state.dataUrl, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error("Remote fetch failed with status " + response.status + ".");
+    }
+    const payload = await response.json();
+    state.catalog = normalizeCatalog(payload);
+    state.selectedSignature = "";
+    hideAlert("releaseAlert");
+    hideAlert("jsonAlert");
+    renderAll();
+    showToast("Remote catalog loaded.");
+  } catch (error) {
+    showAlert("releaseAlert", "error", error.message);
+  }
+}
+
+async function saveRemoteData() {
+  if (!ensureAuthenticated()) return;
+
+  try {
+    const response = await fetch(API_SAVE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Admin-Token": state.adminToken,
+      },
+      body: JSON.stringify(state.catalog),
+    });
+
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || "Save failed.");
+    }
+
+    state.catalog = normalizeCatalog(result.data || state.catalog);
+    state.lastSavedSha = asText(result.sha);
+    renderAll();
+    showToast("Saved to GitHub.");
+  } catch (error) {
+    showAlert("releaseAlert", "error", error.message);
+  }
+}
+
+function exportCatalog() {
+  const blob = new Blob([JSON.stringify(state.catalog, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "data.json";
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+  showToast("Exported data.json.");
+}
+
+async function copyText(value, successMessage) {
+  const text = asText(value);
+  if (!text) {
+    showToast("Nothing to copy yet.");
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast(successMessage || "Copied.");
+  } catch (error) {
+    showToast("Clipboard access failed.");
+  }
+}
+
+function copyCurrentJson() {
+  copyText(JSON.stringify(state.catalog, null, 2), "Copied catalog JSON.");
+}
+
+function triggerDownload(url) {
+  if (!isHttpsUrl(url)) {
+    showToast("Release download URL is missing or invalid.");
+    return;
+  }
+
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.target = "_blank";
+  anchor.rel = "noopener";
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  showToast("Download request started.");
+}
+
+function resetToSample() {
+  if (!ensureAuthenticated()) return;
+  state.catalog = createSampleCatalog();
+  state.selectedSignature = "";
+  renderAll();
+  showToast("Loaded sample catalog.");
+}
+
+function resetToBlank() {
+  if (!ensureAuthenticated()) return;
+  if (!window.confirm("Start a blank catalog?")) return;
+  state.catalog = {
+    catalog: {
+      title: "rutwokLabz Plugin Catalog",
+      core: { plugins: [] },
+      addons: { sections: [] }
+    }
+  };
+  state.selectedSignature = "";
+  renderAll();
+  showToast("Blank catalog ready.");
+}
+
+function testModalDownload() {
+  const value = asText(document.getElementById("releaseDownloadInput").value);
+  triggerDownload(value);
+}
+
+function hasAdminToken() {
+  return !!asText(state.adminToken);
+}
+
+function ensureAuthenticated() {
+  if (state.authVerified && hasAdminToken()) {
+    return true;
+  }
+  openAuthModal();
+  showToast("Admin login required.");
+  return false;
+}
+
+function openAuthModal() {
+  hideAlert("authAlert");
+  document.getElementById("authTokenInput").value = state.adminToken || "";
+  document.getElementById("authModal").classList.add("open");
+  document.getElementById("authModal").setAttribute("aria-hidden", "false");
+}
+
+function closeAuthModal() {
+  document.getElementById("authModal").classList.remove("open");
+  document.getElementById("authModal").setAttribute("aria-hidden", "true");
+}
+
+async function submitAuth() {
+  const token = asText(document.getElementById("authTokenInput").value);
+  if (!token) {
+    showAlert("authAlert", "error", "Enter your admin token.");
+    return;
+  }
+
+  try {
+    const response = await fetch(API_AUTH_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Admin-Token": token,
+      },
+      body: JSON.stringify({ token }),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || "Authentication failed.");
+    }
+
+    state.adminToken = token;
+    state.authVerified = true;
+    sessionStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, token);
+    hideAlert("authAlert");
+    closeAuthModal();
+    renderAuthState();
+    showToast("Admin unlocked.");
+  } catch (error) {
+    state.authVerified = false;
+    showAlert("authAlert", "error", error.message);
+  }
+}
+
+function logoutAuth() {
+  state.adminToken = "";
+  state.authVerified = false;
+  state.lastSavedSha = "";
+  sessionStorage.removeItem(ADMIN_TOKEN_STORAGE_KEY);
+  renderAuthState();
+  showToast("Admin session cleared.");
+}
+
+async function restoreAdminSession() {
+  if (!hasAdminToken()) {
+    renderAuthState();
+    return;
+  }
+
+  try {
+    const response = await fetch(API_AUTH_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Admin-Token": state.adminToken,
+      },
+      body: JSON.stringify({ token: state.adminToken }),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.success) {
+      throw new Error("Stored token is no longer valid.");
+    }
+    state.authVerified = true;
+  } catch (error) {
+    state.adminToken = "";
+    state.authVerified = false;
+    sessionStorage.removeItem(ADMIN_TOKEN_STORAGE_KEY);
+  }
+  renderAuthState();
+}
+
+function showAlert(id, type, message) {
+  const node = document.getElementById(id);
+  node.className = "alert show " + type;
+  node.textContent = message;
+}
+
+function hideAlert(id) {
+  const node = document.getElementById(id);
+  node.className = "alert";
+  node.textContent = "";
+}
+
+let toastTimer = 0;
+function showToast(message) {
+  const node = document.getElementById("toast");
+  node.textContent = message;
+  node.classList.add("show");
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => {
+    node.classList.remove("show");
+  }, 2400);
+}
+
+function bindEvents() {
+  document.getElementById("loadRemoteBtn").addEventListener("click", loadRemoteData);
+  document.getElementById("saveRemoteBtn").addEventListener("click", saveRemoteData);
+  document.getElementById("exportBtn").addEventListener("click", exportCatalog);
+  document.getElementById("openAuthBtn").addEventListener("click", openAuthModal);
+  document.getElementById("logoutAuthBtn").addEventListener("click", logoutAuth);
+  document.getElementById("addCoreReleaseBtn").addEventListener("click", () => openReleaseModal("create", { scope: "core", section: "", pluginName: "" }));
+  document.getElementById("addAddonReleaseBtn").addEventListener("click", () => openReleaseModal("create", { scope: "addon", section: "", pluginName: "" }));
+  document.getElementById("addCorePluginBtn").addEventListener("click", addCorePluginFromInput);
+  document.getElementById("addSectionBtn").addEventListener("click", addSectionFromInput);
+  document.getElementById("addAddonPluginBtn").addEventListener("click", addAddonPluginFromInput);
+  document.getElementById("formatJsonBtn").addEventListener("click", formatJsonEditor);
+  document.getElementById("applyJsonBtn").addEventListener("click", applyJsonEditor);
+  document.getElementById("saveSettingsBtn").addEventListener("click", applySettings);
+  document.getElementById("copyJsonBtn").addEventListener("click", copyCurrentJson);
+  document.getElementById("resetSampleBtn").addEventListener("click", resetToSample);
+  document.getElementById("resetBlankBtn").addEventListener("click", resetToBlank);
+  document.getElementById("releaseScopeInput").addEventListener("change", updateReleaseScopeField);
+  document.getElementById("closeModalBtn").addEventListener("click", closeReleaseModal);
+  document.getElementById("cancelModalBtn").addEventListener("click", closeReleaseModal);
+  document.getElementById("saveReleaseBtn").addEventListener("click", saveReleaseFromModal);
+  document.getElementById("testDownloadBtn").addEventListener("click", testModalDownload);
+  document.getElementById("closeAuthModalBtn").addEventListener("click", closeAuthModal);
+  document.getElementById("cancelAuthBtn").addEventListener("click", closeAuthModal);
+  document.getElementById("submitAuthBtn").addEventListener("click", submitAuth);
+  document.getElementById("releaseModal").addEventListener("click", (event) => {
+    if (event.target === document.getElementById("releaseModal")) {
+      closeReleaseModal();
+    }
   });
-  document.querySelectorAll(".section").forEach(s => s.classList.remove("visible"));
-  document.getElementById("tab-"+name).classList.add("visible");
-  if (name === "json") document.getElementById("jsonEditor").value = JSON.stringify(data, null, 2);
+  document.getElementById("authModal").addEventListener("click", (event) => {
+    if (event.target === document.getElementById("authModal")) {
+      closeAuthModal();
+    }
+  });
 }
 
-function showAlert(id, type, msg) {
-  const el = document.getElementById(id);
-  el.className = "alert " + type;
-  el.textContent = msg;
+function init() {
+  bindEvents();
+  renderAll();
+  restoreAdminSession();
+  loadRemoteData();
 }
-function clearAlert(id) {
-  const el = document.getElementById(id);
-  if (el) el.className = "alert";
-}
-
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove("show"), 2500);
-}
-
-document.getElementById("releaseModal").addEventListener("click", e => {
-  if (e.target === document.getElementById("releaseModal")) closeModal();
-});
 
 init();
 </script>

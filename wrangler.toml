@@ -1,0 +1,8 @@
+name = "rutwoklabz"
+main = "worker.js"
+compatibility_date = "2026-04-26"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "."
+binding = "ASSETS"
