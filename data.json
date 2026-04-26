@@ -22,7 +22,7 @@
     "addons": {
       "sections": [
         {
-          "name": "FluffyMachines",
+          "name": "-",
           "plugins": [
             {
               "name": "FluffyMachines",
@@ -34,7 +34,7 @@
                   "latest": true,
                   "status": "success",
                   "loader": "PaperMC",
-                  "download": "https://github.com/rutwok-labs/SF4-Addons/raw/refs/heads/main/Addons/FluffyMachines/releases/FluffyMachines%20v1.0.0.jar"
+                  "download": "https://github.com/rutwok-labs/SF4-Addons/blob/main/Addons/FluffyMachines/releases/FluffyMachines%20v1.0.0.jar"
                 }
               ]
             }
