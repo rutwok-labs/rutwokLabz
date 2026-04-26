@@ -1782,7 +1782,6 @@ function renderAuthState() {
 }
 
 function openReleaseModal(mode, payload) {
-  if (!ensureAuthenticated()) return;
   state.modalMode = mode; state.editingLocation = null;
   const modalTitle = document.getElementById("modalTitle");
   const modalCopy  = document.getElementById("modalCopy");
@@ -1849,13 +1848,12 @@ function readModalRelease() {
 
   if (!pluginName || !name || !version) throw new Error("Plugin, release name, and version are required.");
   if (scope === "addon" && !section)    throw new Error("Addon releases require a section name.");
-  if (!isHttpsUrl(download))            throw new Error("Download URL must be a valid https:// address.");
+  // download URL is optional at save time — warn in the inspector but don't block
 
   return { scope, section, pluginName, release: { name, version, type, latest, status, loader, download } };
 }
 
 function saveReleaseFromModal() {
-  if (!ensureAuthenticated()) return;
   try {
     const payload = readModalRelease();
     let targetPlugin = getPluginForScope(payload.scope, payload.section, payload.pluginName, true);
@@ -1886,7 +1884,6 @@ function findLatestIndex(releases) {
 }
 
 function deleteRelease(entry) {
-  if (!ensureAuthenticated()) return;
   const label = entry.release.version || entry.release.name || "this release";
   if (!window.confirm("Delete " + label + "?")) return;
   removeReleaseAtLocation(entry);
@@ -1895,21 +1892,18 @@ function deleteRelease(entry) {
 }
 
 function deleteCorePlugin(pluginName) {
-  if (!ensureAuthenticated()) return;
   if (!window.confirm("Delete core plugin " + pluginName + "?")) return;
   state.catalog.catalog.core.plugins = arrayOf(state.catalog.catalog.core.plugins).filter(p => p.name !== pluginName);
   renderAll(); showToast("Core plugin deleted.");
 }
 
 function deleteAddonSection(sectionName) {
-  if (!ensureAuthenticated()) return;
   if (!window.confirm("Delete addon section " + sectionName + "?")) return;
   state.catalog.catalog.addons.sections = arrayOf(state.catalog.catalog.addons.sections).filter(s => s.name !== sectionName);
   renderAll(); showToast("Addon section deleted.");
 }
 
 function deleteAddonPlugin(sectionName, pluginName) {
-  if (!ensureAuthenticated()) return;
   if (!window.confirm("Delete addon plugin " + pluginName + "?")) return;
   const section = findAddonSection(sectionName); if (!section) return;
   section.plugins = arrayOf(section.plugins).filter(p => p.name !== pluginName);
@@ -1917,7 +1911,6 @@ function deleteAddonPlugin(sectionName, pluginName) {
 }
 
 function addCorePluginFromInput() {
-  if (!ensureAuthenticated()) return;
   const input = document.getElementById("newCorePluginName");
   const name  = asText(input.value);
   if (!name) { showAlert("releaseAlert","error","Enter a core plugin name first."); return; }
@@ -1925,7 +1918,6 @@ function addCorePluginFromInput() {
 }
 
 function addSectionFromInput() {
-  if (!ensureAuthenticated()) return;
   const input = document.getElementById("newSectionName");
   const name  = asText(input.value);
   if (!name) { showAlert("releaseAlert","error","Enter an addon section name first."); return; }
@@ -1933,7 +1925,6 @@ function addSectionFromInput() {
 }
 
 function addAddonPluginFromInput() {
-  if (!ensureAuthenticated()) return;
   const sectionName = asText(document.getElementById("addonSectionSelect").value);
   const pluginName  = asText(document.getElementById("newAddonPluginName").value);
   if (!sectionName) { showAlert("releaseAlert","error","Create an addon section first."); return; }
@@ -1944,7 +1935,6 @@ function addAddonPluginFromInput() {
 }
 
 function applyJsonEditor() {
-  if (!ensureAuthenticated()) return;
   try {
     const parsed = JSON.parse(document.getElementById("jsonEditor").value);
     state.catalog = normalizeCatalog(parsed);
@@ -2040,13 +2030,11 @@ function triggerDownload(url) {
 }
 
 function resetToSample() {
-  if (!ensureAuthenticated()) return;
   state.catalog = createSampleCatalog(); state.selectedSignature = "";
   renderAll(); showToast("Loaded sample catalog.");
 }
 
 function resetToBlank() {
-  if (!ensureAuthenticated()) return;
   if (!window.confirm("Start a blank catalog?")) return;
   state.catalog = { catalog: { title:"rutwokLabz Plugin Catalog", core:{ plugins:[] }, addons:{ sections:[] } } };
   state.selectedSignature = "";
