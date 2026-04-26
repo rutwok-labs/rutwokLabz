@@ -2093,10 +2093,10 @@ function applySettings() {
 async function loadRemoteData() {
   try {
     const response = await fetch(state.dataUrl, { cache: "no-store" });
+    const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
-      throw new Error("Remote fetch failed with status " + response.status + ".");
+      throw new Error(payload.error || ("Remote fetch failed with status " + response.status + "."));
     }
-    const payload = await response.json();
     state.catalog = normalizeCatalog(payload);
     state.selectedSignature = "";
     hideAlert("releaseAlert");

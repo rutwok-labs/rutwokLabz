@@ -55,7 +55,13 @@ async function handleApi(request, env, url) {
 
 async function handleGetCatalog(env, headers) {
   if (!env.GITHUB_TOKEN || !env.REPO) {
-    return json({ error: "Server misconfiguration: missing GitHub credentials" }, 500, headers);
+    return json({
+      error: "Server misconfiguration: missing GITHUB_TOKEN or REPO",
+      missing: {
+        GITHUB_TOKEN: !env.GITHUB_TOKEN,
+        REPO: !env.REPO,
+      },
+    }, 500, headers);
   }
 
   try {
@@ -83,7 +89,14 @@ async function handleAdminSave(request, env, headers) {
   }
 
   if (!env.GITHUB_TOKEN || !env.REPO) {
-    return json({ success: false, error: "Server misconfiguration" }, 500, headers);
+    return json({
+      success: false,
+      error: "Server misconfiguration: missing GITHUB_TOKEN or REPO",
+      missing: {
+        GITHUB_TOKEN: !env.GITHUB_TOKEN,
+        REPO: !env.REPO,
+      },
+    }, 500, headers);
   }
 
   let body;
