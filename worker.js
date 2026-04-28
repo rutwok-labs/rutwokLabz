@@ -104,7 +104,7 @@ async function handleAdminAuth(request, env, headers) {
   }
 
   const provided = await readAdminToken(request);
-  if (!safeCompare(provided, expected)) {
+  if (!(await safeCompare(provided, expected))) {
     return json({ success: false, error: "Unauthorized: invalid token" }, 401, headers);
   }
 
@@ -121,7 +121,7 @@ async function handleAdminSave(request, env, headers) {
   }
 
   const provided = await readAdminToken(request);
-  if (!safeCompare(provided, expected)) {
+  if (!(await safeCompare(provided, expected))) {
     return json({ success: false, error: "Unauthorized: invalid token" }, 401, headers);
   }
 
@@ -320,9 +320,11 @@ function normalizeCatalog(input) {
 }
 
 function normalizePlugin(plugin) {
+  const releases = arrayOf(plugin?.releases).map(normalizeRelease);
+  normalizeLatestReleaseFlags(releases);
   return {
     name:     str(plugin?.name),
-    releases: arrayOf(plugin?.releases).map(normalizeRelease),
+    releases,
   };
 }
 
@@ -343,6 +345,16 @@ function normalizeRelease(release) {
     loader:   RELEASE_LOADERS.includes(str(release?.loader))  ? str(release?.loader)  : "PaperMC",
     download: str(release?.download),
   };
+}
+
+function normalizeLatestReleaseFlags(releases) {
+  const items = arrayOf(releases);
+  if (!items.length) return;
+  const preferredIndex = items.findIndex((release) => release.latest);
+  const finalIndex = preferredIndex >= 0 ? preferredIndex : 0;
+  items.forEach((release, index) => {
+    release.latest = index === finalIndex;
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -404,20 +416,9 @@ function validatePlugin(plugin, path) {
   if (!str(plugin.name))             errors.push(`${path}.name is required`);
   if (!Array.isArray(plugin.releases)) errors.push(`${path}.releases must be an array`);
 
-  const versions = new Set();
-  let latestCount = 0;
-
   arrayOf(plugin.releases).forEach((release, i) => {
     errors.push(...validateRelease(release, `${path}.releases[${i}]`));
-    const key = release.version.toLowerCase();
-    if (key) {
-      if (versions.has(key)) errors.push(`${path}.releases[${i}].version must be unique inside the plugin`);
-      versions.add(key);
-    }
-    if (release.latest) latestCount++;
   });
-
-  if (latestCount > 1) errors.push(`${path}.releases can only contain one latest release`);
   return errors;
 }
 

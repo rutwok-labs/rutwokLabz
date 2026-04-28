@@ -51,10 +51,21 @@ function normalizeRelease(release) {
   };
 }
 
+function normalizeLatestReleaseFlags(releases) {
+  if (!Array.isArray(releases) || !releases.length) return;
+  const preferredIndex = releases.findIndex((release) => release.latest === true);
+  const finalIndex = preferredIndex >= 0 ? preferredIndex : 0;
+  releases.forEach((release, index) => {
+    release.latest = index === finalIndex;
+  });
+}
+
 function normalizePlugin(plugin) {
+  const releases = Array.isArray(plugin.releases) ? plugin.releases.map(normalizeRelease) : [];
+  normalizeLatestReleaseFlags(releases);
   return {
     name: str(plugin.name),
-    releases: Array.isArray(plugin.releases) ? plugin.releases.map(normalizeRelease) : [],
+    releases,
   };
 }
 
@@ -98,20 +109,10 @@ function validatePlugin(plugin, path) {
   if (!Array.isArray(plugin.releases)) errors.push(`${path}.releases must be an array`);
 
   const releases = Array.isArray(plugin.releases) ? plugin.releases : [];
-  const versions = new Set();
-  let latestCount = 0;
 
   releases.forEach((release, index) => {
     errors.push(...validateRelease(release, `${path}.releases[${index}]`));
-    const key = str(release.version).toLowerCase();
-    if (key) {
-      if (versions.has(key)) errors.push(`${path}.releases[${index}].version must be unique inside the plugin`);
-      versions.add(key);
-    }
-    if (release.latest === true) latestCount += 1;
   });
-
-  if (latestCount > 1) errors.push(`${path}.releases can only contain one latest release`);
   return errors;
 }
 

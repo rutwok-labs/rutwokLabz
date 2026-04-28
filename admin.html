@@ -2095,7 +2095,10 @@ async function saveRemoteData() {
       body: JSON.stringify(state.catalog),
     });
     const result = await response.json().catch(() => ({}));
-    if (!response.ok || !result.success) throw new Error(result.error || "Save failed.");
+    if (!response.ok || !result.success) {
+      const details = Array.isArray(result.details) ? result.details.join(" | ") : asText(result.details);
+      throw new Error(details ? `${result.error || "Save failed"}: ${details}` : (result.error || "Save failed."));
+    }
     state.catalog     = normalizeCatalog(result.data || state.catalog);
     state.lastSavedSha = asText(result.sha);
     renderAll(); showToast("Saved to GitHub.");
