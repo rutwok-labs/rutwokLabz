@@ -10,10 +10,19 @@
               "name": "Build 2614",
               "version": "1.21.11",
               "type": "stable",
-              "latest": true,
+              "latest": false,
               "status": "success",
               "loader": "PaperMC",
               "download": "https://cdn.modrinth.com/data/Fz9hstnG/versions/1fCkq2KW/SlimefunCore4-2614.jar"
+            },
+            {
+              "name": "2626",
+              "version": "1.21.11",
+              "type": "stable",
+              "latest": true,
+              "status": "success",
+              "loader": "PaperMC",
+              "download": "https://cdn.modrinth.com/data/Fz9hstnG/versions/3rkJp7tf/SlimefunCore4-2626.jar"
             }
           ]
         }
