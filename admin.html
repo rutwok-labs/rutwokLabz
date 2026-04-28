@@ -1205,8 +1205,10 @@
     <!-- Core: plugin select (hidden when Addon) -->
     <div id="corePickerRow" class="field-grid" style="margin-bottom:14px;">
       <div class="field full">
-        <label for="releaseCorePluginSelect">Plugin</label>
-        <select id="releaseCorePluginSelect"></select>
+        <label for="releaseCorePluginInput">Plugin</label>
+        <input id="releaseCorePluginInput" type="text" list="releaseCorePluginOptions" placeholder="SlimeFunCore" />
+        <datalist id="releaseCorePluginOptions"></datalist>
+        <select id="releaseCorePluginSelect" style="display:none;"></select>
       </div>
     </div>
     <!-- hidden text input for plugin kept for JS compat -->
@@ -1793,10 +1795,13 @@ function syncModalTargetInputs() {
   const scope = document.getElementById("releaseScopeInput").value;
   if (scope === "core") {
     document.getElementById("releaseSectionInput").value = "";
-    document.getElementById("releasePluginInput").value = safeSelectValue(
+    const selectValue = safeSelectValue(
       "releaseCorePluginSelect",
       document.getElementById("releasePluginInput").value
     );
+    const input = document.getElementById("releaseCorePluginInput");
+    if (!asText(input.value)) input.value = selectValue;
+    document.getElementById("releasePluginInput").value = asText(input.value);
     return;
   }
 
@@ -1814,6 +1819,7 @@ function openReleaseModal(mode, payload) {
   // Populate selects
   const corePlugins = arrayOf(state.catalog.catalog.core.plugins);
   document.getElementById("releaseCorePluginSelect").innerHTML = corePlugins.map(p => `<option value="${escapeHtml(p.name)}">${escapeHtml(p.name)}</option>`).join("");
+  document.getElementById("releaseCorePluginOptions").innerHTML = corePlugins.map(p => `<option value="${escapeHtml(p.name)}"></option>`).join("");
   const sections = arrayOf(state.catalog.catalog.addons.sections);
   document.getElementById("releaseSectionSelect").innerHTML = sections.map(s => `<option value="${escapeHtml(s.name)}">${escapeHtml(s.name)}</option>`).join("");
 
@@ -1829,6 +1835,7 @@ function openReleaseModal(mode, payload) {
     document.getElementById("releaseScopeInput").value    = entry.scope;
     document.getElementById("releaseSectionInput").value  = entry.section || "";
     document.getElementById("releasePluginInput").value   = entry.pluginName;
+    document.getElementById("releaseCorePluginInput").value = entry.scope === "core" ? entry.pluginName : "";
     document.getElementById("releaseNameInput").value     = entry.release.name;
     document.getElementById("releaseVersionInput").value  = entry.release.version;
     document.getElementById("releaseTypeInput").value     = entry.release.type;
@@ -1850,6 +1857,7 @@ function openReleaseModal(mode, payload) {
     document.getElementById("releaseScopeInput").value    = scope;
     document.getElementById("releaseSectionInput").value  = payload && payload.section    ? payload.section    : "";
     document.getElementById("releasePluginInput").value   = payload && payload.pluginName ? payload.pluginName : "";
+    document.getElementById("releaseCorePluginInput").value = payload && payload.pluginName ? payload.pluginName : "";
     document.getElementById("releaseNameInput").value     = "";
     document.getElementById("releaseVersionInput").value  = "";
     document.getElementById("releaseTypeInput").value     = "stable";
@@ -2245,6 +2253,10 @@ function bindEvents() {
     syncModalTargetInputs();
   });
   document.getElementById("releaseCorePluginSelect").addEventListener("change", () => {
+    document.getElementById("releaseCorePluginInput").value = document.getElementById("releaseCorePluginSelect").value;
+    syncModalTargetInputs();
+  });
+  document.getElementById("releaseCorePluginInput").addEventListener("input", () => {
     syncModalTargetInputs();
   });
   document.getElementById("closeModalBtn").addEventListener("click", closeReleaseModal);
