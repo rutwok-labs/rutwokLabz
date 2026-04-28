@@ -1783,6 +1783,13 @@ function renderAuthState() {
 
 function openReleaseModal(mode, payload) {
   state.modalMode = mode; state.editingLocation = null;
+
+  // Populate selects
+  const corePlugins = arrayOf(state.catalog.catalog.core.plugins);
+  document.getElementById("releaseCorePluginSelect").innerHTML = corePlugins.map(p => `<option value="${escapeHtml(p.name)}">${escapeHtml(p.name)}</option>`).join("");
+  const sections = arrayOf(state.catalog.catalog.addons.sections);
+  document.getElementById("releaseSectionSelect").innerHTML = sections.map(s => `<option value="${escapeHtml(s.name)}">${escapeHtml(s.name)}</option>`).join("");
+
   const modalTitle = document.getElementById("modalTitle");
   const modalCopy  = document.getElementById("modalCopy");
 
@@ -1802,6 +1809,15 @@ function openReleaseModal(mode, payload) {
     document.getElementById("releaseLoaderInput").value   = entry.release.loader;
     document.getElementById("releaseDownloadInput").value = entry.release.download;
     document.getElementById("releaseLatestInput").checked = entry.release.latest;
+    if (entry.scope === "core") {
+      document.getElementById("releaseCorePluginSelect").value = entry.pluginName;
+    } else {
+      document.getElementById("releaseSectionSelect").value = entry.section || "";
+      updateAddonPluginSelect();
+      document.getElementById("releaseAddonPluginSelect").value = entry.pluginName;
+    }
+    document.getElementById("releaseSectionInput").value = document.getElementById("releaseSectionSelect").value;
+    document.getElementById("releasePluginInput").value = entry.scope === "core" ? document.getElementById("releaseCorePluginSelect").value : document.getElementById("releaseAddonPluginSelect").value;
   } else {
     modalTitle.textContent = "Add release";
     modalCopy.textContent  = "Create a release entry that is immediately compatible with the public dashboard.";
@@ -1816,9 +1832,17 @@ function openReleaseModal(mode, payload) {
     document.getElementById("releaseLoaderInput").value   = "PaperMC";
     document.getElementById("releaseDownloadInput").value = "";
     document.getElementById("releaseLatestInput").checked = true;
+    if (scope === "core") {
+      if (payload.pluginName) document.getElementById("releaseCorePluginSelect").value = payload.pluginName;
+    } else {
+      if (payload.section) document.getElementById("releaseSectionSelect").value = payload.section;
+      updateAddonPluginSelect();
+      if (payload.pluginName) document.getElementById("releaseAddonPluginSelect").value = payload.pluginName;
+    }
   }
 
   updateReleaseScopeField();
+  updateTabActive();
   hideAlert("modalAlert");
   document.getElementById("releaseModal").classList.add("open");
   document.getElementById("releaseModal").setAttribute("aria-hidden", "false");
@@ -1831,7 +1855,21 @@ function closeReleaseModal() {
 
 function updateReleaseScopeField() {
   const scope = document.getElementById("releaseScopeInput").value;
-  document.getElementById("releaseSectionField").style.display = scope === "addon" ? "flex" : "none";
+  document.getElementById("corePickerRow").style.display = scope === "core" ? "flex" : "none";
+  document.getElementById("addonPickerRow").style.display = scope === "addon" ? "flex" : "none";
+}
+
+function updateTabActive() {
+  const scope = document.getElementById("releaseScopeInput").value;
+  document.getElementById("scopeTabCore").className = "scope-tab" + (scope === "core" ? " scope-tab-active" : "");
+  document.getElementById("scopeTabAddon").className = "scope-tab" + (scope === "addon" ? " scope-tab-active" : "");
+}
+
+function updateAddonPluginSelect() {
+  const sectionName = document.getElementById("releaseSectionSelect").value;
+  const section = arrayOf(state.catalog.catalog.addons.sections).find(s => s.name === sectionName);
+  const plugins = section ? arrayOf(section.plugins) : [];
+  document.getElementById("releaseAddonPluginSelect").innerHTML = plugins.map(p => `<option value="${escapeHtml(p.name)}">${escapeHtml(p.name)}</option>`).join("");
 }
 
 function readModalRelease() {
@@ -2146,6 +2184,26 @@ function bindEvents() {
   document.getElementById("resetSampleBtn").addEventListener("click", resetToSample);
   document.getElementById("resetBlankBtn").addEventListener("click", resetToBlank);
   document.getElementById("releaseScopeInput").addEventListener("change", updateReleaseScopeField);
+  document.getElementById("scopeTabCore").addEventListener("click", () => {
+    document.getElementById("releaseScopeInput").value = "core";
+    updateReleaseScopeField();
+    updateTabActive();
+  });
+  document.getElementById("scopeTabAddon").addEventListener("click", () => {
+    document.getElementById("releaseScopeInput").value = "addon";
+    updateReleaseScopeField();
+    updateTabActive();
+  });
+  document.getElementById("releaseSectionSelect").addEventListener("change", () => {
+    document.getElementById("releaseSectionInput").value = document.getElementById("releaseSectionSelect").value;
+    updateAddonPluginSelect();
+  });
+  document.getElementById("releaseAddonPluginSelect").addEventListener("change", () => {
+    document.getElementById("releasePluginInput").value = document.getElementById("releaseAddonPluginSelect").value;
+  });
+  document.getElementById("releaseCorePluginSelect").addEventListener("change", () => {
+    document.getElementById("releasePluginInput").value = document.getElementById("releaseCorePluginSelect").value;
+  });
   document.getElementById("closeModalBtn").addEventListener("click", closeReleaseModal);
   document.getElementById("cancelModalBtn").addEventListener("click", closeReleaseModal);
   document.getElementById("saveReleaseBtn").addEventListener("click", saveReleaseFromModal);
