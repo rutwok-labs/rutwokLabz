@@ -1781,6 +1781,37 @@ function renderAuthState() {
   }
 }
 
+function safeSelectValue(selectId, preferredValue) {
+  const select  = document.getElementById(selectId);
+  const options = arrayOf(select.options).map(option => option.value);
+  if (!options.length) {
+    select.value = "";
+    return "";
+  }
+  const nextValue = preferredValue && options.includes(preferredValue) ? preferredValue : options[0];
+  select.value = nextValue;
+  return nextValue;
+}
+
+function syncModalTargetInputs() {
+  const scope = document.getElementById("releaseScopeInput").value;
+  if (scope === "core") {
+    document.getElementById("releaseSectionInput").value = "";
+    document.getElementById("releasePluginInput").value = safeSelectValue(
+      "releaseCorePluginSelect",
+      document.getElementById("releasePluginInput").value
+    );
+    return;
+  }
+
+  const sectionValue = safeSelectValue(
+    "releaseSectionSelect",
+    document.getElementById("releaseSectionInput").value
+  );
+  document.getElementById("releaseSectionInput").value = sectionValue;
+  updateAddonPluginSelect(document.getElementById("releasePluginInput").value);
+}
+
 function openReleaseModal(mode, payload) {
   state.modalMode = mode; state.editingLocation = null;
 
@@ -1816,8 +1847,6 @@ function openReleaseModal(mode, payload) {
       updateAddonPluginSelect();
       document.getElementById("releaseAddonPluginSelect").value = entry.pluginName;
     }
-    document.getElementById("releaseSectionInput").value = document.getElementById("releaseSectionSelect").value;
-    document.getElementById("releasePluginInput").value = entry.scope === "core" ? document.getElementById("releaseCorePluginSelect").value : document.getElementById("releaseAddonPluginSelect").value;
   } else {
     modalTitle.textContent = "Add release";
     modalCopy.textContent  = "Create a release entry that is immediately compatible with the public dashboard.";
@@ -1843,7 +1872,13 @@ function openReleaseModal(mode, payload) {
 
   updateReleaseScopeField();
   updateTabActive();
+  syncModalTargetInputs();
   hideAlert("modalAlert");
+  if (document.getElementById("releaseScopeInput").value === "core" && !document.getElementById("releasePluginInput").value) {
+    showAlert("modalAlert", "info", "Create a core plugin first, then add its release.");
+  } else if (document.getElementById("releaseScopeInput").value === "addon" && !document.getElementById("releasePluginInput").value) {
+    showAlert("modalAlert", "info", "Create an addon section and plugin first, then add its release.");
+  }
   document.getElementById("releaseModal").classList.add("open");
   document.getElementById("releaseModal").setAttribute("aria-hidden", "false");
 }
@@ -1857,6 +1892,7 @@ function updateReleaseScopeField() {
   const scope = document.getElementById("releaseScopeInput").value;
   document.getElementById("corePickerRow").style.display = scope === "core" ? "flex" : "none";
   document.getElementById("addonPickerRow").style.display = scope === "addon" ? "flex" : "none";
+  syncModalTargetInputs();
 }
 
 function updateTabActive() {
@@ -1865,11 +1901,12 @@ function updateTabActive() {
   document.getElementById("scopeTabAddon").className = "scope-tab" + (scope === "addon" ? " scope-tab-active" : "");
 }
 
-function updateAddonPluginSelect() {
+function updateAddonPluginSelect(preferredPluginName) {
   const sectionName = document.getElementById("releaseSectionSelect").value;
   const section = arrayOf(state.catalog.catalog.addons.sections).find(s => s.name === sectionName);
   const plugins = section ? arrayOf(section.plugins) : [];
   document.getElementById("releaseAddonPluginSelect").innerHTML = plugins.map(p => `<option value="${escapeHtml(p.name)}">${escapeHtml(p.name)}</option>`).join("");
+  document.getElementById("releasePluginInput").value = safeSelectValue("releaseAddonPluginSelect", preferredPluginName);
 }
 
 function readModalRelease() {
@@ -1897,17 +1934,39 @@ function saveReleaseFromModal() {
     let targetPlugin = getPluginForScope(payload.scope, payload.section, payload.pluginName, true);
     if (!targetPlugin) throw new Error("Could not resolve the target plugin.");
 
+    let savedIndex = -1;
     if (state.modalMode === "edit" && state.editingLocation) {
-      removeReleaseAtLocation(state.editingLocation);
-      targetPlugin = getPluginForScope(payload.scope, payload.section, payload.pluginName, true);
+      const sameTarget =
+        state.editingLocation.scope === payload.scope &&
+        asText(state.editingLocation.section) === payload.section &&
+        asText(state.editingLocation.pluginName) === payload.pluginName;
+
+      const duplicateIgnoreIndex = sameTarget ? state.editingLocation.releaseIndex : -1;
+      if (releaseExistsWithVersion(targetPlugin.releases, payload.release.version, duplicateIgnoreIndex)) {
+        throw new Error("A release with the same version already exists for this plugin.");
+      }
+
+      if (sameTarget) {
+        targetPlugin.releases[state.editingLocation.releaseIndex] = payload.release;
+        savedIndex = state.editingLocation.releaseIndex;
+      } else {
+        removeReleaseAtLocation(state.editingLocation);
+        targetPlugin = getPluginForScope(payload.scope, payload.section, payload.pluginName, true);
+        if (!targetPlugin) throw new Error("Could not resolve the updated target plugin.");
+        if (releaseExistsWithVersion(targetPlugin.releases, payload.release.version, -1)) {
+          throw new Error("A release with the same version already exists for this plugin.");
+        }
+        targetPlugin.releases.push(payload.release);
+        savedIndex = targetPlugin.releases.length - 1;
+      }
+    } else {
+      if (releaseExistsWithVersion(targetPlugin.releases, payload.release.version, -1)) {
+        throw new Error("A release with the same version already exists for this plugin.");
+      }
+      targetPlugin.releases.push(payload.release);
+      savedIndex = targetPlugin.releases.length - 1;
     }
 
-    if (releaseExistsWithVersion(targetPlugin.releases, payload.release.version, -1)) {
-      throw new Error("A release with the same version already exists for this plugin.");
-    }
-
-    targetPlugin.releases.push(payload.release);
-    const savedIndex = targetPlugin.releases.length - 1;
     normalizeLatestFlags(targetPlugin.releases, payload.release.latest ? savedIndex : findLatestIndex(targetPlugin.releases));
     state.selectedSignature = pluginSignature(payload.scope, payload.section, payload.pluginName, payload.release);
     closeReleaseModal(); renderAll(); showToast("Release saved.");
@@ -2195,14 +2254,13 @@ function bindEvents() {
     updateTabActive();
   });
   document.getElementById("releaseSectionSelect").addEventListener("change", () => {
-    document.getElementById("releaseSectionInput").value = document.getElementById("releaseSectionSelect").value;
-    updateAddonPluginSelect();
+    syncModalTargetInputs();
   });
   document.getElementById("releaseAddonPluginSelect").addEventListener("change", () => {
-    document.getElementById("releasePluginInput").value = document.getElementById("releaseAddonPluginSelect").value;
+    syncModalTargetInputs();
   });
   document.getElementById("releaseCorePluginSelect").addEventListener("change", () => {
-    document.getElementById("releasePluginInput").value = document.getElementById("releaseCorePluginSelect").value;
+    syncModalTargetInputs();
   });
   document.getElementById("closeModalBtn").addEventListener("click", closeReleaseModal);
   document.getElementById("cancelModalBtn").addEventListener("click", closeReleaseModal);
