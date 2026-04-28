@@ -1913,10 +1913,18 @@ function updateAddonPluginSelect(preferredPluginName) {
   document.getElementById("releasePluginInput").value = safeSelectValue("releaseAddonPluginSelect", preferredPluginName);
 }
 
+function getModalPluginName(scope) {
+  if (scope === "core") {
+    const typedName = asText(document.getElementById("releaseCorePluginInput").value);
+    return typedName || asText(document.getElementById("releaseCorePluginSelect").value);
+  }
+  return asText(document.getElementById("releaseAddonPluginSelect").value);
+}
+
 function readModalRelease() {
   const scope      = document.getElementById("releaseScopeInput").value;
-  const section    = asText(document.getElementById("releaseSectionInput").value);
-  const pluginName = asText(document.getElementById("releasePluginInput").value);
+  const section    = scope === "addon" ? asText(document.getElementById("releaseSectionSelect").value) : "";
+  const pluginName = getModalPluginName(scope);
   const name       = asText(document.getElementById("releaseNameInput").value);
   const version    = asText(document.getElementById("releaseVersionInput").value);
   const type       = document.getElementById("releaseTypeInput").value;
@@ -1924,6 +1932,9 @@ function readModalRelease() {
   const loader     = document.getElementById("releaseLoaderInput").value;
   const download   = asText(document.getElementById("releaseDownloadInput").value);
   const latest     = document.getElementById("releaseLatestInput").checked;
+
+  document.getElementById("releaseSectionInput").value = section;
+  document.getElementById("releasePluginInput").value = pluginName;
 
   if (!pluginName || !name || !version) throw new Error("Plugin, release name, and version are required.");
   if (scope === "addon" && !section)    throw new Error("Addon releases require a section name.");
